@@ -1,0 +1,20 @@
+{
+  "name": "@openspot/frontend",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@openspot/shared": "*",
+    "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0"
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^3.0.5",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.6"
+  }
+}

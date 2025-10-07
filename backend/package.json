@@ -1,0 +1,25 @@
+{
+  "name": "@openspot/backend",
+  "private": true,
+  "version": "1.0.0",
+  "main": "./backend/src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "start": "node .",
+    "build": "tsc -P ."
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "dependencies": {
+    "@openspot/shared": "*",
+    "express": "^5.1.0",
+    "knex": "^3.1.0",
+    "mysql2": "^3.15.1",
+    "node-cron": "^4.2.1",
+    "sqlite3": "^5.1.7"
+  }
+}
