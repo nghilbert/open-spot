@@ -29,7 +29,20 @@ export class AccountController {
     }
 
     public async isValidSession(sessionToken: Session): Promise<boolean> {
+        // This function returns true or false depending on if the session is valid
+        const prisma = this.prisma;
 
+        // Creates the password hash to check for
+        try {
+            const sessionExists: boolean = await prisma.user.exists({ where: { sessionToken } });
+            return sessionExists;
+        } catch (error) {
+            console.error("Error finding session: ", error);
+            return false;
+        } finally {
+            // Cleanup
+            await this.prisma.$disconnect();
+        }
     }
 
     public async login(email: string, password: string): Promise<Session|null> {
@@ -81,7 +94,7 @@ export class AccountController {
 
             return true;
         } catch (error) {
-            console.error("Error finding user: ", error);
+            console.error("Error creating user: ", error);
             return false; // Errored out, so no session can be returned
         } finally {
             // Cleanup
