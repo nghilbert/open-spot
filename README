@@ -1,0 +1,26 @@
+# Open Spot
+
+## ⚙️ Common Commands
+
+Run all commands from the **backend/** directory.
+
+| Command | Description |
+|----------|-------------|
+| `npm run prisma:migrate` | Applies migrations and updates the database. Run this when models change. |
+| `npm run prisma:generate` | Regenerates the Prisma Client after modifying `schema.prisma`. |
+| `npm run prisma:studio` | Opens a browser GUI to view or edit data. |
+
+---
+
+## 🗃️ Editing the Schema
+
+1. Open **`backend/prisma/schema.prisma`**.  
+2. Add or modify models. Example:
+
+   ```prisma
+   model User {
+     id    Int     @id @default(autoincrement())
+     email String  @unique
+     name  String?
+     posts Post[]
+   }
