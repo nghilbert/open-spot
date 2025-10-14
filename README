@@ -23,35 +23,49 @@ The following features are currently being implemented:
 
 ### Interface: `AccountManager`
 Defines core account management functionality.
-```java
-interface AccountManager {
-  public boolean createAccount(String email, String password);
-  public boolean emailExists(String email);
-  public Account login(String email, String password);
-  public boolean logout();
-}
 
 Abstract Class: Account
 Implements AccountManager and serves as the base class for user accounts.
 
-abstract class Account implements AccountManager {
-  private String email;
-  private String memberName;
-  private String password;
-  private boolean validEmail;
-
-  public boolean createAccount(String email, String password) {}
-  public boolean emailExists(String email) {}
-  public Account login(String email, String password) {}
-  public boolean logout() {}
-}
-
 Class: User
 Extends Account to represent a user with additional functionality, such as managing favorite spots.
 
-class User extends Account {
-  private List<Spot> favorite;
+```typescript
+interface AccountManager {
+    createAccount(email: String, password: String): boolean;
+    emailExists(email: String): boolean;
+    login(email: String, password: String): Account;
+    logout(): boolean;
 }
+
+abstract class Account implements AccountManager {
+    private email: String = "";
+    private memberName: String = "";
+    private password: String = "";
+    private validEmail: boolean = false;
+    
+    public createAccount(email: String, password: String): boolean {
+        throw new Error("Method not implemented.");
+    }
+
+    public emailExists(email: String): boolean {
+        throw new Error("Method not implemented.");
+    }
+
+    public login(email: String, password: String): Account {
+        throw new Error("Method not implemented.");
+    }
+
+    public logout(): boolean {
+        throw new Error("Method not implemented.");
+    }
+}
+
+type Spot = number;
+class User extends Account {
+    private favorite: Spot[] = [];
+}
+```
 
 ## Getting Started
 To set up the project locally for development:
@@ -64,24 +78,24 @@ Press Enter to save the key in the default location
 Optionally, enter a strong passphrase when prompted for added security.
 
 #Copy the Public SSH Key:
--Navigate to the directory where your SSH key was saved (e.g., ~/.ssh/).
--Open the public key file (e.g., id_ed25519.pub or id_rsa.pub) with a text editor.
--Copy the entire content of the file, including ssh-ed25519
+- Navigate to the directory where your SSH key was saved (e.g., ~/.ssh/).
+- Open the public key file (e.g., id_ed25519.pub or id_rsa.pub) with a text editor.
+- Copy the entire content of the file, including ssh-ed25519
 
 # Add the Public Key to GitLab:
--Log in to your GitLab account.
--Click on your avatar in the upper-right corner and select "Edit profile" or "Settings".
--In the left sidebar, select "SSH Keys".
--Click "Add new key".
--Paste the copied public key into the "Key" field.
--Provide a descriptive "Title" for the key (e.g., "Open Spot").
-Click "Add key".
+- Log in to your GitLab account.
+- Click on your avatar in the upper-right corner and select "Edit profile" or "Settings".
+- In the left sidebar, select "SSH Keys".
+- Click "Add new key".
+- Paste the copied public key into the "Key" field.
+- Provide a descriptive "Title" for the key (e.g., "Open Spot").
+- Click "Add key".
 
 ## Set Up the Environment:
--Install git by following this guide: https://github.com/git-guides/install-git
--Install Node.js here: https://nodejs.org/en/download
--Install Visual Studio Code: https://code.visualstudio.com/download
--inside VS Code Extensions install GitLens, GitLens Inspect, and Prisma.
+- Install git by following this guide: https://github.com/git-guides/install-git
+- Install Node.js here: https://nodejs.org/en/download
+- Install Visual Studio Code: https://code.visualstudio.com/download
+- inside VS Code Extensions install GitLens, GitLens Inspect, and Prisma.
 
 # Clone the Repository:
 bash git clone https://github.com/nghilbert/open-spot
