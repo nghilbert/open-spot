@@ -95,10 +95,10 @@ Optionally, enter a strong passphrase when prompted for added security.
 - Install git by following this guide: https://github.com/git-guides/install-git
 - Install Node.js here: https://nodejs.org/en/download
 - Install Visual Studio Code: https://code.visualstudio.com/download
-- inside VS Code Extensions install GitLens, GitLens Inspect, and Prisma.
+- inside VS Code Extensions install Git Graph, GitLens Inspect, and Prisma.
 
 # Clone the Repository:
-bash git clone https://github.com/nghilbert/open-spot
+git clone https://github.com/nghilbert/open-spot
 
 ## Contributing
 To contribute:
