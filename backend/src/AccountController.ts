@@ -1,5 +1,6 @@
 import { Session, User } from "@openspot/shared";
 import { PrismaClient } from "@prisma/client";
+import { randomBytes } from "crypto";
 import * as bcrypt from "bcrypt";
 
 export class AccountController {
@@ -11,9 +12,20 @@ export class AccountController {
         this.prisma = prisma;
     }
 
-    private async generateSession(user: User): Session {
+    private async generateSession(user: User): Promise<string> {
         // Creates a new session object
+        const sessionToken = randomBytes(32).toString("hex");
 
+        // Send data to database
+        await this.prisma.session.create({
+            data: {
+                userID: user.id,
+                sessionToken,
+            },
+        });
+
+        // Return the resultant session token
+        return sessionToken;
     }
 
     public async login(email: string, password: string): Promise<Session|null> {
