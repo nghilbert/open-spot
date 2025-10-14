@@ -89,10 +89,9 @@ bash git clone https://github.com/nghilbert/open-spot
 ## Contributing
 To contribute:
 
-Fork the repository.
 Create a feature or bug-fix branch (git checkout -b feature/your-feature-name).
 Commit changes with clear, concise messages. (git commit -m "update you are making.")
-Push your branch to your fork (git push origin feature/your-feature-name).
+Push your branch to origin (git push origin feature/your-feature-name).
 Submit a pull request with a detailed description of your changes.
 
 Please follow the existing code style and include comments for clarity. For major changes, open an issue first to discuss your ideas.
