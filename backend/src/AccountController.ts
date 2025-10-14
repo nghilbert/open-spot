@@ -34,8 +34,8 @@ export class AccountController {
 
         // Creates the password hash to check for
         try {
-            const sessionExists: boolean = await prisma.user.exists({ where: { sessionToken } });
-            return sessionExists;
+            const sessionExists = await prisma.session.findUnique({ where: { sessionToken } });
+            return sessionExists !== null;
         } catch (error) {
             console.error("Error finding session: ", error);
             return false;
@@ -52,7 +52,7 @@ export class AccountController {
 
         // Creates the password hash to check for
         try {
-            const user: User = await prisma.user.findUnique({
+            const user: User|null = await prisma.user.findUnique({
                 where: {
                     email: email
                 },
@@ -90,7 +90,7 @@ export class AccountController {
                 passwordHash,
                 name
             };
-            await prisma.session.create({ data: user });
+            await prisma.user.create({ data: user });
 
             return true;
         } catch (error) {

@@ -5,5 +5,5 @@ export interface User {
     email: string;
     passwordHash: string;
     name: string;
-    sessions: Session[];
+    sessions?: Session[];
 };
