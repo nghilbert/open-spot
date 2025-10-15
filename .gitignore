@@ -29,5 +29,5 @@ dist-ssr
 *.sw?
 
 # Prisma
-/generated/prisma
+backend/prisma/generated
 dev.db

@@ -1,5 +1,9 @@
+export type Session = string;
+
 export interface User {
     id: number;
-    name: string;
     email: string;
+    passwordHash: string;
+    name: string;
+    sessions?: Session[];
 };
