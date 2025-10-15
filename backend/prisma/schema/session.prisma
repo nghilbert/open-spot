@@ -1,0 +1,7 @@
+model Session {
+  id String @id @default(cuid())
+  user User @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID Int
+  sessionToken String @unique
+  @@index([sessionToken])
+}
