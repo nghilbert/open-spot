@@ -1,7 +1,9 @@
 // Libraries
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { AccountController } from "./AccountController";
 import { PrismaClient } from "@prisma/client";
+import { User } from "@openspot/shared";
+import cookieParser from "cookie-parser";
 
 // Runtime config
 const environment = process.env.NODE_ENV || "development";
@@ -17,6 +19,30 @@ async function main(){
 	const app = express();
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
+	app.use(cookieParser());
+
+	// Create middleware for securing with session tokens
+	interface AuthenticatedRequest extends Request {
+		user: User;
+	}
+
+	async function requireAuth(req: Request, res: Response, next: NextFunction){
+		const sessionToken = (req as any).cookies?.session;
+
+		if(!sessionToken){
+			return res.status(401).json({ error: "Not authenticated" });
+		}
+
+		const session = await accountController.getUserSession(sessionToken);
+
+		if(!session){
+			return res.status(401).json({ error: "Session expired" });
+		}
+
+		// Attach user info for downstream handlers
+		(req as AuthenticatedRequest).user = session;
+		next();
+	}
 
 	// User testing routes
 	app.post("/api/user/create", async (req, res) => {
@@ -28,7 +54,7 @@ async function main(){
 
 		if(await accountController.createAccount(email, password, name)){
 			// Successful creation
-			res.status(200).end();
+			res.status(200).redirect("/");
 		} else {
 			// Send an error
 			res.status(400).end();
@@ -41,18 +67,38 @@ async function main(){
 		let email: string = data.email;
 		let password: string = data.password;
 
+		if(!email || !password){
+			return res.status(400).json({ error: "Missing email or password" });
+		}
+
 		let sessionToken = await accountController.login(email, password);
 
 		if(sessionToken){
 			// Successful creation
-			res.status(200).json({
-				sessionToken
+			res.cookie("session", sessionToken, {
+				httpOnly: true,
+				secure: false,
+				sameSite: "lax"
 			});
+
+			res.status(200).end();
 		} else {
 			// Send an error
-			res.status(400).json({
-				sessionToken: null
-			});
+			res.status(400).end();
+		}
+	});
+
+	app.post("/api/user/logout", requireAuth, async (req, res) => {
+		// Ask the account manager to log the user out
+		const sessionToken = (req as any).cookies?.session;
+
+		if(sessionToken){
+			// Successful
+			accountController.logout(sessionToken);
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
 		}
 	});
 
@@ -70,6 +116,11 @@ async function main(){
 			// Send an error
 			res.status(400).end();
 		}
+	});
+
+	app.get("/api/user/name", requireAuth, async (req, res) => {
+		// Ask the account manager to log the user in
+		res.end((req as AuthenticatedRequest).user.name);
 	});
 
 	app.get("/api/test", async (req, res) => {

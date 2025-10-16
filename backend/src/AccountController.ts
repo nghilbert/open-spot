@@ -5,7 +5,7 @@ import * as bcrypt from "bcrypt";
 
 export class AccountController {
     // Variables
-    prisma: PrismaClient;
+    private prisma: PrismaClient;
 
     // Functions
     constructor(prisma: PrismaClient){
@@ -53,6 +53,25 @@ export class AccountController {
         } catch (error) {
             console.error("Error finding session: ", error);
             return false;
+        }
+    }
+
+    public async getUserSession(sessionToken: Session): Promise<User|null> {
+        // This function returns true or false depending on if the session is valid
+        const prisma = this.prisma;
+
+        // Creates the password hash to check for
+        try {
+            const sessionExists = await prisma.session.findUnique({ where: { sessionToken }, include: { user: true } });
+
+            if(sessionExists){
+                return sessionExists.user;
+            }
+
+            return null;
+        } catch (error) {
+            console.error("Error finding session: ", error);
+            return null;
         }
     }
 
