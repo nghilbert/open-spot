@@ -27,13 +27,13 @@ async function main(){
 	}
 
 	async function requireAuth(req: Request, res: Response, next: NextFunction){
-		const token = (req as any).cookies?.session;
+		const sessionToken = (req as any).cookies?.session;
 
-		if(!token){
+		if(!sessionToken){
 			return res.status(401).json({ error: "Not authenticated" });
 		}
 
-		const session = await accountController.getUserSession(token);
+		const session = await accountController.getUserSession(sessionToken);
 
 		if(!session){
 			return res.status(401).json({ error: "Session expired" });
@@ -81,6 +81,20 @@ async function main(){
 				sameSite: "lax"
 			});
 
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
+
+	app.post("/api/user/logout", requireAuth, async (req, res) => {
+		// Ask the account manager to log the user out
+		const sessionToken = (req as any).cookies?.session;
+
+		if(sessionToken){
+			// Successful
+			accountController.logout(sessionToken);
 			res.status(200).end();
 		} else {
 			// Send an error
