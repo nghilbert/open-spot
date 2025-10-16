@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "main": "./backend/src/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "npm run sync-db && nodemon src/index.ts",
     "start": "node .",
     "build": "tsc -P .",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio"
+    "sync-db": "prisma migrate dev",
+    "prisma-generate": "prisma generate",
+    "prisma-studio": "prisma studio"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -22,14 +22,13 @@
   "dependencies": {
     "@openspot/shared": "*",
     "@prisma/client": "^6.17.1",
+    "@types/cookie-parser": "^1.4.9",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "knex": "^3.1.0",
     "mysql2": "^3.15.1",
     "node-cron": "^4.2.1",
     "sqlite3": "^5.1.7"
-  },
-  "prisma": {
-    "schema": "./prisma/schema/"
   }
 }
