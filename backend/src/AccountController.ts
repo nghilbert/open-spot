@@ -56,8 +56,20 @@ export class AccountController {
         }
     }
 
-    public async logout(session: Session): Promise<boolean> {
-        throw new Error("Not implemented");
+    public async logout(sessionToken: Session): Promise<boolean> {
+        try {
+            // Attempt to delete the session from the database based on the session token
+            await this.prisma.session.delete({
+                where: { sessionToken },
+            });
+            // If successful, return true
+            return true;
+        // Log any error that occurred during the session deletion
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            // Return false to indicate logout failure
+            return false;
+        }
     }
 
     public async login(email: string, password: string): Promise<Session|null> {
