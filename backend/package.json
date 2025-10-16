@@ -4,12 +4,11 @@
   "version": "1.0.0",
   "main": "./backend/src/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "npm run sync-db && nodemon src/index.ts",
     "start": "node .",
     "build": "tsc -P .",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio"
+    "sync-db": "prisma migrate dev && prisma generate",
+    "prisma-studio": "prisma studio"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
