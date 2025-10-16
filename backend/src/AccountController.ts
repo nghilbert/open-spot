@@ -5,7 +5,7 @@ import * as bcrypt from "bcrypt";
 
 export class AccountController {
     // Variables
-    prisma: PrismaClient;
+    private prisma: PrismaClient;
 
     // Functions
     constructor(prisma: PrismaClient){
