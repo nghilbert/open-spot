@@ -7,7 +7,8 @@
     "dev": "npm run sync-db && nodemon src/index.ts",
     "start": "node .",
     "build": "tsc -P .",
-    "sync-db": "prisma migrate dev && prisma generate",
+    "sync-db": "prisma migrate dev",
+    "prisma-generate": "prisma generate",
     "prisma-studio": "prisma studio"
   },
   "devDependencies": {
