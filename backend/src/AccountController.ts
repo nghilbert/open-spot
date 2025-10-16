@@ -28,6 +28,20 @@ export class AccountController {
         return sessionToken;
     }
 
+    public async emailExists(email: string): Promise<boolean> {
+        // This function returns true or false depending on if the email exists for a user
+        const prisma = this.prisma;
+
+        // Creates the password hash to check for
+        try {
+            const userExists = await prisma.user.findUnique({ where: { email } });
+            return userExists !== null;
+        } catch (error) {
+            console.error("Error finding user: ", error);
+            return false;
+        }
+    }
+
     public async isValidSession(sessionToken: Session): Promise<boolean> {
         // This function returns true or false depending on if the session is valid
         const prisma = this.prisma;
@@ -39,10 +53,11 @@ export class AccountController {
         } catch (error) {
             console.error("Error finding session: ", error);
             return false;
-        } finally {
-            // Cleanup
-            await this.prisma.$disconnect();
         }
+    }
+
+    public async logout(session: Session): Promise<boolean> {
+        throw new Error("Not implemented");
     }
 
     public async login(email: string, password: string): Promise<Session|null> {
@@ -68,9 +83,6 @@ export class AccountController {
         } catch (error) {
             console.error("Error finding user: ", error);
             return null; // Errored out, so no session can be returned
-        } finally {
-            // Cleanup
-            await this.prisma.$disconnect();
         }
     }
 
@@ -96,9 +108,6 @@ export class AccountController {
         } catch (error) {
             console.error("Error creating user: ", error);
             return false; // Errored out, so no session can be returned
-        } finally {
-            // Cleanup
-            await this.prisma.$disconnect();
         }
     }
 };
