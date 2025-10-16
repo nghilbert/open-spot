@@ -28,7 +28,7 @@ async function main(){
 
 		if(await accountController.createAccount(email, password, name)){
 			// Successful creation
-			res.status(200).end();
+			res.status(200).redirect("/");
 		} else {
 			// Send an error
 			res.status(400).end();
