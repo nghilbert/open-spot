@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Account</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="Site">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Open Spot</span>
+    </div>
+    <form id="logout-form" action="/logout" method="POST" aria-label="Log out">
+      <!-- Insert your CSRF token here, e.g.: <input type="hidden" name="csrf" value="{{token}}"> -->
+      <button type="submit" class="btn danger" aria-label="Log out of your account">Log out</button>
+    </form>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card profile" aria-labelledby="profile-heading">
+        <div class="avatar">
+          <img src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="Profile avatar" />
+          <span class="badge" title="Account status">Pro Member</span>
+          <div class="actions">
+            <button class="btn secondary" type="button" id="change-photo">Change photo</button>
+            <button class="btn secondary" type="button" id="edit-profile">Edit profile</button>
+          </div>
+        </div>
+
+        <div class="details">
+          <h2 id="profile-heading">Account</h2>
+          <p class="muted">Manage your personal information and security settings.</p>
+
+          <div class="grid" role="group" aria-label="Profile information">
+            <div class="kv">
+              <label>Full name</label>
+              <div class="value" id="name">Lake Reynolds</div>
+            </div>
+            <div class="kv">
+              <label>Username</label>
+              <div class="value" id="username">example</div>
+            </div>
+            <div class="kv">
+              <label>Email</label>
+              <div class="value" id="email">studentemail@ilstu.edu</div>
+            </div>
+            <div class="kv">
+              <label>Member since</label>
+              <div class="value" id="member-since">Aug 2023</div>
+            </div>
+            <div class="kv">
+              <label>Role</label>
+              <div class="value" id="role">Student</div>
+            </div>
+            <div class="kv">
+              <label>Status</label>
+              <div class="value" id="status">Active</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="security-heading">
+        <h3 class="section-title" id="security-heading">Security</h3>
+        <div class="security">
+          <div class="row">
+            <div>
+              <strong>Password</strong>
+              <div><small>Last changed: 90 days ago</small></div>
+            </div>
+            <button class="btn" type="button" id="change-password">Change</button>
+          </div>
+          <div class="row">
+            <div>
+              <strong>Two-factor authentication</strong>
+              <div><small>Disabled</small></div>
+            </div>
+            <button class="btn secondary" type="button" id="setup-2fa">Set up</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Open Spot. • <a href="#">Privacy</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
