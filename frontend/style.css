@@ -1,0 +1,27 @@
+.home-page {
+  border-radius: 15px; 
+  width: 71rem; 
+  height: 31rem; 
+  position: relative; 
+  top: 50%; 
+  left: 0%; 
+  translate: 15% 15%; 
+  background-color: hsla(0, 0%, 0%, 0.499);
+}
+
+#logo{
+  position: absolute; 
+  top: -12%; 
+  left: 25%; 
+  width: 50%; 
+  height: auto;
+}
+
+#headerTitle{
+  position: absolute; 
+  top: 30%; 
+  color: white; 
+  overflow-wrap: break-word; 
+  text-align: center; 
+  font-size: 5rem;
+}
