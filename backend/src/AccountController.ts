@@ -56,6 +56,10 @@ export class AccountController {
         }
     }
 
+    public async logout(session: Session): Promise<boolean> {
+        throw new Error("Not implemented");
+    }
+
     public async login(email: string, password: string): Promise<Session|null> {
         // Simple login function to check for existing user and matching password.
         // If authenticates, it will create a new session for the user
