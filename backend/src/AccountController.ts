@@ -56,6 +56,25 @@ export class AccountController {
         }
     }
 
+    public async getUserSession(sessionToken: Session): Promise<User|null> {
+        // This function returns true or false depending on if the session is valid
+        const prisma = this.prisma;
+
+        // Creates the password hash to check for
+        try {
+            const sessionExists = await prisma.session.findUnique({ where: { sessionToken }, include: { user: true } });
+
+            if(sessionExists){
+                return sessionExists.user;
+            }
+
+            return null;
+        } catch (error) {
+            console.error("Error finding session: ", error);
+            return null;
+        }
+    }
+
     public async logout(session: Session): Promise<boolean> {
         throw new Error("Not implemented");
     }
