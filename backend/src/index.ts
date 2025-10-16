@@ -104,7 +104,7 @@ async function main(){
 		}
 	});
 
-	app.post("/api/user/name", requireAuth, async (req, res) => {
+	app.get("/api/user/name", requireAuth, async (req, res) => {
 		// Ask the account manager to log the user in
 		res.end((req as AuthenticatedRequest).user.name);
 	});
