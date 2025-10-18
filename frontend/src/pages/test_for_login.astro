@@ -5,6 +5,11 @@
     	<link rel="icon" href="/favicon.svg" type="image/svg+xml" style ="width: 50px; height: 50px;">
     </head>
     <body>
-        <script src="/test.js" is:inline></script>
     </body>
 </html>
+
+<script>
+    fetch("/api/user/name").then(async res => {
+        console.log(await res.text());
+    });
+</script>
