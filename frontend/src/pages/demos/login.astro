@@ -30,10 +30,11 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(jsonData),
+                credentials: "include"
             });
 
             if(response.ok){
-                window.location.href = "/";
+                window.location.href = "/demos/test";
             } else {
                 // Handle errors
                 console.error("Form submission failed:", response.statusText);
