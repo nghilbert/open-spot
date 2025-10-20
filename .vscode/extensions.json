@@ -2,6 +2,7 @@
     "recommendations": [
         "dbaeumer.vscode-eslint",
         "github.vscode-github-actions",
-        "xabikos.javascriptsnippets"
+        "xabikos.javascriptsnippets",
+        "astro-build.astro-vscode"
     ]
 }
