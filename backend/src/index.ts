@@ -1,43 +1,40 @@
 // Libraries
-import express, { Request, Response, NextFunction } from "express";
 import { AccountController } from "./AccountController";
+import express, { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import { User } from "@openspot/shared";
-import cookieParser from "cookie-parser";
 import { LoginController } from "./controllers/LoginController";
+import { createApp } from "./app";
 
 // Runtime config
 const environment = process.env.NODE_ENV || "development";
 const port = parseInt(process.env.PORT || "5001", 10);
 
 // Create a main function for lifetime handling
-async function main(){
+async function main() {
 	// Setup account manager and DB
 	const prisma = new PrismaClient();
 	const accountController = new AccountController(prisma);
 	const loginController = new LoginController(prisma);
 
 	// Setup server
-	const app = express();
-	app.use(express.json());
-	app.use(express.urlencoded({ extended: true }));
-	app.use(cookieParser());
+	const app = createApp();
 
 	// Create middleware for securing with session tokens
 	interface AuthenticatedRequest extends Request {
 		user: User;
 	}
 
-	async function requireAuth(req: Request, res: Response, next: NextFunction){
+	async function requireAuth(req: Request, res: Response, next: NextFunction) {
 		const sessionToken = (req as any).cookies?.session;
 
-		if(!sessionToken){
+		if (!sessionToken) {
 			return res.status(401).json({ error: "Not authenticated" });
 		}
 
 		const session = await accountController.getUserSession(sessionToken);
 
-		if(!session){
+		if (!session) {
 			return res.status(401).json({ error: "Session expired" });
 		}
 
@@ -54,7 +51,7 @@ async function main(){
 		let email: string = data.email;
 		let password: string = data.password;
 
-		if(await accountController.createAccount(email, password, name)){
+		if (await accountController.createAccount(email, password, name)) {
 			// Successful creation
 			res.status(200).redirect("/");
 		} else {
@@ -69,18 +66,18 @@ async function main(){
 		let email: string = data.email;
 		let password: string = data.password;
 
-		if(!email || !password){
+		if (!email || !password) {
 			return res.status(400).json({ error: "Missing email or password" });
 		}
 
 		let sessionToken = await loginController.login(email, password);
 
-		if(sessionToken){
+		if (sessionToken) {
 			// Successful creation
 			res.cookie("session", sessionToken, {
 				httpOnly: true,
 				secure: false,
-				sameSite: "lax"
+				sameSite: "lax",
 			});
 
 			res.status(200).end();
@@ -94,7 +91,7 @@ async function main(){
 		// Ask the account manager to log the user out
 		const sessionToken = (req as any).cookies?.session;
 
-		if(sessionToken){
+		if (sessionToken) {
 			// Successful
 			accountController.logout(sessionToken);
 			res.status(200).end();
@@ -111,7 +108,7 @@ async function main(){
 
 		let exists = await accountController.emailExists(email);
 
-		if(exists){
+		if (exists) {
 			// Successful creation
 			res.status(200).end();
 		} else {
