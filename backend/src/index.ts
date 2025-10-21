@@ -4,7 +4,6 @@ import { AccountController } from "./AccountController";
 import { PrismaClient } from "@prisma/client";
 import { User } from "@openspot/shared";
 import cookieParser from "cookie-parser";
-import { LoginController } from "./controllers/LoginController";
 
 // Runtime config
 const environment = process.env.NODE_ENV || "development";
@@ -15,7 +14,6 @@ async function main(){
 	// Setup account manager and DB
 	const prisma = new PrismaClient();
 	const accountController = new AccountController(prisma);
-	const loginController = new LoginController(prisma);
 
 	// Setup server
 	const app = express();
@@ -73,7 +71,7 @@ async function main(){
 			return res.status(400).json({ error: "Missing email or password" });
 		}
 
-		let sessionToken = await loginController.login(email, password);
+		let sessionToken = await accountController.login(email, password);
 
 		if(sessionToken){
 			// Successful creation
