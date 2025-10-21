@@ -1,7 +1,12 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../dist/server",
+    "outDir": "../dist/backend",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@cryptosim/shared": ["shared/src"]
+    }
   },
-  "include": ["src", "../shared/src"]
+  "include": ["src"]
 }
