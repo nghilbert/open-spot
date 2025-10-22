@@ -6,7 +6,6 @@ import { accountController, loginController } from "../controllers";
 export default function createUserRoutes() {
 	const router = Router();
 
-	// User testing routes
 	router.post("/create", async (req, res) => {
 		// Create a user with the account manager
 		let data = req.body;
@@ -50,7 +49,7 @@ export default function createUserRoutes() {
 		}
 	});
 
-	router.post("/logout", requireAuth, async (req, res) => {
+	router.post("/api/user/logout", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user out
 		const sessionToken = (req as any).cookies?.session;
 
@@ -80,9 +79,9 @@ export default function createUserRoutes() {
 		}
 	});
 
-	router.get("/name", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+	router.get("/api/user/name", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
-		res.end((req as AuthenticatedRequest).user.name);
+		res.end((req as unknown as AuthenticatedRequest).user.name);
 	});
 
 	return router;

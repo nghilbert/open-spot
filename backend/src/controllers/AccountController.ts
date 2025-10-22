@@ -79,11 +79,7 @@ export class AccountController {
 		}
 	}
 
-	public async createAccount(
-		email: string,
-		password: string,
-		name: string
-	): Promise<boolean> {
+	public async createAccount(email: string, password: string, name: string): Promise<boolean> {
 		// Creates a new user object. It returns true if the user was created successfully and false
 		// if it fails. i.e. email in use.
 		const prisma = this.prisma;

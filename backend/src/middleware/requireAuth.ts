@@ -17,6 +17,6 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 	}
 
 	// Attach user info for downstream handlers
-	(req as AuthenticatedRequest).user = session;
+	(req as unknown as AuthenticatedRequest).user = session;
 	next();
 }
