@@ -1,78 +1,88 @@
-// User testing routes
-app.post("/api/user/create", async (req, res) => {
-	// Create a user with the account manager
-	let data = req.body;
-	let name: string = data.name;
-	let email: string = data.email;
-	let password: string = data.password;
+import { Router, Request, Response, NextFunction } from "express";
+import { Controllers } from "../types/controllers";
+import { requireAuth } from "../middleware/requireAuth";
 
-	if (await accountController.createAccount(email, password, name)) {
-		// Successful creation
-		res.status(200).redirect("/");
-	} else {
-		// Send an error
-		res.status(400).end();
-	}
-});
+export default function createUserRoutes({ accountController, loginController }: Controllers) {
+	const router = Router();
 
-app.post("/api/user/login", async (req, res) => {
-	// Ask the account manager to log the user in
-	let data = req.body;
-	let email: string = data.email;
-	let password: string = data.password;
+	// User testing routes
+	router.post("/create", async (req, res) => {
+		// Create a user with the account manager
+		let data = req.body;
+		let name: string = data.name;
+		let email: string = data.email;
+		let password: string = data.password;
 
-	if (!email || !password) {
-		return res.status(400).json({ error: "Missing email or password" });
-	}
+		if (await accountController.createAccount(email, password, name)) {
+			// Successful creation
+			res.status(200).redirect("/");
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
 
-	let sessionToken = await loginController.login(email, password);
+	router.post("/login", async (req, res) => {
+		// Ask the account manager to log the user in
+		let data = req.body;
+		let email: string = data.email;
+		let password: string = data.password;
 
-	if (sessionToken) {
-		// Successful creation
-		res.cookie("session", sessionToken, {
-			httpOnly: true,
-			secure: false,
-			sameSite: "lax",
-		});
+		if (!email || !password) {
+			return res.status(400).json({ error: "Missing email or password" });
+		}
 
-		res.status(200).end();
-	} else {
-		// Send an error
-		res.status(400).end();
-	}
-});
+		let sessionToken = await loginController.login(email, password);
 
-app.post("/api/user/logout", requireAuth, async (req, res) => {
-	// Ask the account manager to log the user out
-	const sessionToken = (req as any).cookies?.session;
+		if (sessionToken) {
+			// Successful creation
+			res.cookie("session", sessionToken, {
+				httpOnly: true,
+				secure: false,
+				sameSite: "lax",
+			});
 
-	if (sessionToken) {
-		// Successful
-		accountController.logout(sessionToken);
-		res.status(200).end();
-	} else {
-		// Send an error
-		res.status(400).end();
-	}
-});
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
 
-app.post("/api/user/exists", async (req, res) => {
-	// Ask the account manager to log the user in
-	let data = req.body;
-	let email: string = data.email;
+	router.post("/logout", requireAuth, async (req, res) => {
+		// Ask the account manager to log the user out
+		const sessionToken = (req as any).cookies?.session;
 
-	let exists = await accountController.emailExists(email);
+		if (sessionToken) {
+			// Successful
+			accountController.logout(sessionToken);
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
 
-	if (exists) {
-		// Successful creation
-		res.status(200).end();
-	} else {
-		// Send an error
-		res.status(400).end();
-	}
-});
+	router.post("/exists", async (req, res) => {
+		// Ask the account manager to log the user in
+		let data = req.body;
+		let email: string = data.email;
 
-app.get("/api/user/name", requireAuth, async (req, res) => {
-	// Ask the account manager to log the user in
-	res.end((req as AuthenticatedRequest).user.name);
-});
+		let exists = await accountController.emailExists(email);
+
+		if (exists) {
+			// Successful creation
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
+
+	router.get("/name", requireAuth, async (req, res) => {
+		// Ask the account manager to log the user in
+		res.end((req as AuthenticatedRequest).user.name);
+	});
+
+	return router;
+}

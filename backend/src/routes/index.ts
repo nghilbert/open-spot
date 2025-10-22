@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import userRoutes from './user.routes.ts';
+import { Router } from "express";
+import createUserRoutes from "./user.routes";
 
-const router = Router();
-
-router.use('/user', userRoutes);
-
-export default router;
+export default function createRoutes(controllers: any) {
+	const router = Router();
+	router.use("/user", createUserRoutes(controllers));
+	return router;
+}
