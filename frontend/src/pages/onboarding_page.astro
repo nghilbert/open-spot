@@ -21,14 +21,14 @@ const title = "Finish setting up your profile";
         --radius-sm: 10px;
         --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 
-        /* Match the Name panel (input.control) */
+        /* Field styling */
         --field-bg: rgba(255,255,255,0.04);
         --field-border: rgba(255,255,255,0.18);
 
-        /* Select palette now matches field style */
-        --select-fg: var(--text);             /* white text */
-        --select-bg: var(--field-bg);         /* same translucent bg */
-        --select-border: var(--field-border); /* same border */
+        /* Select styling (matches Name panel) */
+        --select-fg: var(--text);
+        --select-bg: var(--field-bg);
+        --select-border: var(--field-border);
         --select-hover-bg: rgba(255,255,255,0.08);
         --select-hover-fg: var(--text);
         --select-font-size: 16px;
@@ -49,8 +49,6 @@ const title = "Finish setting up your profile";
         padding: 24px;
       }
 
-      a { color: var(--primary); text-underline-offset: 3px; }
-
       .wrap {
         width: 100%;
         max-width: 760px;
@@ -60,43 +58,18 @@ const title = "Finish setting up your profile";
       }
 
       .header { display: grid; justify-items: center; gap: 10px; text-align: center; }
-
-      .brandMark {
-        width: 36px; height: 36px; border-radius: 10px;
-        background: linear-gradient(135deg, var(--primary), #9ad0ff);
-        box-shadow: inset 0 0 8px rgba(255,255,255,0.15), 0 8px 20px rgba(90,162,255,0.35);
-      }
-
+      .brandMark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), #9ad0ff); box-shadow: inset 0 0 8px rgba(255,255,255,0.15), 0 8px 20px rgba(90,162,255,0.35); }
       .h1 { font-size: clamp(22px, 3vw, 32px); font-weight: 750; letter-spacing: -0.02em; margin: 0; }
       .sub { color: var(--text); margin: 0; }
 
-      .card {
-        width: 100%;
-        background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-        border: 1px solid rgba(255,255,255,0.10);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 22px;
-      }
-
+      .card { width: 100%; background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%); border: 1px solid rgba(255,255,255,0.10); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
       form { display: grid; gap: 18px; }
-
-      .sectionTitle {
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        color: var(--muted);
-        margin: 4px 0 8px 0;
-        text-align: center;
-      }
-
+      .sectionTitle { font-size: 13px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin: 4px 0 8px 0; text-align: center; }
       .field { display: grid; gap: 8px; }
       .field.centered { justify-items: center; text-align: center; }
-
       label { font-weight: 600; color: var(--text); }
       .help { color: var(--text); font-size: 13px; }
 
-      /* Text input (Name) */
       .control {
         width: 100%;
         border-radius: var(--radius-sm);
@@ -108,12 +81,8 @@ const title = "Finish setting up your profile";
         transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease, transform 60ms ease;
       }
       .control::placeholder { color: #eef1f8; }
-      .control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 6px var(--ring);
-      }
+      .control:focus { border-color: var(--primary); box-shadow: 0 0 0 6px var(--ring); }
 
-      /* Segmented control */
       .seg {
         display: flex;
         background: var(--field-bg);
@@ -124,62 +93,36 @@ const title = "Finish setting up your profile";
         width: fit-content;
       }
       .seg button {
-        border: none;
-        background: transparent;
-        color: var(--text);
-        padding: 10px 14px;
-        border-radius: 10px;
-        cursor: pointer;
+        border: none; background: transparent; color: var(--text);
+        padding: 10px 14px; border-radius: 10px; cursor: pointer;
         transition: transform 60ms ease, background 120ms ease, color 120ms ease;
         font-weight: 600;
       }
-      .seg button[aria-pressed="true"] {
-        background: linear-gradient(180deg, rgba(90,162,255,0.25), rgba(90,162,255,0.15));
-        outline: 1px solid rgba(90,162,255,0.45);
-      }
+      .seg button[aria-pressed="true"] { background: linear-gradient(180deg, rgba(90,162,255,0.25), rgba(90,162,255,0.15)); outline: 1px solid rgba(90,162,255,0.45); }
       .seg button:active { transform: translateY(1px); }
 
       .hidden { display: none !important; }
 
       .actions { display: flex; gap: 12px; justify-content: center; margin-top: 6px; }
-
-      .btn {
-        appearance: none;
-        border: 1px solid rgba(255,255,255,0.25);
-        background: rgba(255,255,255,0.04);
-        color: var(--text);
-        padding: 12px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 650;
-        transition: transform 60ms ease, filter 120ms ease, background 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-      }
+      .btn { appearance: none; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.04); color: var(--text); padding: 12px 16px; border-radius: 12px; cursor: pointer; font-weight: 650; transition: transform 60ms ease, filter 120ms ease, background 120ms ease, box-shadow 120ms ease, border-color 120ms ease; }
       .btn:active { transform: translateY(1px); }
-      .btn.primary {
-        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%);
-        border-color: rgba(90,162,255,0.6);
-        color: #05122a;
-        box-shadow: 0 10px 20px rgba(90,162,255,0.25), inset 0 0 8px rgba(255,255,255,0.25);
-      }
+      .btn.primary { background: linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%); border-color: rgba(90,162,255,0.6); color: #05122a; box-shadow: 0 10px 20px rgba(90,162,255,0.25), inset 0 0 8px rgba(255,255,255,0.25); }
       .btn.primary:disabled { filter: grayscale(0.7); opacity: 0.7; cursor: not-allowed; }
 
-      /* Status line (no bubble) */
       .status { margin-top: 6px; color: var(--text); font-size: 14px; text-align: center; }
 
-      /* ===== SELECT now matches the Name panel ===== */
+      /* Select matches Name panel */
       .select {
         width: 100%;
         border-radius: var(--radius-sm);
-        background: var(--select-bg);           /* same as Name field */
-        border: 1px solid var(--select-border); /* same as Name field */
+        background: var(--select-bg);
+        border: 1px solid var(--select-border);
         padding: 12px 14px;
-        color: var(--select-fg);                /* white text */
+        color: var(--select-fg);
         font-size: var(--select-font-size);
         font-weight: var(--select-font-weight);
         outline: none;
         transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease, transform 60ms ease;
-
-        /* visible chevron on dark bg */
         appearance: none;
         background-image:
           linear-gradient(45deg, transparent 50%, #fff 50%),
@@ -192,25 +135,27 @@ const title = "Finish setting up your profile";
         background-size: 5px 5px, 5px 5px, 100% 100%;
         background-repeat: no-repeat;
       }
-      .select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 6px var(--ring);
-      }
+      .select:focus { border-color: var(--primary); box-shadow: 0 0 0 6px var(--ring); }
 
-      /* Open menu items (Chromium/Firefox) — dark to match panel */
       select.select option {
-        color: var(--select-fg);              /* white */
-        background: #0f1733;                  /* dark menu surface for contrast */
+        color: var(--select-fg);
+        background: #0f1733;
         font-size: var(--select-font-size);
         font-weight: var(--select-font-weight);
         line-height: 1.4;
       }
-      select.select option:hover,
-      select.select option:checked {
-        background: var(--select-hover-bg);   /* subtle lighter dark */
-        color: var(--select-hover-fg);        /* white */
+      select.select option:hover, select.select option:checked {
+        background: var(--select-hover-bg);
+        color: var(--select-hover-fg);
       }
-      /* Safari may limit option hover styling; base colors still apply */
+
+      .toast {
+        position: fixed; inset: auto 24px 24px auto;
+        background: #0a1a0f; color: #eafff1; border: 1px solid rgba(34, 197, 94, 0.4);
+        padding: 12px 14px; border-radius: 12px; box-shadow: var(--shadow);
+        display: none;
+      }
+      .toast.show { display: block; }
     </style>
   </head>
   <body>
@@ -225,7 +170,7 @@ const title = "Finish setting up your profile";
         <h2 id="onboard-title" class="sectionTitle">Onboarding</h2>
 
         <form id="onboardingForm" novalidate>
-          <!-- Account Type FIRST -->
+          <!-- Account Type -->
           <div class="field centered">
             <label id="acctTypeLabel">Account Type</label>
             <div class="seg" role="group" aria-labelledby="acctTypeLabel">
@@ -257,7 +202,8 @@ const title = "Finish setting up your profile";
           <div id="msg" class="status" aria-live="polite"></div>
 
           <div class="actions">
-            <button type="button" class="btn" id="cancelBtn">Skip for now</button>
+            <!-- Note the id matches the JS handler below -->
+            <button type="button" class="btn" id="SkipForNow">Skip for now</button>
             <button type="submit" class="btn primary" id="submitBtn">Save & Continue</button>
           </div>
         </form>
@@ -274,7 +220,6 @@ const title = "Finish setting up your profile";
       const permitSelect = document.getElementById('permit');
       const msg = document.getElementById('msg');
       const toast = document.getElementById('toast');
-      const cancelBtn = document.getElementById('cancelBtn');
       const submitBtn = document.getElementById('submitBtn');
       const fullName = document.getElementById('fullName');
 
@@ -291,8 +236,6 @@ const title = "Finish setting up your profile";
       }
 
       segButtons.forEach(btn => btn.addEventListener('click', () => setAccountType(btn.dataset.value)));
-
-      // Default selection
       setAccountType(accountTypeHidden.value || 'Driver');
 
       function validate() {
@@ -305,6 +248,7 @@ const title = "Finish setting up your profile";
         return true;
       }
 
+      // Form submit (normal save)
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!validate()) return;
@@ -317,7 +261,17 @@ const title = "Finish setting up your profile";
         };
 
         try {
-          await new Promise(r => setTimeout(r, 450)); // simulate
+          // Replace with your real endpoint if different
+          const res = await fetch('http://localhost:5001/api/onboarding', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+            },
+            body: JSON.stringify({ action: 'save_onboarding', ...payload })
+          });
+          if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
+
           toast.classList.add('show');
           msg.textContent = 'Saved! Redirecting…';
           setTimeout(() => { window.location.href = '/dashboard'; }, 900);
@@ -329,7 +283,37 @@ const title = "Finish setting up your profile";
         }
       });
 
-      cancelBtn.addEventListener('click', () => { window.location.href = '/'; });
+      // Skip-for-now POST (your requested handler)
+      document.getElementById('SkipForNow').addEventListener('click', async () => {
+        const endpoint = 'http://localhost:5001/api/onboarding'; // include protocol!
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'skip_onboarding',
+              timestamp: new Date().toISOString()
+            })
+          });
+
+          if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
+          }
+
+          if (toast) {
+            toast.textContent = 'Preference saved. Redirecting…';
+            toast.classList.add('show');
+          }
+          window.location.href = '/';
+        } catch (err) {
+          console.error(err);
+          if (msg) msg.textContent = 'Couldn’t save your preference. Please try again.';
+        }
+      });
 
       document.querySelector('.seg')?.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
