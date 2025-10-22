@@ -11,6 +11,17 @@ export class AccountController {
         this.prisma = prisma;
     }
 
+    public async getRole(email:string) {
+
+        const user = await this.prisma.user.findUnique({
+        where: { email:email },
+        select: { role: true }
+    });
+
+        return user?.role;
+
+    }
+
     public async emailExists(email: string): Promise<boolean> {
         // This function returns true or false depending on if the email exists for a user
         const prisma = this.prisma;
