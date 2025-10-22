@@ -1,7 +1,13 @@
+enum Role {
+  NONE
+  ADMIN
+}
+
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
   passwordHash String
-  name  String
+  name  String?  
   sessions Session[]
+  role Role @default(NONE)
 }
