@@ -3,7 +3,7 @@ import { AccountController } from "./controllers/AccountController";
 import express, { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import { createApp } from "./app";
-import { createControllers } from "./controllers/index";
+
 // Runtime config
 const environment = process.env.NODE_ENV || "development";
 const port = parseInt(process.env.PORT || "5001", 10);
@@ -11,8 +11,7 @@ const port = parseInt(process.env.PORT || "5001", 10);
 // Create a main function for lifetime handling
 async function main() {
 	const prisma = new PrismaClient();
-	const controllers = createControllers(prisma);
-	const app = createApp(controllers);
+	const app = createApp();
 
 	let server = app.listen(port, () => {
 		console.log(`Listening on port ${port}`);

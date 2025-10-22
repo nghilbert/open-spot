@@ -1,8 +1,9 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { Controllers } from "../types/controllers";
+import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/requireAuth";
+import { AuthenticatedRequest } from "../types/authenticatedRequest";
+import { accountController, loginController } from "../controllers";
 
-export default function createUserRoutes({ accountController, loginController }: Controllers) {
+export default function createUserRoutes() {
 	const router = Router();
 
 	// User testing routes
@@ -22,7 +23,7 @@ export default function createUserRoutes({ accountController, loginController }:
 		}
 	});
 
-	router.post("/login", async (req, res) => {
+	router.post("/login", async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
 		let data = req.body;
 		let email: string = data.email;
@@ -63,7 +64,7 @@ export default function createUserRoutes({ accountController, loginController }:
 		}
 	});
 
-	router.post("/exists", async (req, res) => {
+	router.post("/exists", async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
 		let data = req.body;
 		let email: string = data.email;
@@ -79,7 +80,7 @@ export default function createUserRoutes({ accountController, loginController }:
 		}
 	});
 
-	router.get("/name", requireAuth, async (req, res) => {
+	router.get("/name", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
 		// Ask the account manager to log the user in
 		res.end((req as AuthenticatedRequest).user.name);
 	});
