@@ -8,7 +8,7 @@
     "start": "node .",
     "build": "tsc -P .",
     "sync-db": "prisma migrate dev",
-    "prisma-generate": "prisma generate",
+    "generate-client": "prisma generate",
     "prisma-studio": "prisma studio"
   },
   "devDependencies": {
