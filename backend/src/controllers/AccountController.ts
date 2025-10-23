@@ -11,6 +11,15 @@ export class AccountController {
 		this.prisma = prisma;
 	}
 
+	public async getRole(email: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { email: email },
+			select: { role: true },
+		});
+
+		return user?.role;
+	}
+
 	public async emailExists(email: string): Promise<boolean> {
 		// This function returns true or false depending on if the email exists for a user
 		const prisma = this.prisma;
@@ -31,9 +40,7 @@ export class AccountController {
 
 		// Creates the password hash to check for
 		try {
-			const sessionExists = await prisma.session.findUnique({
-				where: { sessionToken },
-			});
+			const sessionExists = await prisma.session.findUnique({ where: { sessionToken } });
 			return sessionExists !== null;
 		} catch (error) {
 			console.error("Error finding session: ", error);
@@ -47,10 +54,7 @@ export class AccountController {
 
 		// Creates the password hash to check for
 		try {
-			const sessionExists = await prisma.session.findUnique({
-				where: { sessionToken },
-				include: { user: true },
-			});
+			const sessionExists = await prisma.session.findUnique({ where: { sessionToken }, include: { user: true } });
 
 			if (sessionExists) {
 				return sessionExists.user;
@@ -76,31 +80,6 @@ export class AccountController {
 			console.error("Error logging out: ", error);
 			// Return false to indicate logout failure
 			return false;
-		}
-	}
-
-	public async createAccount(email: string, password: string, name: string): Promise<boolean> {
-		// Creates a new user object. It returns true if the user was created successfully and false
-		// if it fails. i.e. email in use.
-		const prisma = this.prisma;
-
-		try {
-			// Creates the password hash to insert to the DB
-			const salt = await bcrypt.genSalt();
-			const passwordHash = await bcrypt.hash(password, salt);
-
-			// Insert the data into the DB
-			const user: Omit<User, "id" | "sessions"> = {
-				email,
-				passwordHash,
-				name,
-			};
-			await prisma.user.create({ data: user });
-
-			return true;
-		} catch (error) {
-			console.error("Error creating user: ", error);
-			return false; // Errored out, so no session can be returned
 		}
 	}
 }

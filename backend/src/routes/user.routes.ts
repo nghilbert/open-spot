@@ -1,19 +1,19 @@
 import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/requireAuth";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
-import { accountController, loginController } from "../controllers";
+import { accountController, loginController, createAccountController } from "../controllers";
 
 export default function createUserRoutes() {
 	const router = Router();
 
-	router.post("/create", async (req, res) => {
+	router.post("/register", async (req, res) => {
 		// Create a user with the account manager
 		let data = req.body;
 		let name: string = data.name;
 		let email: string = data.email;
 		let password: string = data.password;
 
-		if (await accountController.createAccount(email, password, name)) {
+		if (await createAccountController.register(email, password, name)) {
 			// Successful creation
 			res.status(200).redirect("/");
 		} else {
