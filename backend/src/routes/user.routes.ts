@@ -45,11 +45,13 @@ export default function createUserRoutes() {
 			res.status(200).end();
 		} else {
 			// Send an error
-			res.status(400).end();
+			res.status(401).json({ success: false });
+
+;
 		}
 	});
 
-	router.post("/api/user/logout", requireAuth, async (req: Request, res: Response) => {
+	router.post("/logout", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user out
 		const sessionToken = (req as any).cookies?.session;
 
@@ -79,7 +81,7 @@ export default function createUserRoutes() {
 		}
 	});
 
-	router.get("/api/user/name", requireAuth, async (req: Request, res: Response) => {
+	router.get("/name", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
 		res.end((req as unknown as AuthenticatedRequest).user.name);
 	});
