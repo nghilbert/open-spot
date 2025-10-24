@@ -81,6 +81,12 @@ import logo from "../assets/logo.svg"
             try {
               const emailInput = document.getElementById('userEmail') as HTMLInputElement;
               const email = emailInput.value;
+              // if not an ilstu email reject
+              if (!email.endsWith('@ilstu.edu')) {
+                status.textContent = 'Invalid email or password.';
+                status.style.display = 'block';
+                return;
+              }
 
               const passwordInput = document.getElementById('password') as HTMLInputElement;
               const password = passwordInput.value;
