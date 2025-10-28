@@ -52,9 +52,11 @@ import logo from "../assets/logo.svg"
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <input type="email" class="form-control mb-3" placeholder="Email" required />
-              <input type="password" class="form-control mb-3" placeholder="Password" required />
-              <input type="password" class="form-control mb-3" placeholder="Confirm Password" required />
+              <input id= "nameInput" type="text" class="form-control mb-3" placeholder="John Smith" required />
+              <input id= "emailInput" type="email" class="form-control mb-3" placeholder="Email" required />
+              <input id="passwordInput" type="password" class="form-control mb-3" placeholder="Password" required />
+              <input id ="passwordCheck" type="password" class="form-control mb-3" placeholder="Confirm Password" required />
+              <div id="createStatus" class="text-danger mb-2" style="display: none;"></div>
             </div>
             <div class="modal-footer">
               <button id= "createSubmit"type="button" class="btn btn-success">Create</button>
@@ -69,15 +71,15 @@ import logo from "../assets/logo.svg"
     <script>
 
      document.addEventListener('DOMContentLoaded', () => {
-        const button = document.getElementById('loginSubmit');
+        const submitButton = document.getElementById('loginSubmit');
         const status = document.getElementById('loginStatus');
 
         if(status){
         status.style.display = 'none'; // Hide status before request
         
 
-        if(button){
-          button.addEventListener('click', async () => {
+        if(submitButton){
+          submitButton.addEventListener('click', async () => {
             try {
               const emailInput = document.getElementById('userEmail') as HTMLInputElement;
               const email = emailInput.value;
@@ -117,6 +119,74 @@ import logo from "../assets/logo.svg"
           });
         }
       }});
+
+
+      const createButton = document.getElementById('createSubmit');
+        const createStatus = document.getElementById('createStatus');
+
+        if(createStatus){
+        createStatus.style.display = 'none'; // Hide status before request
+        
+
+        if(createButton){
+          createButton.addEventListener('click', async () => {
+            try {
+              const emailInput = document.getElementById('emailInput') as HTMLInputElement;
+              const newEmail = emailInput.value;
+              // if not an ilstu email reject
+              if (!newEmail.endsWith('@ilstu.edu')) {
+                createStatus.textContent = 'Invalid email, only Illinois State email can register for an account';
+                createStatus.style.display = 'block';
+                return;
+              }
+
+              const newPasswordInput = document.getElementById('passwordInput') as HTMLInputElement;
+              const newPassword = newPasswordInput.value;
+              const passwordInputCheck = document.getElementById('passwordCheck') as HTMLInputElement;
+              const passwordCheck = passwordInputCheck.value;
+
+              if(newPassword != passwordCheck){
+                createStatus.textContent = 'Passwords entered do not match, please check and try again';
+                createStatus.style.display = 'block';
+                return;
+              }
+
+              const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+              const name = nameInput.value;
+
+              if(!name){
+                createStatus.textContent = 'Please put in your name';
+                createStatus.style.display = 'block';
+                return;
+              }
+
+
+              const response = await fetch('/api/user/register', {
+                method: 'POST',
+                body: JSON.stringify({name: name, email: newEmail, password: newPassword}),
+                headers: { 'Content-Type': 'application/json' }
+              });
+
+              const result = await response.json();
+              if (response.status === 200) {
+                console.log("Account Created: " + name + " for email: " + emailInput);
+                 window.location.href = result.redirectTo;
+              } else if (response.status === 400) {
+                createStatus.textContent = 'Email already in use';
+                createStatus.style.display = 'block';
+              } else {
+                console.log(response.status)
+                createStatus.textContent = 'Unexpected error. Please try again.';
+                createStatus.style.display = 'block';
+              }
+              
+
+            } catch (error) {
+              console.error('Error sending POST request:', error);
+            }
+          });
+        }
+      }
       
 
 

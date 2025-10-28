@@ -8,6 +8,9 @@ const backendPort = parseInt(process.env.PORT || "5001", 10);
 // https://astro.build/config
 export default defineConfig({
     integrations: [react()],
+    server:{
+        port: 3000
+    },
     outDir: '../dist/frontend',
 
     vite: {

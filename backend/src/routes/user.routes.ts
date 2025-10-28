@@ -15,10 +15,10 @@ export default function createUserRoutes() {
 
 		if (await createAccountController.register(email, password, name)) {
 			// Successful creation
-			res.status(200).redirect("/");
+			res.status(200).json({redirectTo:"/onboarding_page"});
 		} else {
 			// Send an error
-			res.status(400).end();
+			res.status(400).json({ success: false });;
 		}
 	});
 
