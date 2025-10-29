@@ -263,7 +263,7 @@ const title = "Finish setting up your profile";
         };
 
         try {
-          const res = await fetch('http://localhost:5001/api/onboarding', {
+          const res = await fetch('/api/onboarding', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ const title = "Finish setting up your profile";
 
       // Skip-for-now POST
       document.getElementById('SkipForNow').addEventListener('click', async () => {
-        const endpoint = 'http://localhost:5001/api/onboarding';
+        const endpoint = '/api/onboarding';
         try {
           const res = await fetch(endpoint, {
             method: 'POST',

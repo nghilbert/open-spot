@@ -185,7 +185,6 @@ const title = "Open Spot — Dashboard";
       const resetBtn = document.getElementById('resetFilters');
 
       const token = () => localStorage.getItem('token') || '';
-      const apiBase = 'http://localhost:5001';
 
       let allLots = [];
 
@@ -268,7 +267,7 @@ const title = "Open Spot — Dashboard";
       // --------- Load data ---------
       async function loadLots(){
         try{
-          const res = await fetch(`${apiBase}/api/locations`, { headers:{ 'Authorization': `Bearer ${token()}` } });
+          const res = await fetch(`/api/locations`, { headers:{ 'Authorization': `Bearer ${token()}` } });
           if(!res.ok) throw new Error(await res.text());
           const data = await res.json();
           // expected: [{ id, name, address, kind:'Parking'|'Bike', permitRequired:null|'Commuter'|..., availability:{ used, total } }]
