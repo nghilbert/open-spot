@@ -200,3 +200,14 @@ if(tokenQuery){
     </div>
   </body>
 </html>
+
+<script define:vars={{ emailVerified }}>
+  // This is inline implicitly because of define:vars
+  // as such, no typescript.
+  if(emailVerified){
+    // If the email is verified, redirect after 10 seconds
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000 * 10);
+  }
+</script>
