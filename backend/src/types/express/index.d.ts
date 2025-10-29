@@ -1,9 +1,10 @@
-import type { User } from "@prisma/client";
+import type { User, Session } from "@prisma/client";
 
 declare global {
 	namespace Express {
 		interface Request {
 			user?: User;
+			session?: Session;
 		}
 	}
 }
