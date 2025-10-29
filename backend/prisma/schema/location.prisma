@@ -6,7 +6,8 @@ enum Type {
 
 model Location {
   id Int @id @default(autoincrement())
-  address String @unique
+  addressId Int @unique
+  address Address @relation(fields: [addressId], references: [id])
   name String
   spotCapacity Int
   spotAvailability Int
