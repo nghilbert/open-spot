@@ -10,5 +10,6 @@ model User {
   passwordHash String
   name  String  
   sessions Session[]
+  oauths OAuth[]
   role Role @default(NONE)
 }
