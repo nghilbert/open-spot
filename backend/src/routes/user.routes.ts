@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/requireAuth";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
-import { accountController, loginController, createAccountController } from "../controllers";
+import { accountController, loginController, createAccountController, logoutController} from "../controllers";
 
 export default function createUserRoutes() {
 	const router = Router();
@@ -55,7 +55,7 @@ export default function createUserRoutes() {
 
 		if (sessionToken) {
 			// Successful
-			accountController.logout(sessionToken);
+			logoutController.logout(sessionToken);
 			res.status(200).end();
 		} else {
 			// Send an error
