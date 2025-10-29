@@ -2,7 +2,7 @@ import { prismaClient } from "../../prismaClient";
 import { Address } from "@openspot/shared";
 
 export class ParkingLotController {
-	async addParkingLot(address: Address, spotCapacity: number, name?: string): Promise<boolean> {
+	async addLot(address: Address, spotCapacity: number, name?: string): Promise<boolean> {
 		// Validate arguments
 		if (!address || !Number.isInteger(spotCapacity) || spotCapacity <= 0) {
 			return false;
