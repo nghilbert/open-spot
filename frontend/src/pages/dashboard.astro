@@ -1,0 +1,294 @@
+---
+const title = "Open Spot — Dashboard";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      /* ===== Shared theme (same as onboarding/admin) ===== */
+      :root{
+        --bg:#0b1020; --panel:#111936; --panel-2:#0e1530; --text:#fff; --muted:#dfe5f5;
+        --primary:#5aa2ff; --primary-600:#4a8ae0; --ring:rgba(90,162,255,.35);
+        --radius:16px; --radius-sm:12px; --shadow:0 10px 30px rgba(0,0,0,.45);
+        --border:rgba(255,255,255,.10); --border-2:rgba(255,255,255,.18);
+        --field-bg:rgba(255,255,255,.04); --field-border:rgba(255,255,255,.18);
+
+        /* occupancy palettes (solid so they pop on dark bg) */
+        --green-bg:#11341e; --green-br:#2fb36a; --green-fg:#eafff1;
+        --yellow-bg:#3b2a0e; --yellow-br:#f5a623; --yellow-fg:#fff4cf;
+        --red-bg:#3a1515; --red-br:#f06464; --red-fg:#ffe3e3;
+      }
+
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0}
+      body{
+        background: radial-gradient(1200px 800px at 10% -10%, #13214a 0%, var(--bg) 40%, #090e1d 100%);
+        color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      }
+      a{color:var(--primary); text-underline-offset:3px}
+      .shell{max-width:1100px; margin:0 auto; padding:24px}
+
+      /* Nav */
+      header.nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+      .brand{display:flex;align-items:center;gap:10px}
+      .brand img{width:36px;height:36px;border-radius:10px;display:block;box-shadow:0 8px 20px rgba(90,162,255,.35)}
+      .brand .title{font-weight:750;letter-spacing:-.02em}
+
+      .btn{
+        appearance:none;border:1px solid var(--border-2);background:rgba(255,255,255,.04);
+        color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:650;
+        transition:transform 60ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+      }
+      .btn:active{transform:translateY(1px)}
+      .btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-600));color:#05122a;border-color:rgba(90,162,255,.6)}
+
+      /* Filters card */
+      .card{
+        background:linear-gradient(180deg,var(--panel),var(--panel-2));
+        border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+      }
+      .filters{padding:14px;display:grid;gap:10px}
+      .filters .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+      .filters label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+      /* Inputs & selects: make dropdowns more visible (higher contrast) */
+      select,input[type="search"]{
+        background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+        border:1px solid rgba(255,255,255,.28); color:var(--text);
+        border-radius:var(--radius-sm); padding:10px 12px; outline:none;
+        transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
+      }
+
+      /* Style only selects to include a custom caret and stronger contrast */
+      select{
+        appearance:none; -webkit-appearance:none; -moz-appearance:none;
+        padding-right:36px; /* room for caret */
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'><path fill='%23ffffff' d='M7 10l5 5 5-5z'/></svg>");
+        background-repeat:no-repeat; background-position:right 12px center;
+        background-color:transparent;
+      }
+      /* Remove IE/Edge default caret */
+      select::-ms-expand{ display:none }
+
+      select:focus,input[type="search"]:focus{ border-color:var(--primary); box-shadow:0 0 0 6px var(--ring) }
+
+      /* Attempt to style option list (browser support varies) */
+      select option{
+        background:var(--panel); color:var(--text);
+      }
+
+      /* List */
+      .list{margin-top:18px;display:grid;gap:16px}
+
+      /* Lot card (colors driven by inline CSS vars, with data-occ backup) */
+      .lotCard{
+        display:grid;gap:12px;grid-template-columns:1fr auto;align-items:start;
+        padding:16px;border-radius:18px;
+        background:var(--card-bg,var(--panel)); color:var(--card-fg,var(--text));
+        border:2px solid var(--card-br,var(--border-2));
+        box-shadow:0 12px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.06);
+      }
+      .lotCard[data-occ="green"]  { --card-bg:var(--green-bg);  --card-br:var(--green-br);  --card-fg:var(--green-fg); }
+      .lotCard[data-occ="yellow"] { --card-bg:var(--yellow-bg); --card-br:var(--yellow-br); --card-fg:var(--yellow-fg); }
+      .lotCard[data-occ="red"]    { --card-bg:var(--red-bg);    --card-br:var(--red-br);    --card-fg:var(--red-fg); }
+
+      .lotHead{display:grid;gap:6px}
+      .lotName{font-weight:800;letter-spacing:-.01em}
+      .lotMeta{font-size:13px;opacity:.95}
+      .lotBadges{display:flex;gap:6px;flex-wrap:wrap}
+      .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid currentColor;background:rgba(255,255,255,.08)}
+      .occ{font-weight:800;font-size:18px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.28)}
+      .barWrap{height:8px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.22);overflow:hidden}
+      .bar{height:100%;width:0%;background:rgba(255,255,255,.92);mix-blend-mode:screen}
+
+      /* Legend */
+      .legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+      .dot{width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:6px}
+      .dot.g{background:#22c55e}.dot.y{background:#f59e0b}.dot.r{background:#ef4444}
+
+      /* Safety net: render any article inside #list as a card even if other CSS overrides */
+      #list > article{
+        display:block; margin:16px 0; padding:16px; border-radius:18px;
+        background:var(--card-bg,#111936); border:2px solid var(--card-br,rgba(255,255,255,.25));
+        box-shadow:0 12px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.06);
+        color:var(--card-fg,var(--text));
+      }
+
+      .empty{padding:24px;text-align:center;color:var(--muted)}
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- Nav -->
+      <header class="nav">
+        <div class="brand">
+          <img src="/favicon.svg" alt="Open Spot logo" />
+          <div class="title">Open Spot — Dashboard</div>
+        </div>
+        <div class="navBtns">
+          <a href="/admin" class="btn">Admin</a>
+        </div>
+      </header>
+
+      <!-- Filters -->
+      <section class="card">
+        <div class="filters">
+          <div class="row">
+            <label for="search">Search</label>
+            <input type="search" id="search" placeholder="Search by name or address…" />
+            <label for="avail">Available</label>
+            <select id="avail">
+              <option value="">All</option>
+              <option value="available">Has open spots</option>
+              <option value="full">Full</option>
+            </select>
+            <label for="type">Type</label>
+            <select id="type">
+              <option value="">Any</option>
+              <option value="Parking">Parking</option>
+              <option value="Bike">Bike Rack</option>
+            </select>
+            <label for="permit">Permit</label>
+            <select id="permit">
+              <option value="">Any</option>
+              <option value="None">None</option>
+              <option value="Commuter">Commuter</option>
+              <option value="Faculty/Staff">Faculty/Staff</option>
+              <option value="All Parking Garage Zone">All Parking Garage Zone</option>
+            </select>
+            <button class="btn" id="resetFilters">Reset</button>
+          </div>
+          <div class="row legend">
+            <span><span class="dot g"></span>Under 50% full</span>
+            <span><span class="dot y"></span>50–99% full</span>
+            <span><span class="dot r"></span>100% full</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- List -->
+      <section class="list" id="list"></section>
+      <div class="empty" id="empty" style="display:none">No locations match your filters.</div>
+    </div>
+
+    <script type="module">
+      // --------- Setup ---------
+      const listEl   = document.getElementById('list');
+      const emptyEl  = document.getElementById('empty');
+      const searchEl = document.getElementById('search');
+      const availEl  = document.getElementById('avail');
+      const typeEl   = document.getElementById('type');
+      const permitEl = document.getElementById('permit');
+      const resetBtn = document.getElementById('resetFilters');
+
+      const token = () => localStorage.getItem('token') || '';
+      const apiBase = 'http://localhost:5001';
+
+      let allLots = [];
+
+      // --------- Helpers ---------
+      const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+      const pct   = (used,total)=> total>0 ? clamp(Math.round((used/total)*100),0,100) : 0;
+      const occ   = (p)=> p>=100 ? 'red' : p>=50 ? 'yellow' : 'green';
+      const permitLabel = (kind, permit)=> kind==='Parking' ? (permit || '—') : 'None';
+
+      // Render one card (inline CSS vars ensure color applies)
+      function renderLot(l){
+        const used = Number(l.availability?.used ?? 0);
+        const total = Number(l.availability?.total ?? 0);
+        const p = pct(used,total);
+        const state = occ(p);
+        const occText = total>0 ? `${used}/${total} spots full` : '—';
+        const typeText = l.kind==='Parking' ? 'Parking' : 'Bike Rack';
+        const permitTxt = permitLabel(l.kind, l.permitRequired);
+
+        const styleVars = {
+          green:  `--card-bg:var(--green-bg); --card-br:var(--green-br); --card-fg:var(--green-fg);`,
+          yellow: `--card-bg:var(--yellow-bg); --card-br:var(--yellow-br); --card-fg:var(--yellow-fg);`,
+          red:    `--card-bg:var(--red-bg);    --card-br:var(--red-br);    --card-fg:var(--red-fg);`,
+        }[state];
+
+        // Inline fallback styles ensure the card chrome is visible even if external CSS
+        // overrides the page styles. We keep the CSS variables (styleVars) first so
+        // consumers can still override colors via vars when available.
+        const baseInline = `background:var(--card-bg,var(--panel)); border:2px solid var(--card-br,var(--border-2)); color:var(--card-fg,var(--text)); padding:16px; border-radius:18px; box-shadow:0 12px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.06);`;
+        const styleAttr = `${styleVars} ${baseInline}`;
+
+        return `
+          <article class="lotCard" data-occ="${state}" style="${styleAttr}">
+            <div class="lotHead">
+              <div class="lotName">${l.name}</div>
+              <div class="lotMeta">${l.address || ''}</div>
+              <div class="lotBadges">
+                <span class="badge">${typeText}</span>
+                <span class="badge">Permit: ${permitTxt}</span>
+                <span class="badge">${occText}</span>
+              </div>
+              <div class="barWrap" aria-hidden="true"><div class="bar" style="width:${p}%"></div></div>
+            </div>
+            <div class="occ" aria-label="Occupancy">${p}%</div>
+          </article>
+        `;
+      }
+
+      function applyFilters(){
+        const q = (searchEl.value||'').toLowerCase().trim();
+        const avail = availEl.value; // '', 'available', 'full'
+        const type  = typeEl.value;  // '', 'Parking', 'Bike'
+        const permit= (permitEl.value||'').toLowerCase();
+
+        const filtered = allLots.filter(l=>{
+          const nm=(l.name||'').toLowerCase(), ad=(l.address||'').toLowerCase();
+          const matchesText = !q || nm.includes(q) || ad.includes(q);
+          const matchesType = !type || l.kind === type;
+          const pLbl = permitLabel(l.kind, l.permitRequired).toLowerCase() || 'none';
+          const matchesPermit = !permit || pLbl === permit;
+
+          const used=Number(l.availability?.used ?? 0), total=Number(l.availability?.total ?? 0);
+          const open = total - used;
+          let matchesAvail = true;
+          if (avail==='available') matchesAvail = open>0;
+          if (avail==='full')      matchesAvail = total>0 && used>=total;
+
+          return matchesText && matchesType && matchesPermit && matchesAvail;
+        });
+
+        listEl.innerHTML = filtered.map(renderLot).join('');
+        emptyEl.style.display = filtered.length ? 'none' : 'block';
+      }
+
+      // --------- Events ---------
+      resetBtn.addEventListener('click', ()=>{ searchEl.value=''; availEl.value=''; typeEl.value=''; permitEl.value=''; applyFilters(); });
+      [searchEl,availEl,typeEl,permitEl].forEach(el=>el.addEventListener('input',applyFilters));
+      [availEl,typeEl,permitEl].forEach(el=>el.addEventListener('change',applyFilters));
+
+      // --------- Load data ---------
+      async function loadLots(){
+        try{
+          const res = await fetch(`${apiBase}/api/locations`, { headers:{ 'Authorization': `Bearer ${token()}` } });
+          if(!res.ok) throw new Error(await res.text());
+          const data = await res.json();
+          // expected: [{ id, name, address, kind:'Parking'|'Bike', permitRequired:null|'Commuter'|..., availability:{ used, total } }]
+          allLots = Array.isArray(data) ? data : [];
+        }catch{
+          // demo data so UI renders even if API is offline
+          allLots = [
+            { id:1, name:"South Garage", address:"123 Oak St", kind:"Parking", permitRequired:"Commuter", availability:{ used:11, total:50 } },
+            { id:2, name:"Library Deck", address:"45 Campus Way", kind:"Parking", permitRequired:"All Parking Garage Zone", availability:{ used:50, total:50 } },
+            { id:3, name:"Rec Center Racks", address:"200 Fitness Dr", kind:"Bike", permitRequired:null, availability:{ used:12, total:60 } },
+            { id:4, name:"North Lot", address:"800 Maple Ave", kind:"Parking", permitRequired:"Faculty/Staff", availability:{ used:22, total:40 } },
+            { id:5, name:"Arts Quad Racks", address:"10 Studio Ln", kind:"Bike", permitRequired:null, availability:{ used:2, total:40 } },
+          ];
+        }
+        applyFilters();
+      }
+
+      loadLots();
+      // Open your console to verify cards render:
+      // setTimeout(()=>console.log('cards:', document.querySelectorAll('#list > article').length), 0);
+    </script>
+  </body>
+</html>
