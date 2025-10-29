@@ -1,0 +1,6 @@
+model Verify {
+  id String @id @default(cuid())
+  token String @unique
+  userID Int
+  @@index([token])
+}

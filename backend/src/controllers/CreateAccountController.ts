@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { emailController } from ".";
 import bcrypt from "bcrypt";
 
 export class CreateAccountController {
@@ -34,13 +35,16 @@ export class CreateAccountController {
 		const passwordHash = await bcrypt.hash(password, salt);
 
 		// Create user
-		await this.prisma.user.create({
+		let user = await this.prisma.user.create({
 			data: {
 				email: email,
 				passwordHash: passwordHash,
-				name: "",
+				name: name,
 			},
 		});
+
+		// Send off verification email
+		emailController.sendVerificationEmail(user);
 
 		return true;
 	}
