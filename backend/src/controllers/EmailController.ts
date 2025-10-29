@@ -35,6 +35,10 @@ export class EmailController {
             html: content
         });
 
+        if(response.error){
+            console.error(response.error);
+        }
+
         return response.error !== null;
     }
 

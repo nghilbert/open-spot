@@ -44,7 +44,7 @@ export class CreateAccountController {
 		});
 
 		// Send off verification email
-		emailController.sendVerificationEmail(user);
+		await emailController.sendVerificationEmail(user);
 
 		return true;
 	}
