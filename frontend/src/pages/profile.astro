@@ -100,9 +100,9 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        const res = await fetch('/logout', { method: 'POST', credentials: 'include' });
+        const res = await fetch('api/user/logout', { method: 'POST', credentials: 'include' });
         if (res.ok) {
-          window.location.href = '/login';
+          window.location.href = '../';
         } else {
           alert('Logout failed. Please try again.');
         }
