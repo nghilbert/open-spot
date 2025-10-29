@@ -1,4 +1,4 @@
-import { prismaClient } from "../prismaClient";
+import { prismaClient } from "../../prismaClient";
 import bcrypt from "bcrypt";
 
 export class CreateAccountController {

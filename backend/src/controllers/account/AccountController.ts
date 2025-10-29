@@ -1,5 +1,5 @@
 import { Session, User } from "@openspot/shared";
-import { prismaClient } from "../prismaClient";
+import { prismaClient } from "../../prismaClient";
 import * as bcrypt from "bcrypt";
 
 export class AccountController {

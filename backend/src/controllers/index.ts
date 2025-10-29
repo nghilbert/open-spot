@@ -1,7 +1,7 @@
-import { AccountController } from "./AccountController";
-import { LoginController } from "./LoginController";
-import { CreateAccountController } from "./CreateAccountController";
-import { LogoutController } from "./LogoutController";
+import { AccountController } from "./account/AccountController";
+import { LoginController } from "./account/LoginController";
+import { CreateAccountController } from "./account/CreateAccountController";
+import { LogoutController } from "./account/LogoutController";
 
 export const accountController = new AccountController();
 export const loginController = new LoginController();

@@ -1,4 +1,4 @@
-import { prismaClient } from "../prismaClient";
+import { prismaClient } from "../../prismaClient";
 
 export class LogoutController {
 	private prisma = prismaClient;
