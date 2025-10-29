@@ -1,13 +1,33 @@
 ---
-const title = "Finish setting up your profile";
+// Force the server to regenerate the page every request, rather than at `npm run build`.
+export const prerender = false;
+
+// Grab the parameters from the URL
+const params = new URLSearchParams(Astro.url.search);
+const tokenQuery = params.get("token");
+
+let validToken = true;
+let emailVerified = false;
+
+if(tokenQuery){
+  // Token query was provided, send api request
+  let response = await fetch(`${Astro.url.origin}/api/email/verify?token=${tokenQuery}`, { method: "GET" });
+
+  if(response.ok){
+    // The verification worked, display good
+    emailVerified = true;
+  }
+} else {
+  // No token query was provided, so give an error
+  validToken = false;
+}
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>{title}</title>
+    <title>Verify Email</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Optional: ensure browsers also pick up your favicon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <style>
       :root {
@@ -173,158 +193,21 @@ const title = "Finish setting up your profile";
   <body>
     <div class="wrap">
       <div class="header">
-        <!-- Use the web path for assets in /public -->
         <img src="/favicon.svg" alt="Open Spot logo" class="logo" />
-        <div class="h1">Finish setting up your profile</div>
-        <div class="sub">Choose your account type and (if you drive) your parking permit. You can change these later.</div>
-      </div>
-
-      <div class="card" role="region" aria-labelledby="onboard-title">
-        <h2 id="onboard-title" class="sectionTitle">Onboarding</h2>
-
-        <form id="onboardingForm" novalidate>
-          <!-- Account Type -->
-          <div class="field centered">
-            <label id="acctTypeLabel">Account Type</label>
-            <div class="seg" role="group" aria-labelledby="acctTypeLabel">
-              <button type="button" class="segBtn" data-value="Driver" aria-pressed="true">Driver</button>
-              <button type="button" class="segBtn" data-value="Cyclist" aria-pressed="false">Cyclist</button>
-            </div>
-            <input type="hidden" id="accountType" name="accountType" value="Driver" />
-          </div>
-
-          <!-- Parking permit (only for Drivers) -->
-          <div id="permitGroup" class="field">
-            <label for="permit">Parking Permit</label>
-            <select id="permit" name="permit" class="select" required>
-              <option value="" disabled selected>Select your permit…</option>
-              <option value="Commuter">Commuter</option>
-              <option value="Faculty/Staff">Faculty/Staff</option>
-              <option value="All Parking Garage Zone">All Parking Garage Zone</option>
-            </select>
-            <div class="help">Required for Drivers. Not needed for Cyclists.</div>
-          </div>
-
-          <div id="msg" class="status" aria-live="polite"></div>
-
-          <div class="actions">
-            <button type="button" class="btn" id="SkipForNow">Skip for now</button>
-            <button type="submit" class="btn primary" id="submitBtn">Save & Continue</button>
-          </div>
-        </form>
+        <div class="h1">Verifying your email...</div>
+        <div class="sub">{!validToken ? "Invalid verification token." : (emailVerified ? "Success!" : "Email failed to verify.")}</div>
       </div>
     </div>
-
-    <div id="toast" class="toast" role="status" aria-live="polite">Profile saved. You’re all set!</div>
-
-    <script type="module">
-      const form = document.getElementById('onboardingForm');
-      const segButtons = Array.from(document.querySelectorAll('.segBtn'));
-      const accountTypeHidden = document.getElementById('accountType');
-      const permitGroup = document.getElementById('permitGroup');
-      const permitSelect = document.getElementById('permit');
-      const msg = document.getElementById('msg');
-      const toast = document.getElementById('toast');
-      const submitBtn = document.getElementById('submitBtn');
-
-      function setAccountType(value) {
-        accountTypeHidden.value = value;
-        segButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === value)));
-        const isDriver = value === 'Driver';
-        permitGroup.classList.toggle('hidden', !isDriver);
-        permitSelect.required = isDriver;
-        if (!isDriver) permitSelect.value = '';
-        msg.textContent = isDriver
-          ? 'Drivers must select a parking permit.'
-          : 'Cyclists don’t need a parking permit.';
-      }
-
-      segButtons.forEach(btn => btn.addEventListener('click', () => setAccountType(btn.dataset.value)));
-      setAccountType(accountTypeHidden.value || 'Driver');
-
-      function validate() {
-        msg.textContent = '';
-        const problems = [];
-        const acct = accountTypeHidden.value;
-        if (acct === 'Driver' && !permitSelect.value) problems.push('Please choose a parking permit.');
-        if (problems.length) { msg.textContent = problems.join(' '); return false; }
-        return true;
-      }
-
-      // Form submit (normal save)
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!validate()) return;
-        submitBtn.disabled = true;
-
-        const payload = {
-          accountType: accountTypeHidden.value,
-          permit: accountTypeHidden.value === 'Driver' ? permitSelect.value : null,
-        };
-
-        try {
-          const res = await fetch('/api/onboarding', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-            },
-            body: JSON.stringify({ action: 'save_onboarding', ...payload }),
-            credentials: "include"
-          });
-          if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
-
-          toast.classList.add('show');
-          msg.textContent = 'Saved! Redirecting…';
-          setTimeout(() => { window.location.href = '/dashboard'; }, 900);
-        } catch (err) {
-          console.error(err);
-          msg.textContent = 'Something went wrong saving your profile. Please try again.';
-        } finally {
-          submitBtn.disabled = false;
-        }
-      });
-
-      // Skip-for-now POST
-      document.getElementById('SkipForNow').addEventListener('click', async () => {
-        const endpoint = '/api/onboarding';
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              action: 'skip_onboarding',
-              timestamp: new Date().toISOString()
-            }),
-            credentials: "include"
-          });
-
-          if (!res.ok) {
-            const text = await res.text().catch(() => '');
-            throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
-          }
-
-          if (toast) {
-            toast.textContent = 'Preference saved. Redirecting…';
-            toast.classList.add('show');
-          }
-          window.location.href = '/';
-        } catch (err) {
-          console.error(err);
-          if (msg) msg.textContent = 'Couldn’t save your preference. Please try again.';
-        }
-      });
-
-      document.querySelector('.seg')?.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          const current = accountTypeHidden.value;
-          setAccountType(current === 'Driver' ? 'Cyclist' : 'Driver');
-        }
-      });
-    </script>
   </body>
 </html>
+
+<script define:vars={{ emailVerified }}>
+  // This is inline implicitly because of define:vars
+  // as such, no typescript.
+  if(emailVerified){
+    // If the email is verified, redirect after 10 seconds
+    setTimeout(() => {
+      window.location.href = "/dashboard";
+    }, 1000 * 10);
+  }
+</script>

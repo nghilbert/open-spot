@@ -14,6 +14,8 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/nodemailer": "^7.0.3",
     "nodemon": "^3.1.10",
     "prisma": "^6.17.1",
     "ts-node": "^10.9.2",
@@ -22,13 +24,14 @@
   "dependencies": {
     "@openspot/shared": "*",
     "@prisma/client": "^6.17.1",
-    "@types/cookie-parser": "^1.4.9",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "knex": "^3.1.0",
     "mysql2": "^3.15.1",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.10",
+    "resend": "^6.3.0",
     "sqlite3": "^5.1.7"
   }
 }

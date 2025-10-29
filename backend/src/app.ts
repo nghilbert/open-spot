@@ -1,6 +1,7 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import cookieParser from "cookie-parser";
 import createRoutes from "./routes";
+import { emailController } from "./controllers";
 
 export function createExpressApp() {
 	const app = express();
