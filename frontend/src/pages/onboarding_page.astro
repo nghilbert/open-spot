@@ -269,7 +269,8 @@ const title = "Finish setting up your profile";
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
             },
-            body: JSON.stringify({ action: 'save_onboarding', ...payload })
+            body: JSON.stringify({ action: 'save_onboarding', ...payload }),
+            credentials: "include"
           });
           if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
 
@@ -297,7 +298,8 @@ const title = "Finish setting up your profile";
             body: JSON.stringify({
               action: 'skip_onboarding',
               timestamp: new Date().toISOString()
-            })
+            }),
+            credentials: "include"
           });
 
           if (!res.ok) {
