@@ -2,6 +2,7 @@ import { User } from "@openspot/shared";
 import { PrismaClient } from "@prisma/client";
 import { randomBytes } from "crypto";
 import { Resend } from "resend";
+import cron, { ScheduledTask } from "node-cron";
 
 const hostname = process.env.HOSTNAME || "http://localhost:3000";
 
@@ -9,12 +10,28 @@ export class EmailController {
     // Variables
     private emailService;
     private prisma;
+    private pruningTask: ScheduledTask;
     
     // Functions
     constructor(prisma: PrismaClient){
         // Create mailing system, which for simplicity is gmail
         this.emailService = new Resend(process.env.RESEND_API_KEY);
         this.prisma = prisma;
+
+        // Setup cron system to prune old records
+        this.pruningTask = cron.schedule("0,30 * * * *", async () => {
+            // Run every 30 minutes and remove things older than 24 hours
+            const cutoffDate = new Date();
+            cutoffDate.setHours(cutoffDate.getHours() - 24);
+
+            await this.prisma.verify.deleteMany({
+                where: {
+                    createdAt: {
+                        lt: cutoffDate
+                    }
+                }
+            })
+        });
     }
 
     private isEmail(address: string): boolean {
@@ -63,9 +80,15 @@ export class EmailController {
 
     public async finishVerification(token: string){
         // Remove the token from the verification table
+        const cutoffDate = new Date();
+        cutoffDate.setHours(cutoffDate.getHours() - 24);
+
         const verifyRow = await this.prisma.verify.findUnique({
 			where: {
-				token: token
+				token: token,
+                createdAt: {
+                    gte: cutoffDate
+                }
 			},
         });
 
