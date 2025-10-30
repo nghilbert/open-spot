@@ -2,5 +2,6 @@ model Verify {
   id String @id @default(cuid())
   token String @unique
   userID Int
+  createdAt DateTime @default(now())
   @@index([token])
 }
