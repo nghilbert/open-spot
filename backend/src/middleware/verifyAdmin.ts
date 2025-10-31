@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "../prismaClient";
 import { Request, Response, NextFunction } from "express";
-const prismaClient = new PrismaClient();
 
 export async function verifyAdmin(req: Request, res: Response, next: NextFunction) {
 	const sessionToken = req.body.sessionToken;
