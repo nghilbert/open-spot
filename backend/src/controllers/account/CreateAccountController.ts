@@ -1,13 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import { emailController } from ".";
+import { prismaClient } from "../../prismaClient";
+import { emailController } from "../";
 import bcrypt from "bcrypt";
 
 export class CreateAccountController {
-	private prisma: PrismaClient;
-
-	constructor(prisma: PrismaClient) {
-		this.prisma = prisma;
-	}
+	private prisma = prismaClient;
 
 	async register(email: string, password: string, name: string): Promise<boolean> {
 		// Basic validation

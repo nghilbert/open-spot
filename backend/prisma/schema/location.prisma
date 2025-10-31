@@ -1,0 +1,15 @@
+enum Type {
+  PARKING_LOT   
+  Bike_RACK
+  NONE
+}
+
+model Location {
+  id Int @id @default(autoincrement())
+  addressId Int @unique
+  address Address @relation(fields: [addressId], references: [id])
+  name String
+  spotCapacity Int
+  spotAvailability Int
+  type Type @default(NONE)
+}

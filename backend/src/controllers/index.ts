@@ -1,14 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-import { AccountController } from "./AccountController";
-import { LoginController } from "./LoginController";
-import { CreateAccountController } from "./CreateAccountController";
-import { LogoutController } from "./LogoutController";
-import { EmailController } from "./EmailController";
+import { AccountController } from "./account/AccountController";
+import { LoginController } from "./account/LoginController";
+import { CreateAccountController } from "./account/CreateAccountController";
+import { LogoutController } from "./account/LogoutController";
+import { EmailController } from "./account/EmailController";
+import { ParkingLotController } from "./location/ParkingLotController";
 
-const prisma = new PrismaClient();
-
-export const accountController = new AccountController(prisma);
-export const loginController = new LoginController(prisma);
-export const createAccountController = new CreateAccountController(prisma);
-export const logoutController = new LogoutController(prisma);
-export const emailController = new EmailController(prisma);
+export const accountController = new AccountController();
+export const loginController = new LoginController();
+export const createAccountController = new CreateAccountController();
+export const logoutController = new LogoutController();
+export const parkingLotController = new ParkingLotController();
+export const emailController = new EmailController();

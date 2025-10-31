@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "./prismaClient";
 import { createExpressApp } from "./app";
 
 // Runtime config
@@ -7,7 +7,6 @@ const port = parseInt(process.env.PORT || "5001", 10);
 
 // Create a main function for lifetime handling
 async function main() {
-	const prisma = new PrismaClient();
 	const app = createExpressApp();
 
 	let server = app.listen(port, () => {
@@ -17,7 +16,7 @@ async function main() {
 	// Graceful shutdown
 	process.on("SIGINT", async () => {
 		console.log("Disconnecting Prisma...");
-		await prisma.$disconnect();
+		await prismaClient.$disconnect();
 		server.close(() => process.exit(0));
 	});
 }

@@ -1,14 +1,10 @@
 import { Session, User } from "@openspot/shared";
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "../../prismaClient";
+import * as bcrypt from "bcrypt";
 
 export class AccountController {
 	// Variables
-	private prisma: PrismaClient;
-
-	// Functions
-	constructor(prisma: PrismaClient) {
-		this.prisma = prisma;
-	}
+	private prisma = prismaClient;
 
 	public async getRole(email: string) {
 		const user = await this.prisma.user.findUnique({
@@ -65,6 +61,4 @@ export class AccountController {
 			return null;
 		}
 	}
-
-	
 }

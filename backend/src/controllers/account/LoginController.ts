@@ -1,16 +1,11 @@
 import { Session, User } from "@openspot/shared";
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import * as bcrypt from "bcrypt";
 
 export class LoginController {
 	// Variables
-	private prisma: PrismaClient;
-
-	// Constructor
-	constructor(prisma: PrismaClient) {
-		this.prisma = prisma;
-	}
+	private prisma = prismaClient;
 
 	// Functions
 	private async generateSession(user: User): Promise<string> {

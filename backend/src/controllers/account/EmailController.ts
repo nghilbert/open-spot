@@ -1,18 +1,19 @@
 import { User } from "@openspot/shared";
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
 
 const hostname = process.env.HOSTNAME || "http://localhost:3000";
 
 export class EmailController {
-  private prisma: PrismaClient;
+  private prisma = prismaClient;
   private transporter;
 
-  constructor(prisma: PrismaClient) {
+  constructor() {
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
     const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -31,8 +32,6 @@ export class EmailController {
         pass: smtpPass,
       },
     });
-
-    this.prisma = prisma;
   }
 
   private isEmail(address: string): boolean {

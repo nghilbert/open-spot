@@ -18,7 +18,7 @@ export default function createUserRoutes() {
 			res.status(200).json({redirectTo:"/onboarding_page"});
 		} else {
 			// Send an error
-			res.status(400).json({ success: false });;
+			res.status(400).json({ success: false });
 		}
 	});
 
@@ -46,8 +46,6 @@ export default function createUserRoutes() {
 		} else {
 			// Send an error
 			res.status(401).json({ success: false });
-
-;
 		}
 	});
 

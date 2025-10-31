@@ -7,9 +7,9 @@
     "dev": "npm run sync-db && nodemon src/index.ts",
     "start": "node .",
     "build": "tsc -P .",
+    "prisma": "prisma",
     "sync-db": "prisma migrate dev",
-    "generate-client": "prisma generate",
-    "prisma-studio": "prisma studio"
+    "gen-db": "prisma generate"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
