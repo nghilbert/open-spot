@@ -102,7 +102,7 @@ import logo from "../assets/logo.svg"
               const result = await response.json();
                 if (response.status === 200) {
               status.style.display = 'none';
-              console.log('Login successful');
+              window.location.href = result.redirectTo;
                 // Optionally close modal or redirect
               } else if (response.status === 401) {
                 status.textContent = 'Invalid email or password.';
@@ -169,7 +169,6 @@ import logo from "../assets/logo.svg"
 
               const result = await response.json();
               if (response.status === 200) {
-                console.log("Account Created: " + name + " for email: " + emailInput);
                  window.location.href = result.redirectTo;
               } else if (response.status === 400) {
                 createStatus.textContent = 'Email already in use';

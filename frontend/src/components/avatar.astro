@@ -1,0 +1,12 @@
+---
+// Props: { avatarUrl: string, role: string }
+const { avatarUrl, role } = Astro.props;
+---
+<div class="avatar">
+  <img src={avatarUrl} alt="Profile avatar" />
+  <span class="badge" title="Account status">{role}</span>
+  <div class="actions">
+    <button class="btn secondary" type="button" id="change-photo">Change photo</button>
+    <button class="btn secondary" type="button" id="edit-profile">Edit profile</button>
+  </div>
+</div>

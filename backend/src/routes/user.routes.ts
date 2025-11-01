@@ -42,7 +42,7 @@ export default function createUserRoutes() {
 				sameSite: "lax",
 			});
 
-			res.status(200).end();
+			res.status(200).json({redirectTo:"/dashboard"});
 		} else {
 			// Send an error
 			res.status(401).json({ success: false });
