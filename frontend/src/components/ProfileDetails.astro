@@ -1,0 +1,16 @@
+---
+// Props: { name, username, email, memberSince, role, status }
+const { name, username, email, memberSince, role, status } = Astro.props;
+---
+<div class="details">
+  <h2 id="profile-heading">Account</h2>
+  <p class="muted">Manage your personal information and security settings.</p>
+  <div class="grid" role="group" aria-label="Profile information">
+    <div class="kv"><label>Full name</label><div class="value">{name}</div></div>
+    <div class="kv"><label>Username</label><div class="value">{username}</div></div>
+    <div class="kv"><label>Email</label><div class="value">{email}</div></div>
+    <div class="kv"><label>Member since</label><div class="value">{memberSince}</div></div>
+    <div class="kv"><label>Type</label><div class="value">{role}</div></div>
+    <div class="kv"><label>Authenticated</label><div class="value">{status}</div></div>
+  </div>
+</div>
