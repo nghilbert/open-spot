@@ -44,15 +44,15 @@ export class AccountController {
 	}
 
 	public async getUserSession(sessionToken: Session): Promise<User | null> {
-		// This function returns true or false depending on if the session is valid
+		// Returns the user object if the sessiontoken is valid and found, otherwise null
 		const prisma = this.prisma;
 
-		// Creates the password hash to check for
+		// trys to find the session based on the session token and gets the user
 		try {
 			const sessionExists = await prisma.session.findUnique({ where: { sessionToken }, include: { user: true } });
 
 			if (sessionExists) {
-				return sessionExists.user;
+				return sessionExists.user; //if found return the user object
 			}
 
 			return null;

@@ -84,5 +84,21 @@ export default function createUserRoutes() {
 		res.end((req as unknown as AuthenticatedRequest).user.name);
 	});
 
+	router.get("/profile", requireAuth, async (req: Request, res: Response) => {
+  const sessionToken = (req as any).cookies?.session;
+  console.log("Session token:", sessionToken);
+
+  if (sessionToken) {
+    const user = await accountController.getUserSession(sessionToken);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(401).json({ error: "Invalid session" });
+    }
+  } else {
+    res.status(401).json({ error: "No session token provided" });
+  }
+});
+
 	return router;
 }
