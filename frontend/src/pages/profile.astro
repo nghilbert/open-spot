@@ -4,17 +4,35 @@ import Avatar from '../components/avatar.astro';
 import ProfileDetails from '../components/ProfileDetails.astro';
 import ProtectedPanel from '../components/ProtectedPanel.astro'
 
-const user = {
-  name: 'Lake Reynolds',
-  username: 'example',
-  email: 'studentemail@ilstu.edu',
-  memberSince: 'Aug 2023',
-  role: 'Member',
-  status: 'Active',
-  avatarUrl: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-  passwordChangedAgo: '90 days ago',
-  emailNote: 'Must be an ilstu email',
-};
+
+// Force the server to regenerate the page every request, rather than at `npm run build`.
+export const prerender = false;
+
+const base = import.meta.env.SITE;
+const res = await fetch(`${base}/api/user/profile`, { headers: {
+    cookie: Astro.request.headers.get('cookie') ?? ''
+  }
+});
+
+if (!res.ok) {
+  throw new Error('Unauthorized');
+}
+
+const user = await res.json();
+
+
+
+// const user = {
+//   name: 'Lake Reynolds',
+//   username: 'example',
+//   email: 'studentemail@ilstu.edu',
+//   memberSince: 'Aug 2023',
+//   role: 'Member',
+//   status: 'Active',
+//   avatarUrl: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+//   passwordChangedAgo: '90 days ago',
+//   emailNote: 'Must be an ilstu email',
+// };
 
 
 ---

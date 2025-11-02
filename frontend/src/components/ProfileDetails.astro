@@ -1,6 +1,6 @@
 ---
 // Props: { name, username, email, memberSince, role, status }
-const { name, username, email, memberSince, role, status } = Astro.props;
+const { name, username, email, memberSince, role, emailVerified } = Astro.props;
 ---
 <div class="details">
   <h2 id="profile-heading">Account</h2>
@@ -11,6 +11,6 @@ const { name, username, email, memberSince, role, status } = Astro.props;
     <div class="kv"><label>Email</label><div class="value">{email}</div></div>
     <div class="kv"><label>Member since</label><div class="value">{memberSince}</div></div>
     <div class="kv"><label>Type</label><div class="value">{role}</div></div>
-    <div class="kv"><label>Authenticated</label><div class="value">{status}</div></div>
+    <div class="kv"><label>Authenticated</label><div class="value">{emailVerified == true ? 'Active' : 'Disactive'}</div></div>
   </div>
 </div>
