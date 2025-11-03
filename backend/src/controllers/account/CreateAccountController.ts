@@ -29,15 +29,26 @@ export class CreateAccountController {
 		// Creates the password hash to insert to the DB
 		const salt = await bcrypt.genSalt();
 		const passwordHash = await bcrypt.hash(password, salt);
+		//create password
+		const passwordRecord = await this.prisma.password.create({
+		data: {
+			passwordHash
+		}
+		});
 
 		// Create user
-		let user = await this.prisma.user.create({
-			data: {
-				email: email,
-				passwordHash: passwordHash,
-				name: name,
-			},
+		const user = await this.prisma.user.create({
+		data: {
+			email:email,
+			name:name ,
+			PasswordID: passwordRecord.passwordId
+		},
+		include: {
+			password: true
+		}
 		});
+
+
 
 		// Send off verification email
 		await emailController.sendVerificationEmail(user);
