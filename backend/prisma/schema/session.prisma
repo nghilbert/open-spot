@@ -3,5 +3,6 @@ model Session {
   user User @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID Int
   sessionToken String @unique
+  createdOn DateTime @default(now())
   @@index([sessionToken])
 }

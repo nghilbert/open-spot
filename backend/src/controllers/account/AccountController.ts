@@ -19,7 +19,6 @@ export class AccountController {
 		// This function returns true or false depending on if the email exists for a user
 		const prisma = this.prisma;
 
-		// Creates the password hash to check for
 		try {
 			const userExists = await prisma.user.findUnique({ where: { email } });
 			return userExists !== null;
@@ -33,7 +32,6 @@ export class AccountController {
 		// This function returns true or false depending on if the session is valid
 		const prisma = this.prisma;
 
-		// Creates the password hash to check for
 		try {
 			const sessionExists = await prisma.session.findUnique({ where: { sessionToken } });
 			return sessionExists !== null;

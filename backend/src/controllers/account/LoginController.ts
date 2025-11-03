@@ -1,4 +1,4 @@
-import { Session, User } from "@openspot/shared";
+import { Session, User} from "@openspot/shared";
 import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import * as bcrypt from "bcrypt";
@@ -37,8 +37,12 @@ export class LoginController {
 				},
 			});
 
+			let currentPassword = ""
+			if(user?.password){
+				currentPassword = user.password.passwordHash.toString();
+			}
 			// Make sure the user exists and the password checks out
-			if (user && (await bcrypt.compare(password, user.passwordHash))) {
+			if (user && (await bcrypt.compare(password, currentPassword))) {
 				return this.generateSession(user);
 			} else {
 				// Email doesn't exist, return no session
