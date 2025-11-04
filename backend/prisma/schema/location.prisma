@@ -1,6 +1,6 @@
 enum Type {
   PARKING_LOT   
-  Bike_RACK
+  BIKE_RACK
   NONE
 }
 
