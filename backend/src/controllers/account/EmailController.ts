@@ -96,7 +96,7 @@ export class EmailController {
     if (!user) return false;
 
     await this.prisma.user.update({
-      data: { emailVerified: true },
+      data: { emailVerified: true, role: 'MEMBER' },
       where: { id: userID },
     });
 
