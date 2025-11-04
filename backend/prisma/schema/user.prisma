@@ -1,5 +1,6 @@
 enum Role {
   NONE
+  MEMBER
   ADMIN
 }
 
