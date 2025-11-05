@@ -35,6 +35,9 @@ export class LoginController {
 				where: {
 					email: email,
 				},
+				include: {
+					password: true
+				},
 			});
 
 			let currentPassword = ""
