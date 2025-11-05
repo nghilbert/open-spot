@@ -10,6 +10,10 @@ export default function createUserRoutes() {
 		token: string
 	};
 
+	interface ResetBody {
+		password: string
+	};
+
 	// Constants
 	const hostname = process.env.HOSTNAME || "http://localhost:3000";
 	const router = Router();
@@ -112,24 +116,32 @@ export default function createUserRoutes() {
 	router.post("/reset", requireAuth, async (req: Request, res: Response) => {
 		const authReq = (req as unknown as AuthenticatedRequest);
 		const query = req.query as unknown as ResetQuery;
+		const body = req.body as unknown as ResetBody;
 
-		// // Route to handle /reset?token=TOKENHERE
-		// // This is the API to take a saved verification token and remove it, marking the user as verified
-		// const { token } = req.query;
+		// Route to handle /reset?token=TOKENHERE
+		// This is the API to take a saved verification token and remove it, marking the user as verified
+		const { token } = query;
+		const { password } = body;
 
-		// if(!token){
-		// 	// No token provided in the link, send an error
-		// 	res.status(400).json({ success: false });
-		// }
+		if(!token){
+			// No token provided in the link, send an error
+			res.status(400).json({ success: false });
+		}
 
-		// // Token was sent, check if it was successful
-		// if(await emailController.finishVerification(token)){
-		// 	// Successful verification
-		// 	res.status(200).json({ success: true });
-		// } else {
-		// 	// Unsuccessful verification
-		// 	res.status(400).json({ success: false });
-		// }
+		if(!password){
+			// No password provided in body, send an error
+			res.status(400).json({ success: false });
+		}
+
+		// Token was sent, check if it was successful
+		if(await accountController.finishPasswordReset(token)){
+			// Successful reset link, 
+			accountController.updateAccount(authReq.user.id, undefined, password, undefined);
+			res.status(200).json({ success: true });
+		} else {
+			// Unsuccessful reset link
+			res.status(400).json({ success: false });
+		}
 	});
 
 	return router;
