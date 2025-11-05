@@ -136,6 +136,13 @@ export class AccountController {
 			const resetRow = await this.prisma.resetToken.findUnique({ where: { token }});
 			if(!resetRow) return false;
 
+
+			const isExpired = Date.now() - new Date(resetRow.createdAt).getTime() > 1000 * 60 * 60 * 24;
+			if (isExpired) {
+				await this.prisma.verify.delete({ where: { token } });
+				return false;
+			}
+
 			const userID = resetRow.userID;
 			await this.prisma.verify.delete({ where: { token } });
 
