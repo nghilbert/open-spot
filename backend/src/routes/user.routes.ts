@@ -140,9 +140,8 @@ export default function createUserRoutes() {
 		}
 
 		// Token was sent, check if it was successful
-		if(await accountController.finishPasswordReset(token)){
+		if(await accountController.finishPasswordReset(token, password)){
 			// Successful reset link, 
-			accountController.updateAccount(authReq.user.id, undefined, password, undefined);
 			res.status(200).json({ success: true });
 		} else {
 			// Unsuccessful reset link

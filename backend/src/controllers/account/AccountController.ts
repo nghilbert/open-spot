@@ -130,7 +130,7 @@ export class AccountController {
 		return await emailController.sendEmail(user.email, "Reset password", content);
 	}
 
-	public async finishPasswordReset(token: string): Promise<boolean> {
+	public async finishPasswordReset(token: string, newPassword: string): Promise<boolean> {
 		// Finishes the password reset and remove sthe entry
 		try {
 			const resetRow = await this.prisma.resetToken.findUnique({ where: { token }});
@@ -143,12 +143,23 @@ export class AccountController {
 			}
 
 			const userID = resetRow.userID;
-			await this.prisma.resetToken.delete({ where: { token } });
-			
-			const userRow = await this.prisma.user.findUnique({ where: { id: userID } });
+			const userRow = await this.prisma.user.findUnique({ where: { id: userID }, include: { password: true, oldPasswords: true } });
 			if (!userRow) return false;
 
-			return true;
+			// Make sure the user's new password isnt an old password
+			for(let pass of userRow.oldPasswords){
+				if(await bcrypt.compare(newPassword, pass.passwordHash)){
+					return false;
+				}
+			}
+
+			if(await bcrypt.compare(newPassword, userRow.password.passwordHash)){
+				return false;
+			}
+
+			await this.prisma.resetToken.delete({ where: { token } });
+
+			return await this.updateAccount(userID, undefined, newPassword, undefined);
 		} catch(err){
 			console.error(err);
 			return false;
