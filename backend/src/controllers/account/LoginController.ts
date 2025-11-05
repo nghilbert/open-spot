@@ -41,7 +41,6 @@ export class LoginController {
 			});
 
 			let currentPassword = ""
-			console.log(user?.PasswordID);
 			if(user?.password){
 				currentPassword = user.password.passwordHash.toString();
 			}

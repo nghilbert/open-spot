@@ -113,6 +113,12 @@ export default function createUserRoutes() {
 		}
 	});
 
+
+	router.get("/newreset", requireAuth, async (req: Request, res: Response) => {
+		const authReq = (req as unknown as AuthenticatedRequest);
+		res.end(await accountController.createPasswordReset(authReq.user));
+	});
+
 	router.post("/reset", requireAuth, async (req: Request, res: Response) => {
 		const authReq = (req as unknown as AuthenticatedRequest);
 		const query = req.query as unknown as ResetQuery;

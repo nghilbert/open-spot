@@ -1,6 +1,6 @@
 ---
 import "../assets/style.css";
-import loginBackground from "../assets/login-page.svg"
+import loginBackground from "../assets/login-page.png"
 import logo from "../assets/logo.svg"
 ---
 
@@ -174,7 +174,6 @@ import logo from "../assets/logo.svg"
                 createStatus.textContent = 'Email already in use';
                 createStatus.style.display = 'block';
               } else {
-                console.log(response.status)
                 createStatus.textContent = 'Unexpected error. Please try again.';
                 createStatus.style.display = 'block';
               }
