@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { verifyAdmin } from "../middleware/verifyAdmin";
-import { parkingLotController } from "../controllers";
+import { bikeRackController } from "../controllers";
 
-export default function createLotRoutes() {
+export default function createRackRoutes() {
 	const router = Router();
 
 	router.post("/add", verifyAdmin, async (req: Request, res: Response) => {
@@ -10,7 +10,7 @@ export default function createLotRoutes() {
 		const { address, spotCapacity, name } = req.body;
 
 		// Attempt to create a parking lot object
-		if (await parkingLotController.addLot(address, spotCapacity, name)) {
+		if (await bikeRackController.addRack(address, spotCapacity, name)) {
 			// Successful creation
 			res.status(200).json({ success: true });
 		} else {
