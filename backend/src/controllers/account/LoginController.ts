@@ -35,12 +35,17 @@ export class LoginController {
 				where: {
 					email: email,
 				},
+				include: {
+					password: true
+				},
 			});
 
 			let currentPassword = ""
+			console.log(user?.PasswordID);
 			if(user?.password){
 				currentPassword = user.password.passwordHash.toString();
 			}
+
 			// Make sure the user exists and the password checks out
 			if (user && (await bcrypt.compare(password, currentPassword))) {
 				return this.generateSession(user);

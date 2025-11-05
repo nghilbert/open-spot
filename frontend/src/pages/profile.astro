@@ -14,6 +14,8 @@ const res = await fetch(`${base}/api/user/profile`, { headers: {
   }
 });
 
+console.log(base);
+
 if (!res.ok) {
   throw new Error('Unauthorized');
 }

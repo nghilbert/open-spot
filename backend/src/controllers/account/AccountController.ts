@@ -1,6 +1,7 @@
 import { Session, User } from "@openspot/shared";
 import { prismaClient } from "../../prismaClient";
-import * as bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
+import { emailController } from "..";
 
 export class AccountController {
 	// Variables
@@ -58,5 +59,25 @@ export class AccountController {
 			console.error("Error finding session: ", error);
 			return null;
 		}
+	}
+
+	public async createPasswordReset(user: User): Promise<boolean> {
+		// Creates a password reset token and returns the link to reset or null to back
+		const hostname = process.env.HOSTNAME || "http://localhost:3000";
+		const token = randomBytes(32).toString("hex");
+	
+		await this.prisma.resetToken.create({
+			data: {
+				token,
+				userID: user.id,
+			},
+		});
+	
+		const content = `
+			<p>Hello, please click this link to reset your password.</p><br>
+			<a href="${hostname}/reset_password?token=${token}">Click here</a>
+		`;
+	
+		return await emailController.sendEmail(user.email, "Reset password", content);
 	}
 }
