@@ -1,35 +1,102 @@
 ---
+
 ---
+
 <div>
-    <form id="email-form">
-        <label for="email">Email:</label>
-        <input type="text" id="email" name="email" required><br>
-        <button type="submit">Reset password</button>
-    </form>
-    <p id="feedback"></p>
+  <form id="email-form">
+    <input type="text" id="email" name="email" placeholder="Email" required /><br />
+    <button type="submit">Reset password</button>
+  </form>
+  <p id="feedback"></p>
 </div>
 
 <script>
-    // Add event listener for the form
-    const form = document.getElementById("email-form") as HTMLFormElement;
-    const feedback = document.getElementById("feedback") as HTMLParagraphElement;
+  // Add event listener for the form
+  const form = document.getElementById("email-form") as HTMLFormElement;
+  const feedback = document.getElementById("feedback") as HTMLParagraphElement;
 
-    if(form){
-        form.addEventListener("submit", async event => {
-            event.preventDefault();
-            
-            const formData = new FormData(form);
-            const jsonData = Object.fromEntries(formData.entries());
-            const response = await fetch(`/api/user/reset/${jsonData.email}`, { method: "GET", credentials: "include" });
+  if (form) {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-            if(response.ok){
-                console.log("Password reset sent");
-                feedback.innerHTML = "Password reset link sent to email!";
-            } else {
-                // Handle errors
-                console.error("Form submission failed:", response.statusText);
-                feedback.innerHTML = "Email does not exist!";
-            }
-        });
+      const formData = new FormData(form);
+      const jsonData = Object.fromEntries(formData.entries());
+      const response = await fetch(`/api/user/reset/${jsonData.email}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        console.log("Password reset sent");
+        feedback.innerHTML = "Password reset link sent to email!";
+        form.style.display = "none";
+      } else {
+        // Handle errors
+        console.error("Form submission failed:", response.statusText);
+        feedback.innerHTML = "Email does not exist!";
       }
+    });
+  }
 </script>
+
+<style>
+  #email-form {
+    padding: 10px;
+  }
+
+  input {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    outline: none;
+    transition:
+      box-shadow 0.12s ease,
+      border-color 0.12s ease,
+      background 0.12s ease;
+  }
+
+  #email-form button {
+    width: 100%;
+    margin-top: 10px;
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 650;
+    transition:
+      transform 60ms ease,
+      filter 120ms ease,
+      background 120ms ease,
+      box-shadow 120ms ease,
+      border-color 120ms ease;
+  }
+  #email-form button:active {
+    transform: translateY(1px);
+  }
+  #email-form button.primary {
+    background: linear-gradient(
+      180deg,
+      var(--primary) 0%,
+      var(--primary-600) 100%
+    );
+    border-color: rgba(90, 162, 255, 0.6);
+    color: #05122a;
+    box-shadow:
+      0 10px 20px rgba(90, 162, 255, 0.25),
+      inset 0 0 8px rgba(255, 255, 255, 0.25);
+  }
+  #email-form button.primary:disabled {
+    filter: grayscale(0.7);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+</style>
