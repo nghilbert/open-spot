@@ -117,14 +117,13 @@ export default function createUserRoutes() {
 		const user = await accountController.getUserFromEmail(req.params.email);
 
 		if(user){
-			res.status(200).end(await accountController.createPasswordReset(user));
+			res.status(200).json({success: await accountController.createPasswordReset(user)});
 		} else {
-			res.status(400).end();
+			res.status(400).json({ success: false });
 		}
 	});
 
-	router.post("/reset", requireAuth, async (req: Request, res: Response) => {
-		const authReq = (req as unknown as AuthenticatedRequest);
+	router.post("/reset", async (req: Request, res: Response) => {
 		const query = req.query as unknown as ResetQuery;
 		const body = req.body as unknown as ResetBody;
 

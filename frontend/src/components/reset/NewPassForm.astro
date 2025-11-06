@@ -1,15 +1,17 @@
 ---
 ---
-
-<form id="reset-form">
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br>
-
-    <label for="confirm">Confirm:</label>
-    <input type="password" id="confirm" name="confirm" required><br>
-
-    <button type="submit">Submit</button>
-</form>
+<div>
+    <form id="reset-form">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+    
+        <label for="confirm">Confirm:</label>
+        <input type="password" id="confirm" name="confirm" required><br>
+    
+        <button type="submit">Submit</button>
+    </form>
+    <p id="error"></p>
+</div>
 
 <script>
     // Get token
@@ -23,10 +25,19 @@
 
     // Add event listener for the form
     const form = document.getElementById("reset-form") as HTMLFormElement;
+    const password1 = document.getElementById("password") as HTMLInputElement;
+    const password2 = document.getElementById("confirm") as HTMLInputElement;
+    const error = document.getElementById("error") as HTMLParagraphElement;
 
     if(form){
         form.addEventListener("submit", async event => {
             event.preventDefault();
+
+            // Handle errors and check fields
+            if(password1.value !== password2.value){
+                error.innerHTML = "Passwords do not match!";
+                return;
+            }
             
             const formData = new FormData(form);
             const jsonData = Object.fromEntries(formData.entries());
@@ -39,6 +50,7 @@
 
             if(response.ok){
                 console.log("Password reset");
+                window.location.href = "/";
             } else {
                 // Handle errors
                 console.error("Form submission failed:", response.statusText);

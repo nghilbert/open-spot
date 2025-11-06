@@ -1,15 +1,18 @@
 ---
 ---
-
-<form id="email-form">
-    <label for="email">Email:</label>
-    <input type="text" id="email" name="email" required><br>
-    <button type="submit">Reset password</button>
-</form>
+<div>
+    <form id="email-form">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br>
+        <button type="submit">Reset password</button>
+    </form>
+    <p id="feedback"></p>
+</div>
 
 <script>
     // Add event listener for the form
     const form = document.getElementById("email-form") as HTMLFormElement;
+    const feedback = document.getElementById("feedback") as HTMLParagraphElement;
 
     if(form){
         form.addEventListener("submit", async event => {
@@ -21,9 +24,11 @@
 
             if(response.ok){
                 console.log("Password reset sent");
+                feedback.innerHTML = "Password reset link sent to email!";
             } else {
                 // Handle errors
                 console.error("Form submission failed:", response.statusText);
+                feedback.innerHTML = "Email does not exist!";
             }
         });
       }
