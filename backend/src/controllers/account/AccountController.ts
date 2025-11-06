@@ -110,6 +110,12 @@ export class AccountController {
         }
     }
 
+	public async getUserFromEmail(email: string): Promise<User|null> {
+		// Gets the user or null depending on the email given
+		const user = this.prisma.user.findUnique({ where: { email }});
+		return user;
+	}
+
 	public async createPasswordReset(user: User): Promise<boolean> {
 		// Creates a password reset token and returns the link to reset or null to back
 		const hostname = process.env.HOSTNAME || "http://localhost:3000";

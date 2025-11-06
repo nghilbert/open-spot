@@ -113,10 +113,14 @@ export default function createUserRoutes() {
 		}
 	});
 
+	router.get("/reset/:email", async (req: Request, res: Response) => {
+		const user = await accountController.getUserFromEmail(req.params.email);
 
-	router.get("/newreset", requireAuth, async (req: Request, res: Response) => {
-		const authReq = (req as unknown as AuthenticatedRequest);
-		res.end(await accountController.createPasswordReset(authReq.user));
+		if(user){
+			res.status(200).end(await accountController.createPasswordReset(user));
+		} else {
+			res.status(400).end();
+		}
 	});
 
 	router.post("/reset", requireAuth, async (req: Request, res: Response) => {
