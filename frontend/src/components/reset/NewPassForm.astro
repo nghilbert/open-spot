@@ -1,0 +1,48 @@
+---
+---
+
+<form id="reset-form">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+
+    <label for="confirm">Confirm:</label>
+    <input type="password" id="confirm" name="confirm" required><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    // Get token
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const token = urlParams.get("token");
+
+    if(!token){
+      document.body.innerHTML = "No token provided.";
+    }
+
+    // Add event listener for the form
+    const form = document.getElementById("reset-form") as HTMLFormElement;
+
+    if(form){
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            
+            const formData = new FormData(form);
+            const jsonData = Object.fromEntries(formData.entries());
+            const response = await fetch(`/api/user/reset?token=${token}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonData),
+                credentials: "include"
+            });
+
+            if(response.ok){
+                console.log("Password reset");
+            } else {
+                // Handle errors
+                console.error("Form submission failed:", response.statusText);
+            }
+        });
+      }
+</script>

@@ -1,0 +1,30 @@
+---
+---
+
+<form id="email-form">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" required><br>
+    <button type="submit">Reset password</button>
+</form>
+
+<script>
+    // Add event listener for the form
+    const form = document.getElementById("email-form") as HTMLFormElement;
+
+    if(form){
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            
+            const formData = new FormData(form);
+            const jsonData = Object.fromEntries(formData.entries());
+            const response = await fetch(`/api/user/reset/${jsonData.email}`, { method: "GET", credentials: "include" });
+
+            if(response.ok){
+                console.log("Password reset sent");
+            } else {
+                // Handle errors
+                console.error("Form submission failed:", response.statusText);
+            }
+        });
+      }
+</script>
