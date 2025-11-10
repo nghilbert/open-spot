@@ -40,15 +40,13 @@ export class CreateAccountController {
 		const user = await this.prisma.user.create({
 		data: {
 			email:email,
-			name:name ,
+			name:name,
 			PasswordID: passwordRecord.passwordId
 		},
 		include: {
 			password: true
 		}
 		});
-
-
 
 		// Send off verification email
 		await emailController.sendVerificationEmail(user);

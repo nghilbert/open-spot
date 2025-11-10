@@ -44,6 +44,7 @@ export class LoginController {
 			if(user?.password){
 				currentPassword = user.password.passwordHash.toString();
 			}
+
 			// Make sure the user exists and the password checks out
 			if (user && (await bcrypt.compare(password, currentPassword))) {
 				return this.generateSession(user);

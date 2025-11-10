@@ -1,6 +1,6 @@
 ---
 import "../assets/style.css";
-import loginBackground from "../assets/login-page.svg"
+import loginBackground from "../assets/login-page.png"
 import logo from "../assets/logo.svg"
 ---
 
@@ -35,6 +35,7 @@ import logo from "../assets/logo.svg"
               <div id="loginStatus" class="text-danger mb-2" style="display: none;"></div>
             </div>
             <div class="modal-footer">
+              <a href="/reset_password">Forgot password?</a>
               <button id= "loginSubmit" type="button" class="btn btn-success">Login</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
@@ -174,7 +175,6 @@ import logo from "../assets/logo.svg"
                 createStatus.textContent = 'Email already in use';
                 createStatus.style.display = 'block';
               } else {
-                console.log(response.status)
                 createStatus.textContent = 'Unexpected error. Please try again.';
                 createStatus.style.display = 'block';
               }
