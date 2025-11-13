@@ -111,8 +111,6 @@ export default function createUserRoutes() {
 		const user = authReq.user;
 		const payload = authReq.body as unknown as PatchPayload;
 
-		console.log(payload);
-
 		if(await accountController.updateAccount(user.id, undefined, undefined, payload.name, payload.username, payload.type, payload.permit)){
 			res.status(200).end();
 		} else {
