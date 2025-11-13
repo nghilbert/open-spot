@@ -135,8 +135,8 @@ const title = "Open Spot — Edit Profile";
               <label class="label" for="permit">Permit</label>
               <select id="permit" name="permit" class="select" disabled>
                 <option value="Commuter">Commuter</option>
-                <option value="Faculty/Staff">Faculty/Staff</option>
-                <option value="All Parking Garage Zone">All Parking Garage Zone</option>
+                <option value="Faculty">Faculty/Staff</option>
+                <option value="All">All Parking Garage Zone</option>
               </select>
               <div class="hint">Drivers must have a parking permit.</div>
             </div>
@@ -187,22 +187,27 @@ const title = "Open Spot — Edit Profile";
       // Load current profile
       async function loadProfile(){
         try{
-          const res = await fetch(`/api/user/profile`, {
-            headers: { 'Authorization': `Bearer ${token()}` }
-          });
+          const res = await fetch(`/api/user/profile`);
           if(!res.ok) throw new Error(await res.text());
           const p = await res.json();
           // Expected: { name, username, type: 'Driver'|'Cyclist', permit?: string|null }
           nameEl.value = p?.name ?? '';
           userEl.value = p?.username ?? '';
-          typeEl.value = (p?.type === 'Cyclist') ? 'Cyclist' : 'Driver';
+          typeEl.value = (p?.userType === 'CYCLIST') ? 'Cyclist' : 'Driver';
 
           const isDriver = typeEl.value === 'Driver';
           setPermitEnabled(isDriver);
           if(isDriver){
-            permitEl.value = p?.permit ?? 'Commuter';
+            if(p?.permit == "COMMUTER"){
+              permitEl.value = "Commuter";
+            } else if(p?.permit == "FACULTY"){
+              permitEl.value = "Faculty";
+            } else if(p?.permit == "ALL"){
+              permitEl.value = "All";
+            }
           }
         }catch(e){
+          console.error(e);
           showStatus('Could not load profile.', 'err');
           // Default UI state
           setPermitEnabled(typeEl.value === 'Driver');
@@ -233,8 +238,7 @@ const title = "Open Spot — Edit Profile";
           const res = await fetch(`/api/user/profile`, {
             method: 'PATCH',
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token()}`
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
           });
