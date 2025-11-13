@@ -99,11 +99,12 @@ export default function createUserRoutes() {
 
 	router.get("/profile", requireAuth, async (req: Request, res: Response) => {
 		const sessionToken = (req as any).cookies?.session;
-		console.log("Session token:", sessionToken);
 
 		if (sessionToken) {
-			const user = await accountController.getUserSession(sessionToken);
+			let user = await accountController.getUserSession(sessionToken);
+			
 			if (user) {
+				if(user.password) delete user.password;
 				res.status(200).json(user);
 			} else {
 				res.status(401).json({ error: "Invalid session" });

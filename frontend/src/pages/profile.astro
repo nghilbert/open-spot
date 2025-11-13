@@ -8,9 +8,8 @@ import ProtectedPanel from '../components/ProtectedPanel.astro'
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 
-const base = import.meta.env.SITE;
-const res = await fetch(`${base}/api/user/profile`, { headers: {
-    cookie: Astro.request.headers.get('cookie') ?? ''
+const res = await fetch(`${Astro.url.origin}/api/user/profile`, { headers: {
+    Cookie: `session=${Astro.cookies.get("session")?.value}`
   }
 });
 
@@ -19,8 +18,6 @@ if (!res.ok) {
 }
 
 const user = await res.json();
-
-
 
 // const user = {
 //   name: 'Lake Reynolds',
