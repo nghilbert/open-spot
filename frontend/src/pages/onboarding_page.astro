@@ -183,6 +183,13 @@ const title = "Finish setting up your profile";
         <h2 id="onboard-title" class="sectionTitle">Onboarding</h2>
 
         <form id="onboardingForm" novalidate>
+          <!-- Username -->
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" class="control" type="text" placeholder="Choose a username" required />
+            <div class="help">This will be your public username (no spaces).</div>
+          </div>
+
           <!-- Account Type -->
           <div class="field centered">
             <label id="acctTypeLabel">Account Type</label>
@@ -223,6 +230,7 @@ const title = "Finish setting up your profile";
       const accountTypeHidden = document.getElementById('accountType');
       const permitGroup = document.getElementById('permitGroup');
       const permitSelect = document.getElementById('permit');
+      const usernameEl = document.getElementById('username');
       const msg = document.getElementById('msg');
       const toast = document.getElementById('toast');
       const submitBtn = document.getElementById('submitBtn');
@@ -246,6 +254,7 @@ const title = "Finish setting up your profile";
         msg.textContent = '';
         const problems = [];
         const acct = accountTypeHidden.value;
+        if (!usernameEl || !usernameEl.value.trim() || /\s/.test(usernameEl.value)) problems.push('Please choose a username (no spaces).');
         if (acct === 'Driver' && !permitSelect.value) problems.push('Please choose a parking permit.');
         if (problems.length) { msg.textContent = problems.join(' '); return false; }
         return true;
@@ -260,6 +269,7 @@ const title = "Finish setting up your profile";
         const payload = {
           accountType: accountTypeHidden.value,
           permit: accountTypeHidden.value === 'Driver' ? permitSelect.value : null,
+          username: usernameEl ? usernameEl.value.trim() : null,
         };
 
         try {
