@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/requireAuth";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
 import { accountController, loginController, createAccountController, logoutController, emailController } from "../controllers";
+import { Permit, UserType } from "@prisma/client";
 
 
 export default function createUserRoutes() {
@@ -13,6 +14,13 @@ export default function createUserRoutes() {
 	interface ResetBody {
 		password: string
 	};
+
+	interface PatchPayload {
+		name: string,
+		username: string,
+		type: UserType,
+		permit: Permit
+	}
 
 	// Constants
 	const hostname = process.env.HOSTNAME || "http://localhost:3000";
@@ -95,6 +103,21 @@ export default function createUserRoutes() {
 	router.get("/name", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
 		res.end((req as unknown as AuthenticatedRequest).user.name);
+	});
+
+	router.patch("/profile", requireAuth, async (req: Request, res: Response) => {
+		// Edit profile route
+		const authReq = (req as unknown as AuthenticatedRequest);
+		const user = authReq.user;
+		const payload = authReq.body as unknown as PatchPayload;
+
+		console.log(payload);
+
+		if(await accountController.updateAccount(user.id, undefined, undefined, payload.name, payload.username, payload.type, payload.permit)){
+			res.status(200).end();
+		} else {
+			res.status(401).json({ error: "Invalid session" });
+		}
 	});
 
 	router.get("/profile", requireAuth, async (req: Request, res: Response) => {
