@@ -225,15 +225,15 @@ const title = "Finish setting up your profile";
     <div id="toast" class="toast" role="status" aria-live="polite">Profile saved. You’re all set!</div>
 
     <script type="module">
-  const form = document.getElementById('onboardingForm');
-  const segButtons = Array.from(document.querySelectorAll('.segBtn'));
-  const accountTypeHidden = document.getElementById('accountType');
-  const permitGroup = document.getElementById('permitGroup');
-  const permitSelect = document.getElementById('permit');
-  const usernameEl = document.getElementById('username');
-  const msg = document.getElementById('msg');
-  const toast = document.getElementById('toast');
-  const submitBtn = document.getElementById('submitBtn');
+      const form = document.getElementById('onboardingForm');
+      const segButtons = Array.from(document.querySelectorAll('.segBtn'));
+      const accountTypeHidden = document.getElementById('accountType');
+      const permitGroup = document.getElementById('permitGroup');
+      const permitSelect = document.getElementById('permit');
+      const usernameEl = document.getElementById('username');
+      const msg = document.getElementById('msg');
+      const toast = document.getElementById('toast');
+      const submitBtn = document.getElementById('submitBtn');
 
       function setAccountType(value) {
         accountTypeHidden.value = value;
