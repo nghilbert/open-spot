@@ -152,7 +152,6 @@ const title = "Open Spot — Edit Profile";
     </div>
 
     <script type="module">
-      const apiBase = 'http://localhost:5001';
       const token = () => localStorage.getItem('token') || '';
 
       const form        = document.getElementById('profileForm');
@@ -188,7 +187,7 @@ const title = "Open Spot — Edit Profile";
       // Load current profile
       async function loadProfile(){
         try{
-          const res = await fetch(`${apiBase}/api/profile`, {
+          const res = await fetch(`/api/user/profile`, {
             headers: { 'Authorization': `Bearer ${token()}` }
           });
           if(!res.ok) throw new Error(await res.text());
@@ -231,7 +230,7 @@ const title = "Open Spot — Edit Profile";
         };
 
         try{
-          const res = await fetch(`${apiBase}/api/profile`, {
+          const res = await fetch(`/api/user/profile`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
