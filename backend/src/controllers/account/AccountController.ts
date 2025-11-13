@@ -2,6 +2,7 @@ import { Session, User } from "@openspot/shared";
 import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import { emailController } from "..";
+import { Permit, Role, Type, UserType } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 export class AccountController {
@@ -62,7 +63,7 @@ export class AccountController {
 		}
 	}
 
-	public async updateAccount(userID: number, email?: string, password?: string, name?: string): Promise<boolean> {
+	public async updateAccount(userID: number, email?: string, password?: string, name?: string, username?: string, userType?: UserType, permit?: Permit): Promise<boolean> {
         // Creates a new user object. It returns true if the user was created successfully and false
         // if it fails. i.e. email in use.
         const prisma = this.prisma;
@@ -79,7 +80,10 @@ export class AccountController {
                 },
                 data: {
                     email,
-                    name
+					username,
+                    name,
+					userType: userType?.toUpperCase() as UserType,
+					permit: permit?.toUpperCase() as Permit
                 },
 				include: {
 					password: true

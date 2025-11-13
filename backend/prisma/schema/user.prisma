@@ -4,6 +4,19 @@ enum Role {
   ADMIN
 }
 
+enum UserType {
+  DRIVER
+  CYCLIST
+  NONE
+}
+
+enum Permit {
+  COMMUTER
+  FACULTY
+  ALL
+  NONE
+}
+
 model User {
   id            Int        @id @default(autoincrement())
   username      String     @default("")
@@ -16,5 +29,7 @@ model User {
   sessions      Session[]
   oauths        OAuth[]
   role          Role       @default(NONE)
+  permit        Permit     @default(NONE)
+  userType    UserType       @default(NONE)
   createdOn     DateTime   @default(now())
 }
