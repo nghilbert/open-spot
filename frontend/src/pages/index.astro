@@ -1,195 +1,190 @@
 ---
-import "../assets/style.css";
-import loginBackground from "../assets/login-page.png"
-import logo from "../assets/logo.svg"
+import "../assets/styles/index.css";
+import Layout from "../layouts/Layout.astro";
+import logo from "../assets/images/logo.svg";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Open Spot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="icon" href ="/favicon.svg" type= "image/svg+xml" style ="width: 50px; height: 50px;">
-  </head>
-  <body style={`background-image: url(${loginBackground.src}); background-repeat: no-repeat; background-position: center; background-attachment: fixed; background-size: cover;`}>
-    <div class = "home-page" style = "border-radius: 15px; width: 71rem; height: 31rem; position: relative; top: 50%; left: 0%; translate: 15% 15%; background-color: hsla(0, 0%, 0%, 0.499);">
-      <img id="logo" src={logo.src} style = "position: absolute; top: -12%; left: 25%; width: 50%; height: auto;" alt ="Logo for Open Spot" class = "logo"></img>
-      <h1 style= "position: absolute; top: 30%; color: white; overflow-wrap: break-word; text-align: center; font-size: 5rem;">College is hard enough, finding parking shoudn't be</h1>
-      <button id="loginBtn" type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal" style="position: absolute; bottom: 50px; left: 150px; padding: 10px 75px 10px 75px;text-align: center; font-size: 2rem;">Login</button>
-      <button id="createBtn" type="button" class="btn btn-secondary btn-lg"  data-bs-toggle="modal" data-bs-target="#createModal" style="position: absolute; bottom: 50px; right: 150px; font-size: 2rem;">Create Account</button>
-      </div>
-      <!-- Login in Pop up menu -->
-      <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form id="loginForm">
-            <div class="modal-header">
-              <h5 class="modal-title" id="loginModalLabel">Login to Open Spot</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <input id ="userEmail" type="email" class="form-control mb-3" placeholder="Email" required />
-              <input id= "password" type="password" class="form-control mb-3" placeholder="Password" required />
-              <div id="loginStatus" class="text-danger mb-2" style="display: none;"></div>
-            </div>
-            <div class="modal-footer">
-              <a href="/reset_password">Forgot password?</a>
-              <button id= "loginSubmit" type="button" class="btn btn-success">Login</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- Create account pop up menu -->
-    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form id="createForm">
-            <div class="modal-header">
-              <h5 class="modal-title" id="createModalLabel">Create an account for Open Spot</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <input id= "nameInput" type="text" class="form-control mb-3" placeholder="John Smith" required />
-              <input id= "emailInput" type="email" class="form-control mb-3" placeholder="Email" required />
-              <input id="passwordInput" type="password" class="form-control mb-3" placeholder="Password" required />
-              <input id ="passwordCheck" type="password" class="form-control mb-3" placeholder="Confirm Password" required />
-              <div id="createStatus" class="text-danger mb-2" style="display: none;"></div>
-            </div>
-            <div class="modal-footer">
-              <button id= "createSubmit"type="button" class="btn btn-success">Create</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+<Layout>
+	<div class="login-bg flex-center-content">
+		<div class="welcome-container flex-column-center-content gap-3">
+			<img src={logo.src} alt="Open Spot Logo" style="width: 70%" />
+			<h2>College is hard enough, finding parking shoudn't be</h2>
+			<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+				Login
+			</button>
+			<button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#createModal">
+				Create Account
+			</button>
+		</div>
+	</div>
 
+	<!-- Login in Pop up menu -->
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="loginForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="loginModalLabel">Login to Open Spot</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input id="userEmail" type="email" class="form-control mb-3" placeholder="Email" required />
+						<input id="password" type="password" class="form-control mb-3" placeholder="Password" required />
+						<div id="loginStatus" class="text-danger mb-2" style="display: none;"></div>
+					</div>
+					<div class="modal-footer">
+						<a href="/reset_password">Forgot password?</a>
+						<button id="loginSubmit" type="button" class="btn btn-success">Login</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Create account pop up menu -->
+	<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form id="createForm">
+					<div class="modal-header">
+						<h5 class="modal-title" id="createModalLabel">Create an account for Open Spot</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input id="nameInput" type="text" class="form-control mb-3" placeholder="John Smith" required />
+						<input id="emailInput" type="email" class="form-control mb-3" placeholder="Email" required />
+						<input id="passwordInput" type="password" class="form-control mb-3" placeholder="Password" required />
+						<input
+							id="passwordCheck"
+							type="password"
+							class="form-control mb-3"
+							placeholder="Confirm Password"
+							required
+						/>
+						<div id="createStatus" class="text-danger mb-2" style="display: none;"></div>
+					</div>
+					<div class="modal-footer">
+						<button id="createSubmit" type="button" class="btn btn-success">Create</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
-    <script>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const submitButton = document.getElementById("loginSubmit");
+			const status = document.getElementById("loginStatus");
 
-     document.addEventListener('DOMContentLoaded', () => {
-        const submitButton = document.getElementById('loginSubmit');
-        const status = document.getElementById('loginStatus');
+			if (status) {
+				status.style.display = "none"; // Hide status before request
 
-        if(status){
-        status.style.display = 'none'; // Hide status before request
-        
+				if (submitButton) {
+					submitButton.addEventListener("click", async () => {
+						try {
+							const emailInput = document.getElementById("userEmail") as HTMLInputElement;
+							const email = emailInput.value;
+							// if not an ilstu email reject
+							if (!email.endsWith("@ilstu.edu")) {
+								status.textContent = "Invalid email or password.";
+								status.style.display = "block";
+								return;
+							}
 
-        if(submitButton){
-          submitButton.addEventListener('click', async () => {
-            try {
-              const emailInput = document.getElementById('userEmail') as HTMLInputElement;
-              const email = emailInput.value;
-              // if not an ilstu email reject
-              if (!email.endsWith('@ilstu.edu')) {
-                status.textContent = 'Invalid email or password.';
-                status.style.display = 'block';
-                return;
-              }
+							const passwordInput = document.getElementById("password") as HTMLInputElement;
+							const password = passwordInput.value;
 
-              const passwordInput = document.getElementById('password') as HTMLInputElement;
-              const password = passwordInput.value;
+							const response = await fetch("/api/user/login", {
+								method: "POST",
+								body: JSON.stringify({ email: email, password: password }),
+								headers: { "Content-Type": "application/json" },
+							});
 
-              const response = await fetch('/api/user/login', {
-                method: 'POST',
-                body: JSON.stringify({email: email, password: password }),
-                headers: { 'Content-Type': 'application/json' }
-              });
+							const result = await response.json();
+							if (response.status === 200) {
+								status.style.display = "none";
+								window.location.href = result.redirectTo;
+								// Optionally close modal or redirect
+							} else if (response.status === 401) {
+								status.textContent = "Invalid email or password.";
+								status.style.display = "block";
+							} else {
+								status.textContent = "Unexpected error. Please try again.";
+								status.style.display = "block";
+							}
+						} catch (error) {
+							console.error("Error sending POST request:", error);
+						}
+					});
+				}
+			}
+		});
 
-              const result = await response.json();
-                if (response.status === 200) {
-              status.style.display = 'none';
-              window.location.href = result.redirectTo;
-                // Optionally close modal or redirect
-              } else if (response.status === 401) {
-                status.textContent = 'Invalid email or password.';
-                status.style.display = 'block';
-              } else {
-                status.textContent = 'Unexpected error. Please try again.';
-                status.style.display = 'block';
-              }
-              
+		const createButton = document.getElementById("createSubmit");
+		const createStatus = document.getElementById("createStatus");
 
-            } catch (error) {
-              console.error('Error sending POST request:', error);
-            }
-          });
-        }
-      }});
+		if (createStatus) {
+			createStatus.style.display = "none"; // Hide status before request
 
+			if (createButton) {
+				createButton.addEventListener("click", async () => {
+					try {
+						const emailInput = document.getElementById("emailInput") as HTMLInputElement;
+						const newEmail = emailInput.value;
+						// if not an ilstu email reject
+						if (!newEmail.endsWith("@ilstu.edu")) {
+							createStatus.textContent = "Invalid email, only Illinois State email can register for an account";
+							createStatus.style.display = "block";
+							return;
+						}
 
-      const createButton = document.getElementById('createSubmit');
-        const createStatus = document.getElementById('createStatus');
+						const newPasswordInput = document.getElementById("passwordInput") as HTMLInputElement;
+						const newPassword = newPasswordInput.value;
+						const passwordInputCheck = document.getElementById("passwordCheck") as HTMLInputElement;
+						const passwordCheck = passwordInputCheck.value;
 
-        if(createStatus){
-        createStatus.style.display = 'none'; // Hide status before request
-        
+						if (newPassword != passwordCheck) {
+							createStatus.textContent = "Passwords entered do not match, please check and try again";
+							createStatus.style.display = "block";
+							return;
+						}
 
-        if(createButton){
-          createButton.addEventListener('click', async () => {
-            try {
-              const emailInput = document.getElementById('emailInput') as HTMLInputElement;
-              const newEmail = emailInput.value;
-              // if not an ilstu email reject
-              if (!newEmail.endsWith('@ilstu.edu')) {
-                createStatus.textContent = 'Invalid email, only Illinois State email can register for an account';
-                createStatus.style.display = 'block';
-                return;
-              }
+						const nameInput = document.getElementById("nameInput") as HTMLInputElement;
+						const name = nameInput.value;
 
-              const newPasswordInput = document.getElementById('passwordInput') as HTMLInputElement;
-              const newPassword = newPasswordInput.value;
-              const passwordInputCheck = document.getElementById('passwordCheck') as HTMLInputElement;
-              const passwordCheck = passwordInputCheck.value;
+						if (!name) {
+							createStatus.textContent = "Please put in your name";
+							createStatus.style.display = "block";
+							return;
+						}
 
-              if(newPassword != passwordCheck){
-                createStatus.textContent = 'Passwords entered do not match, please check and try again';
-                createStatus.style.display = 'block';
-                return;
-              }
+						const response = await fetch("/api/user/register", {
+							method: "POST",
+							body: JSON.stringify({ name: name, email: newEmail, password: newPassword }),
+							headers: { "Content-Type": "application/json" },
+						});
 
-              const nameInput = document.getElementById('nameInput') as HTMLInputElement;
-              const name = nameInput.value;
-
-              if(!name){
-                createStatus.textContent = 'Please put in your name';
-                createStatus.style.display = 'block';
-                return;
-              }
-
-
-              const response = await fetch('/api/user/register', {
-                method: 'POST',
-                body: JSON.stringify({name: name, email: newEmail, password: newPassword}),
-                headers: { 'Content-Type': 'application/json' }
-              });
-
-              const result = await response.json();
-              if (response.status === 200) {
-                 window.location.href = result.redirectTo;
-              } else if (response.status === 400) {
-                createStatus.textContent = 'Email already in use';
-                createStatus.style.display = 'block';
-              } else {
-                createStatus.textContent = 'Unexpected error. Please try again.';
-                createStatus.style.display = 'block';
-              }
-              
-
-            } catch (error) {
-              console.error('Error sending POST request:', error);
-            }
-          });
-        }
-      }
-      
-
-
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" is:inline></script>
-  </body>
-</html>
+						const result = await response.json();
+						if (response.status === 200) {
+							window.location.href = result.redirectTo;
+						} else if (response.status === 400) {
+							createStatus.textContent = "Email already in use";
+							createStatus.style.display = "block";
+						} else {
+							createStatus.textContent = "Unexpected error. Please try again.";
+							createStatus.style.display = "block";
+						}
+					} catch (error) {
+						console.error("Error sending POST request:", error);
+					}
+				});
+			}
+		}
+	</script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"
+		is:inline></script>
+</Layout>
