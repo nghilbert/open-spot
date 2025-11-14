@@ -1,22 +1,21 @@
+---
+import "../assets/styles/global.css";
+/* Base HTML layout for all pages. Renders the page inside <slot />. */
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>Open Spot</title>
 	</head>
 	<body>
 		<slot />
+		<footer class="site-footer">
+			<small>&copy; {new Date().getFullYear()} Open Spot. All rights reserved.</small>
+		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
