@@ -1,12 +1,18 @@
 ---
 import "../assets/styles/global.css";
 const { title = "Open Spot" } = Astro.props;
-/* Base HTML layout for all pages. Renders the page inside <slot /> */
+/* Base HTML layout for all pages. Renders content inside <slot /> */
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
+		<script>
+			// If the user is running dark mode, set bootstrap variable?
+			const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+			if (isDarkMode) document.documentElement.setAttribute("data-bs-theme", "dark");
+		</script>
+
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
@@ -14,8 +20,10 @@ const { title = "Open Spot" } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<main>
-			<slot />
-		</main>
+		<slot />
+
+		<footer class="site-footer">
+			<small>&copy; Open Spot</small>
+		</footer>
 	</body>
 </html>

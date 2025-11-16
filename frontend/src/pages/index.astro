@@ -5,9 +5,10 @@ import logo from "../assets/images/logo.svg";
 ---
 
 <Layout>
-	<div class="login-bg flex-center-content">
+	<!-- Main content -->
+	<main class="flex-center-content">
 		<div class="welcome-container flex-column-center-content gap-3">
-			<img src={logo.src} alt="Open Spot Logo" style="width: 70%" />
+			<img src={logo.src} alt="Open Spot Logo" />
 			<h2>College is hard enough, finding parking shoudn't be</h2>
 			<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
 				Login
@@ -16,7 +17,7 @@ import logo from "../assets/images/logo.svg";
 				Create Account
 			</button>
 		</div>
-	</div>
+	</main>
 
 	<!-- Login in Pop up menu -->
 	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">

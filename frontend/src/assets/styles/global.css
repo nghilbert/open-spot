@@ -1,20 +1,15 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
-:root {
-	--text: white;
-}
 
+/* Bootstrap already has styles applied to html and body. Only height is needed */
 html,
 body {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100vh;
-	color: var(--text);
+	height: 100%;
 }
 
+/* Custom global styling */
 .site-footer {
+	width: 100%;
 	text-align: center;
-	padding-bottom: 3rem;
 }
 
 .flex-center-content {
