@@ -2,26 +2,33 @@
 // Props: { avatarUrl: string, role: string }
 const { avatarUrl, role } = Astro.props;
 ---
-<div class="avatar">
-  <img src={avatarUrl} />
-  <span class="badge" title="Account status">{role}</span>
-  <div class="gap-2 flex-column-center-content">
-    <button class="btn btn-primary" type="button" id="change-photo">Change photo</button>
-    <button class="btn btn-primary" type="button" id="edit-profile">Edit profile</button>
-  </div>
-</div>  
 
-<style is:global>  
-  .avatar {
-    align-self: center;
-    display: grid;
-    gap: 12px;
-    justify-items: center;
-    background: linear-gradient(180deg, #0c1738, #0e1d49);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-  }  .avatar img {
-    width: 148px; height: 148px; border-radius: 50%; object-fit: cover;
-    border: 3px solid #2b6fff33; box-shadow: 0 0 24px #2b6fff44;
-  }</style>
+<div class="avatar">
+	<img src={avatarUrl} />
+	<span class="badge" title="Account status">{role}</span>
+	<div class="gap-2 flex-column-center-content">
+		<button class="btn btn-primary" type="button" id="change-photo">Change photo</button>
+		<button class="btn btn-primary" type="button" id="edit-profile">Edit profile</button>
+	</div>
+</div>
+
+<style is:global>
+	.avatar {
+		align-self: center;
+		display: grid;
+		gap: 12px;
+		justify-items: center;
+		background: linear-gradient(180deg, #0c1738, #0e1d49);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 20px;
+	}
+	.avatar img {
+		width: 148px;
+		height: 148px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 3px solid #2b6fff33;
+		box-shadow: 0 0 24px #2b6fff44;
+	}
+</style>

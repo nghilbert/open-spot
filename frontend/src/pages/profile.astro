@@ -1,87 +1,84 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../assets/styles/profile.css";
-import LogoutHeader from '../components/logoutHeader.astro';
-import Avatar from '../components/avatar.astro';
-import ProfileDetails from '../components/ProfileDetails.astro';
-import ProtectedPanel from '../components/ProtectedPanel.astro'
-
+import LogoutHeader from "../components/logoutHeader.astro";
+import Avatar from "../components/avatar.astro";
+import ProfileDetails from "../components/ProfileDetails.astro";
+import ProtectedPanel from "../components/ProtectedPanel.astro";
 
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 
-const res = await fetch(`${Astro.url.origin}/api/user/profile`, { headers: {
-    Cookie: `session=${Astro.cookies.get("session")?.value}`
-  }
+const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
+	headers: {
+		Cookie: `session=${Astro.cookies.get("session")?.value}`,
+	},
 });
 
 if (!res.ok) {
-  throw new Error('Unauthorized');
+	throw new Error("HTTP ");
 }
 
 const user = await res.json();
 ---
 
 <BaseLayout title="Account">
+	<LogoutHeader />
+	<main>
+		<div class="wrap">
+			<div class="topActions">
+				<button onclick="window.location.href='/dashboard'" class="btn btn-outline-light" id="backBtn">
+					Back to dashboard
+				</button>
+			</div>
+			<section class="card profile" aria-labelledby="profile-heading">
+				<Avatar avatarUrl={user.avatarUrl} role={user.role} />
+				<ProfileDetails {...user} />
+			</section>
 
-  <LogoutHeader />
-<main>
-    <div class="wrap">
-      <div class="topActions">
-        <button onclick="window.location.href='/dashboard'" class="btn btn-outline-light" id="backBtn">Back to dashboard</button>
-      </div>
-      <section class="card profile" aria-labelledby="profile-heading">
-        
-        <Avatar avatarUrl={user.avatarUrl} role={user.role} />
-        <ProfileDetails {...user} />
-          
-      </section>
+			<ProtectedPanel passwordChangedAgo={user.passwordChangedAgo} emailNote={user.emailNote} />
+		</div>
+	</main>
 
-      <ProtectedPanel passwordChangedAgo={user.passwordChangedAgo} emailNote={user.emailNote} />
+	<script>
+		// Handle logout with fetch (comment out e.preventDefault() to use native form POST instead)
+		const form = document.getElementById("logout-form");
 
-    </div>
-  </main>
+		if (form) {
+			form.addEventListener("submit", async (e) => {
+				e.preventDefault();
+				try {
+					const res = await fetch("api/user/logout", { method: "POST", credentials: "include" });
+					if (res.ok) {
+						window.location.href = "../";
+					} else {
+						alert("Logout failed. Please try again.");
+					}
+				} catch (err) {
+					alert("Network error.");
+				}
+			});
+		}
 
-<script>
-  // Handle logout with fetch (comment out e.preventDefault() to use native form POST instead)
-  const form = document.getElementById('logout-form');
+		// Footer year
+		const yearEl = document.getElementById("year");
+		if (yearEl) yearEl.textContent = new Date().getFullYear().toString();
 
-  if(form){
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        const res = await fetch('api/user/logout', { method: 'POST', credentials: 'include' });
-        if (res.ok) {
-          window.location.href = '../';
-        } else {
-          alert('Logout failed. Please try again.');
-        }
-      } catch (err) {
-        alert('Network error.');
-      }
-    });
-  }
+		// Example button handlers (replace with real routes/modals)
+		document.getElementById("change-password")?.addEventListener("click", () => {
+			window.location.href = "/reset_password";
+		});
 
-  // Footer year
-  const yearEl = document.getElementById('year');
-  if(yearEl)
-    yearEl.textContent = new Date().getFullYear().toString();
+		document.getElementById("setup-2fa")?.addEventListener("click", () => {
+			window.location.href = "/settings/2fa";
+		});
 
-  // Example button handlers (replace with real routes/modals)
-  document.getElementById('change-password')?.addEventListener('click', () => {
-    window.location.href = '/settings/password';
-  });
+		document.getElementById("edit-profile")?.addEventListener("click", () => {
+			window.location.href = "/edit_profile";
+		});
 
-  document.getElementById('setup-2fa')?.addEventListener('click', () => {
-    window.location.href = '/settings/2fa';
-  });
-
-  document.getElementById('edit-profile')?.addEventListener('click', () => {
-    window.location.href = '/edit_profile';
-  });
-
-  document.getElementById('change-photo')?.addEventListener('click', () => {
-    window.location.href = '/settings/avatar';
-  });
-</script>
+		document.getElementById("change-photo")?.addEventListener("click", () => {
+			window.location.href = "/settings/avatar";
+		});
+	</script>
 </BaseLayout>

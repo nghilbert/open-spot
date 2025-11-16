@@ -6,7 +6,7 @@ body {
 	height: 100%;
 }
 
-body {    
+body {
 	background-image: url("/site-bg.svg"); /* get image from public/site-bg.svg */
 	display: flex;
 	flex-direction: column;
