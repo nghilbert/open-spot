@@ -1,11 +1,6 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 /* Bootstrap already has styles applied to html and body. Only height is needed */
-html,
-body {
-	height: 100%;
-}
-
 body {
 	background-image: url("/site-bg.svg"); /* get image from public/site-bg.svg */
 	display: flex;
