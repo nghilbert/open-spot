@@ -8,19 +8,29 @@ type ButtonLink = {
 const { title, buttonList } = Astro.props;
 ---
 
-<header class="nav d-flex align-items-center justify-content-between gap-3 mb-4">
+<header
+  class="nav d-flex align-items-center justify-content-between gap-3 mb-4"
+>
   <div class="d-flex gap-2">
-    <a href = "/dashboard" class="brand d-flex align-items-center gap-2">
-    <img src="../src/assets/images/logo.svg" alt="Open Spot logo"
-         class="img-fluid"
-         style="width: 100px; height: 36px; padding: 0 5px; border-radius: 10px;box-shadow: 0 8px 20px rgba(90,162,255,.35);">
-  </a>
-  <div class="title fw-semibold mt-2" style="letter-spacing: -0.02em;">{title}</div>
+    <a href="/dashboard" class="brand d-flex align-items-center gap-2">
+      <img
+        src="../src/assets/images/logo.svg"
+        alt="Open Spot logo"
+        class="img-fluid"
+        style="width: 100px; height: 36px; padding: 0 5px; border-radius: 10px;box-shadow: 0 8px 20px rgba(90,162,255,.35);"
+      />
+    </a>
+    <div class="title fw-semibold mt-2" style="letter-spacing: -0.02em;">
+      {title}
+    </div>
   </div>
   <div class="navBtns d-flex gap-2">
-    {buttonList.map((button: ButtonLink) => (
-  <a href={button.href} class={button.class}>{button.label}</a>
-))}
-
+    {
+      buttonList.map((button: ButtonLink) => (
+        <a href={button.href} class={button.class}>
+          {button.label}
+        </a>
+      ))
+    }
   </div>
 </header>

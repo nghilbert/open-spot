@@ -6,25 +6,30 @@ const { title = "Open Spot" } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<script>
-			// If the user is running dark mode, set bootstrap variable?
-			const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-			if (isDarkMode) document.documentElement.setAttribute("data-bs-theme", "dark");
-		</script>
+  <head>
+    <script>
+      // If the user is running dark mode, set bootstrap variable?
+      const isDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      if (isDarkMode)
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+    </script>
 
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
 
-		<footer class="site-footer">
-			<small>&copy; Open Spot</small>
-		</footer>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	</body>
+    <footer class="site-footer">
+      <small>&copy; Open Spot</small>
+    </footer>
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    ></script>
+  </body>
 </html>
