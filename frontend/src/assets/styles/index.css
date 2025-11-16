@@ -1,16 +1,11 @@
 .welcome-container {
 	background-color: hsla(0, 0%, 0%, 0.8);
 	border-radius: 1rem;
+	padding: 2rem;
 }
 
 body {
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-	background-image: url("/login-bg.png"); /* get image from public/login-bg.png */
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: cover;
+	background-image: url("/login-bg.png") !important; /* get image from public/login-bg.png */
 }
 
 main {

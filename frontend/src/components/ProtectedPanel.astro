@@ -10,14 +10,7 @@ const { passwordChangedAgo, emailNote } = Astro.props;
         <strong>Password</strong>
         <div><small>Last changed: {passwordChangedAgo}</small></div>
       </div>
-      <button class="btn" type="button" id="change-password">Change</button>
-    </div>
-    <div class="row">
-      <div>
-        <strong>Email</strong>
-        <div><small>{emailNote}</small></div>
-      </div>
-      <button class="btn" type="button" id="setup-2fa">Change</button>
+      <button class="btn btn-primary" type="button" id="change-password">Change</button>
     </div>
   </div>
 </section>
