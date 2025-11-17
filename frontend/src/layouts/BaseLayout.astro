@@ -1,6 +1,12 @@
 ---
 import "../assets/styles/global.css";
+
+interface Props {
+	title: string
+};
+
 const { title = "Open Spot" } = Astro.props;
+
 /* Base HTML layout for all pages. Renders content inside <slot /> */
 ---
 
