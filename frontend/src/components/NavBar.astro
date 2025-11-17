@@ -26,7 +26,7 @@ const { title, buttonList } = Astro.props;
   </div>
   <div class="navBtns d-flex gap-2">
     {
-      buttonList.map((button: ButtonLink) => (
+      buttonList && buttonList.map((button: ButtonLink) => (
         <a href={button.href} class={button.class}>
           {button.label}
         </a>
