@@ -55,19 +55,19 @@ const lots = [
     availability: { used: 2, total: 40 },
   },
 ];
-//the next three variables are the filter options
+//Available Filter options
 const availOptions = [
   { label: "All", value: "" },
   { label: "Available Spots", value: "available" },
   { label: "Full", value: "full" },
 ];
-
+//Type Filter options
 const typeOptions = [
   { label: "Any", value: "" },
   { label: "Parking", value: "Parking" },
   { label: "Bike Rack", value: "Bike" },
 ];
-
+//Permit Filter options
 const permitOptions = [
   { label: "Any", value: "" },
   { label: "None", value: "None" },
@@ -75,7 +75,6 @@ const permitOptions = [
   { label: "Faculty/Staff", value: "Faculty/Staff" },
   { label: "All Parking Garage Zone", value: "All Parking Garage Zone" },
 ];
-
 
 const clamp = (n: number, a: number, b: number): number =>
   Math.max(a, Math.min(b, n));
@@ -100,21 +99,21 @@ const occStyles = {
     <NavBar title={title} buttonList={buttonList} />
 
     <!-- Filters -->
-      <section
-  class="card shadow-lg rounded-4 border"
-  style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
->
-  <div class="p-3 d-grid gap-3">
-    <Filter
-      searchLabel="Search"
-      availOptions={availOptions}
-      typeOptions={typeOptions}
-      permitOptions={permitOptions}
-      onSubmit="#"
-    />
-    <ColorScore />
-  </div>
-</section>
+    <section
+      class="card shadow-lg rounded-4 border"
+      style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
+    >
+      <div class="p-3 d-grid gap-3">
+        <Filter
+          searchLabel="Search"
+          availOptions={availOptions}
+          typeOptions={typeOptions}
+          permitOptions={permitOptions}
+          onSubmit="#"
+        />
+        <ColorScore />
+      </div>
+    </section>
 
     <!-- List -->
     <section class="d-grid gap-4 mt-4" id="list">

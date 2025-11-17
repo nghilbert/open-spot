@@ -8,8 +8,14 @@ const {
 } = Astro.props;
 ---
 
-<form class="row gy-2 gx-3 align-items-center flex-wrap" method="GET" action={onSubmit}>
-  <label class="text-uppercase text-muted small" for="search">{searchLabel}</label>
+<form
+  class="row gy-2 gx-3 align-items-center flex-wrap"
+  method="GET"
+  action={onSubmit}
+>
+  <label class="text-uppercase text-muted small" for="search"
+    >{searchLabel}</label
+  >
   <input
     type="search"
     class="form-control"
@@ -20,23 +26,31 @@ const {
 
   <label class="text-uppercase text-muted small" for="avail">Available</label>
   <select class="form-select" name="avail" id="avail">
-    {availOptions.map(({ label, value }: { label: string; value: string }) => (
-  <option value={value}>{label}</option>
-))}
+    {
+      availOptions.map(({ label, value }: { label: string; value: string }) => (
+        <option value={value}>{label}</option>
+      ))
+    }
   </select>
 
   <label class="text-uppercase text-muted small" for="type">Type</label>
   <select class="form-select" name="type" id="type">
-    {typeOptions.map(({ label, value }: { label: string; value: string }) => (
-  <option value={value}>{label}</option>
-))}
+    {
+      typeOptions.map(({ label, value }: { label: string; value: string }) => (
+        <option value={value}>{label}</option>
+      ))
+    }
   </select>
 
   <label class="text-uppercase text-muted small" for="permit">Permit</label>
   <select class="form-select" name="permit" id="permit">
-    {permitOptions.map(({ label, value }: { label: string; value: string }) => (
-  <option value={value}>{label}</option>
-))}
+    {
+      permitOptions.map(
+        ({ label, value }: { label: string; value: string }) => (
+          <option value={value}>{label}</option>
+        )
+      )
+    }
   </select>
 
   <button class="btn btn-outline-light" type="submit">Reset</button>
