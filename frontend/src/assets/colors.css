@@ -1,0 +1,17 @@
+:root{
+    --bg: #0b1020;
+    --panel: #111936;
+    --panel-2: #0e1530;
+    --text: #fff;
+    --muted: #dfe5f5;
+    --primary: #5aa2ff;
+    --primary-600: #4a8ae0;
+    --ring: rgba(90, 162, 255, 0.349);
+    --radius: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 10px 30px #00000073;
+    --border: rgba(255,255,255,.10);
+    --border-2: rgba(255,255,255,.18);
+    --field-bg: rgba(255,255,255,.06);
+    --field-border: rgba(255,255,255,.18);
+}

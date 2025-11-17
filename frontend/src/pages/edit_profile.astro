@@ -1,4 +1,6 @@
 ---
+import Card from "src/components/Card.astro";
+
 const title = "Open Spot — Edit Profile";
 ---
 
@@ -105,21 +107,20 @@ const title = "Open Spot — Edit Profile";
         <div class="navBtns"></div>
       </header>
 
-      <section class="card" id="profileCard">
-        <div class="hdr">Profile</div>
+      <Card title="Profile">
         <form class="body" id="profileForm" autocomplete="on" novalidate>
           <div class="grid-2">
             <div class="field">
               <label class="label" for="name">Name</label>
               <input id="name" name="name" class="input" type="text" placeholder="Full name" required />
             </div>
-
+  
             <div class="field">
               <label class="label" for="username">Username</label>
               <input id="username" name="username" class="input" type="text" placeholder="username" required />
             </div>
           </div>
-
+  
           <div class="grid-2">
             <div class="field">
               <label class="label" for="type">Type</label>
@@ -129,7 +130,7 @@ const title = "Open Spot — Edit Profile";
               </select>
               <div class="hint">Selecting <b>Driver</b> enables permit selection.</div>
             </div>
-
+  
             <!-- Permit: only shown when Type = Driver -->
             <div class="field hidden" id="permitField">
               <label class="label" for="permit">Permit</label>
@@ -141,119 +142,151 @@ const title = "Open Spot — Edit Profile";
               <div class="hint">Drivers must have a parking permit.</div>
             </div>
           </div>
-
+  
           <div class="status" id="status"></div>
           <div class="actions">
             <a href="/dashboard" class="btn ghost" id="cancelBtn">Cancel</a>
             <button type="submit" class="btn primary" id="saveBtn">Save Changes</button>
           </div>
         </form>
-      </section>
+      </Card>
     </div>
 
-    <script type="module">
-      const token = () => localStorage.getItem('token') || '';
-
-      const form        = document.getElementById('profileForm');
-      const statusEl    = document.getElementById('status');
-      const nameEl      = document.getElementById('name');
-      const userEl      = document.getElementById('username');
-      const typeEl      = document.getElementById('type');
-      const permitWrap  = document.getElementById('permitField');
-      const permitEl    = document.getElementById('permit');
-
-      function showStatus(msg, kind='ok'){
-        statusEl.textContent = msg;
-        statusEl.className = `status show ${kind}`;
-        if(kind === 'ok'){ setTimeout(()=> statusEl.className = 'status', 2000); }
-      }
-
-      function setPermitEnabled(enabled){
-        permitWrap.classList.toggle('hidden', !enabled);
-        permitEl.disabled = !enabled;
-        if(!enabled){ permitEl.value = ''; } // clear when Cyclist
-      }
-
-      // reflect Type -> Permit UI
-      typeEl.addEventListener('change', ()=>{
-        const isDriver = typeEl.value === 'Driver';
-        setPermitEnabled(isDriver);
-        if(isDriver && !permitEl.value){
-          // default to Commuter if none selected
-          permitEl.value = 'Commuter';
-        }
-      });
-
-      // Load current profile
-      async function loadProfile(){
-        try{
-          const res = await fetch(`/api/user/profile`);
-          if(!res.ok) throw new Error(await res.text());
-          const p = await res.json();
-          // Expected: { name, username, type: 'Driver'|'Cyclist', permit?: string|null }
-          nameEl.value = p?.name ?? '';
-          userEl.value = p?.username ?? '';
-          typeEl.value = (p?.userType === 'CYCLIST') ? 'Cyclist' : 'Driver';
-
-          const isDriver = typeEl.value === 'Driver';
-          setPermitEnabled(isDriver);
-          if(isDriver){
-            if(p?.permit == "COMMUTER"){
-              permitEl.value = "Commuter";
-            } else if(p?.permit == "FACULTY"){
-              permitEl.value = "Faculty";
-            } else if(p?.permit == "ALL"){
-              permitEl.value = "All";
-            }
-          }
-        }catch(e){
-          console.error(e);
-          showStatus('Could not load profile.', 'err');
-          // Default UI state
-          setPermitEnabled(typeEl.value === 'Driver');
-        }
-      }
-
-      // Save profile
-      form.addEventListener('submit', async (ev) => {
-        ev.preventDefault();
-
-        const isDriver = typeEl.value === 'Driver';
-        // Basic client validation
-        if(!nameEl.value.trim() || !userEl.value.trim()){
-          showStatus('Name and username are required.', 'err'); return;
-        }
-        if(isDriver && !permitEl.value){
-          showStatus('Please select a permit for Driver type.', 'err'); return;
-        }
-
-        const payload = {
-          name: nameEl.value.trim(),
-          username: userEl.value.trim(),
-          type: typeEl.value,
-          permit: isDriver ? permitEl.value : null
-        };
-
-        try{
-          const res = await fetch(`/api/user/profile`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          });
-          if(!res.ok){
-            const msg = await res.text().catch(()=> 'Error');
-            throw new Error(msg || 'Failed to save');
-          }
-          showStatus('Profile updated successfully!', 'ok');
-        }catch(e){
-          showStatus(`Save failed: ${e?.message || e}`, 'err');
-        }
-      });
-
-      // Kick off
-      loadProfile();
-    </script>
   </body>
 </html>
+
+<script>
+  // Find all the elements within the page
+  const form = document.getElementById("profileForm") as HTMLFormElement;
+  const statusEl = document.getElementById("status") as HTMLDivElement;
+  const nameEl = document.getElementById("name") as HTMLInputElement;
+  const userEl = document.getElementById("username") as HTMLInputElement;
+  const typeEl = document.getElementById("type") as HTMLSelectElement;
+  const permitWrap = document.getElementById("permitField") as HTMLDivElement;
+  const permitEl = document.getElementById("permit") as HTMLSelectElement;
+
+  // Declare some helper functions
+  function showStatus(msg?: string, kind: string = "ok"){
+    // Sets the status element and its message. Pass undefined to hide
+    statusEl.textContent = msg || "";
+    statusEl.className = (msg ? `status show ${kind}` : "status");
+
+    if(kind === "ok"){
+      // OK statuses should clear after 2 seconds
+      setTimeout(() => statusEl.className = 'status', 2000);
+    }
+  }
+
+  function setPermitEnabled(enabled: boolean){
+    // Sets the permit option enabled or disabled. This is because cyclists should not be able to set a permit type
+    permitWrap.classList.toggle("hidden", !enabled);
+    permitEl.disabled = !enabled;
+
+    if(!enabled){
+      // Simple book keeping to keep the permit type empty if its a cyclist.
+      permitEl.value = '';
+    }
+  }
+
+  async function loadProfile(){
+    // Runs the fetch to obtain profile data and populates it into the respective fields
+    try {
+      const res = await fetch("/api/user/profile", {
+        credentials: "include"
+      });
+
+      if(!res.ok)
+        throw new Error(await res.text());
+
+      // Convert response body to json, as the backend payload sends a json
+      const p = await res.json(); // Expected: { name, username, type: 'Driver'|'Cyclist', permit?: string|null }
+
+      if(!p)
+        throw new Error("Invalid payload from server");
+
+      // Populate fields if they exist
+      nameEl.value = p.name ?? "";
+      userEl.value = p.username ?? "";
+      typeEl.value = (p.userType === "CYCLIST") ? "Cyclist" : "Driver";
+
+      // Check if the permit section should be opened up
+      const isDriver = typeEl.value === "Driver";
+      setPermitEnabled(isDriver);
+
+      if(isDriver){
+        // Convert the permit payload type to a human readable value
+        if(p.permit == "COMMUTER"){
+          permitEl.value = "Commuter";
+        } else if(p.permit == "FACULTY"){
+          permitEl.value = "Faculty";
+        } else if(p.permit == "ALL"){
+          permitEl.value = "All";
+        }
+      }
+    } catch(err) {
+      // Error out
+      setPermitEnabled(typeEl.value === 'Driver'); // Default UI state
+      showStatus("Could not load profile.", "err");
+      console.error(err);
+    }
+  }
+
+  // Populate event listeners
+  typeEl.addEventListener("change", () => {
+    // This function keeps the permit enabled dependant on the type of driver/cyclist
+    const isDriver = typeEl.value === "Driver";
+    setPermitEnabled(isDriver);
+
+    if(isDriver && !permitEl.value){
+      // Default to Commuter if none selected
+      permitEl.value = "Commuter";
+    }
+  });
+
+  form.addEventListener("submit", async (event) => {
+    // Save profile when the form is submitted
+    event.preventDefault(); // Stop the form from trying to redirect
+    const isDriver = typeEl.value === "Driver";
+    
+    // Basic client validation
+    if(!nameEl.value.trim() || !userEl.value.trim()){
+      showStatus("Name and username are required.", "err");
+      return;
+    }
+    
+    if(isDriver && !permitEl.value){
+      showStatus("Please select a permit for Driver type.", "err");
+      return;
+    }
+    
+    // Construct a payload to send to the server
+    const payload = {
+      name: nameEl.value.trim(),
+      username: userEl.value.trim(),
+      type: typeEl.value,
+      permit: isDriver ? permitEl.value : null
+    };
+
+    // Attempt sending the payload to the server to update the user
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok){
+        // Error out if the result was not okay
+        const msg = await res.text();
+        throw new Error(msg || "Failed to save");
+      }
+
+      showStatus("Profile updated successfully!", "ok");
+    } catch(err) {
+      showStatus(`Save failed: ${err}`, "err");
+    }
+  });
+
+  // Kick off initial load
+  loadProfile();
+</script>
