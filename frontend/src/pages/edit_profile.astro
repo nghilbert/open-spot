@@ -1,18 +1,21 @@
 ---
 import Card from "src/components/Card.astro";
 import Layout from "src/layouts/Layout.astro";
+import StatusLine from "src/components/StatusLine";
 import "../assets/colors.css";
+
+const title = "Open Spot — Edit Profile";
 ---
 
-<Layout title="Open Spot — Edit Profile">
+<Layout title={title}>
   <div class="shell">
-    <header class="nav">
+    <div class="nav">
       <div class="brand">
         <img src="/favicon.svg" alt="Open Spot logo" />
-        <div class="title">Open Spot — Edit Profile</div>
+        <div class="title">{title}</div>
       </div>
       <div class="navBtns"></div>
-    </header>
+    </div>
 
     <Card title="Profile">
       <form class="body" id="profileForm" autocomplete="on" novalidate>
@@ -50,7 +53,7 @@ import "../assets/colors.css";
           </div>
         </div>
 
-        <div class="status" id="status"></div>
+        <StatusLine eventIdentifier="edit_status" client:load />
         <div class="actions">
           <a href="/dashboard" class="btn ghost" id="cancelBtn">Cancel</a>
           <button type="submit" class="btn primary" id="saveBtn">Save Changes</button>
@@ -65,12 +68,12 @@ import "../assets/colors.css";
   html,body{height:100%;margin:0}
   body{
     background: radial-gradient(1200px 800px at 10% -10%, #13214a 0%, var(--bg) 40%, #090e1d 100%);
-    color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
   }
   a{color:var(--primary); text-underline-offset:3px}
   .shell{max-width:900px; margin:0 auto; padding:24px}
 
-  header.nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
   .brand{display:flex;align-items:center;gap:10px}
   .brand img{width:36px;height:36px;border-radius:10px;display:block;box-shadow:0 8px 20px rgba(90,162,255,.35)}
   .brand .title{font-weight:750;letter-spacing:-.02em}
@@ -127,10 +130,10 @@ import "../assets/colors.css";
   .btn.primary{ background:linear-gradient(180deg,var(--primary),var(--primary-600)); color:#05122a; border-color:rgba(90,162,255,.6) }
   .btn.ghost{ background:transparent }
 
-  .status{padding:0 18px 14px 18px; display:none}
+  /* .status{padding:0 18px 14px 18px; display:none}
   .status.show{display:block}
   .status.ok{color:#bbf7d0}
-  .status.err{color:#fecaca}
+  .status.err{color:#fecaca} */
 
   @media (min-width: 720px){
     .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px }
@@ -141,9 +144,11 @@ import "../assets/colors.css";
 </style>
 
 <script>
+  // Import types
+  import { StatusLineEvent } from "src/components/StatusLine";
+
   // Find all the elements within the page
   const form = document.getElementById("profileForm") as HTMLFormElement;
-  const statusEl = document.getElementById("status") as HTMLDivElement;
   const nameEl = document.getElementById("name") as HTMLInputElement;
   const userEl = document.getElementById("username") as HTMLInputElement;
   const typeEl = document.getElementById("type") as HTMLSelectElement;
@@ -151,15 +156,17 @@ import "../assets/colors.css";
   const permitEl = document.getElementById("permit") as HTMLSelectElement;
 
   // Declare some helper functions
-  function showStatus(msg?: string, kind: string = "ok"){
+  function showStatus(msg?: string, kind: "ok"|"err" = "ok"){
     // Sets the status element and its message. Pass undefined to hide
-    statusEl.textContent = msg || "";
-    statusEl.className = (msg ? `status show ${kind}` : "status");
+    const event = new StatusLineEvent("edit_status", {
+      detail: {
+        message: msg,
+        type: kind,
+        timeout: 2000
+      }
+    });
 
-    if(kind === "ok"){
-      // OK statuses should clear after 2 seconds
-      setTimeout(() => statusEl.className = 'status', 2000);
-    }
+    window.dispatchEvent(event);
   }
 
   function setPermitEnabled(enabled: boolean){
