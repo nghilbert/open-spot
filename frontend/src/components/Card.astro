@@ -7,31 +7,9 @@ const { title } = Astro.props;
 ---
 
 <div class="card">
-    { title && (<div class="title">{title}</div>) }
+    { title && (<div class="card-header fw-bold">{title}</div>)}
     
-    <div class="content">
+    <div class="card-body d-grid gap-3">
         <slot />
     </div>
 </div>
-
-<style>
-    .card {
-        background: linear-gradient(180deg,var(--panel), var(--panel-2));
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-    }
-
-    .card .title {
-        padding:16px 18px;
-        border-bottom:1px solid var(--border-2);
-        font-weight:800;
-        letter-spacing: -.01em;
-    }
-
-    .card .content {
-        padding:18px;
-        display:grid;
-        gap:14px;
-    }
-</style>
