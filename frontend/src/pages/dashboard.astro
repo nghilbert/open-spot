@@ -1,14 +1,18 @@
 ---
 import BaseLayout from "src/layouts/BaseLayout.astro";
 import NavBar from "../components/NavBar.astro";
+import Filter from "../components/FilterComponent.astro";
+import ColorScore from "../components/ColorScore.astro";
 import "../assets/styles/dashboard.css";
 
+// Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
+//the list of buttons to be given to the header
 const buttonList = [
   { label: "Profile", href: "/profile", class: "btn btn-outline-light" },
   { label: "Admin", href: "/admin", class: "btn btn-outline-light" },
 ];
-
+//Temp list for the lots, needs to be remove once pulling from database
 const lots = [
   {
     id: 1,
@@ -51,6 +55,27 @@ const lots = [
     availability: { used: 2, total: 40 },
   },
 ];
+//the next three variables are the filter options
+const availOptions = [
+  { label: "All", value: "" },
+  { label: "Available Spots", value: "available" },
+  { label: "Full", value: "full" },
+];
+
+const typeOptions = [
+  { label: "Any", value: "" },
+  { label: "Parking", value: "Parking" },
+  { label: "Bike Rack", value: "Bike" },
+];
+
+const permitOptions = [
+  { label: "Any", value: "" },
+  { label: "None", value: "None" },
+  { label: "Commuter", value: "Commuter" },
+  { label: "Faculty/Staff", value: "Faculty/Staff" },
+  { label: "All Parking Garage Zone", value: "All Parking Garage Zone" },
+];
+
 
 const clamp = (n: number, a: number, b: number): number =>
   Math.max(a, Math.min(b, n));
@@ -75,77 +100,21 @@ const occStyles = {
     <NavBar title={title} buttonList={buttonList} />
 
     <!-- Filters -->
-    <section
-      class="card shadow-lg rounded-4 border"
-      style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
-    >
-      <div class="p-3 d-grid gap-3">
-        <form class="row gy-2 gx-3 align-items-center flex-wrap" method="GET">
-          <label class="text-uppercase text-muted small" for="search"
-            >Search</label
-          >
-          <input
-            type="search"
-            class="form-control"
-            name="search"
-            id="search"
-            placeholder="Search by name or address…"
-          />
-
-          <label class="text-uppercase text-muted small" for="avail"
-            >Available</label
-          >
-          <select class="form-select" name="avail" id="avail">
-            <option value="">All</option>
-            <option value="available">Available Spots</option>
-            <option value="full">Full</option>
-          </select>
-
-          <label class="text-uppercase text-muted small" for="type">Type</label>
-          <select class="form-select" name="type" id="type">
-            <option value="">Any</option>
-            <option value="Parking">Parking</option>
-            <option value="Bike">Bike Rack</option>
-          </select>
-
-          <label class="text-uppercase text-muted small" for="permit"
-            >Permit</label
-          >
-          <select class="form-select" name="permit" id="permit">
-            <option value="">Any</option>
-            <option value="None">None</option>
-            <option value="Commuter">Commuter</option>
-            <option value="Faculty/Staff">Faculty/Staff</option>
-            <option value="All Parking Garage Zone"
-              >All Parking Garage Zone</option
-            >
-          </select>
-
-          <button class="btn btn-outline-light" type="submit">Reset</button>
-        </form>
-
-        <div class="row legend text-muted small">
-          <span
-            ><span
-              class="rounded-circle me-2"
-              style="background-color:#22c55e; width:10px; height:10px; display:inline-block;"
-            ></span>Under 50% full</span
-          >
-          <span
-            ><span
-              class="rounded-circle me-2"
-              style="background-color:#f59e0b; width:10px; height:10px; display:inline-block;"
-            ></span>50–99% full</span
-          >
-          <span
-            ><span
-              class="rounded-circle me-2"
-              style="background-color:#ef4444; width:10px; height:10px; display:inline-block;"
-            ></span>100% full</span
-          >
-        </div>
-      </div>
-    </section>
+      <section
+  class="card shadow-lg rounded-4 border"
+  style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
+>
+  <div class="p-3 d-grid gap-3">
+    <Filter
+      searchLabel="Search"
+      availOptions={availOptions}
+      typeOptions={typeOptions}
+      permitOptions={permitOptions}
+      onSubmit="#"
+    />
+    <ColorScore />
+  </div>
+</section>
 
     <!-- List -->
     <section class="d-grid gap-4 mt-4" id="list">
