@@ -4,16 +4,37 @@ import NavBar from "../components/NavBar.astro";
 import Filter from "../components/FilterComponent.astro";
 import ColorScore from "../components/ColorScore.astro";
 import "../assets/styles/dashboard.css";
-import type { IndexKind } from "typescript";
-import type { LogType } from "vite";
+
+// Force the server to regenerate the page every request, rather than at `npm run build`.
+export const prerender = false;
+//request user session and makes sure it is vaild and active
+const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
+	headers: {
+		Cookie: `session=${Astro.cookies.get("session")?.value}`,
+	},
+});
+
+//redirects user before the page load to the login page if they are not logged in
+if (!res.ok) {
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: "/",
+    },
+  });
+}
+const user = await res.json();
 
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
 //the list of buttons to be given to the header
 const buttonList = [
   { label: "Profile", href: "/profile", class: "btn btn-outline-light" },
-  { label: "Admin", href: "/admin", class: "btn btn-outline-light" },
 ];
+//if the user is an Admin the will see the admin dashboard button
+if (user.role === "ADMIN"){
+buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light" });
+}
 //Temp list for the lots, needs to be remove once pulling from database
 const lots = [
   {
