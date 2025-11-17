@@ -4,6 +4,8 @@ import NavBar from "../components/NavBar.astro";
 import Filter from "../components/FilterComponent.astro";
 import ColorScore from "../components/ColorScore.astro";
 import "../assets/styles/dashboard.css";
+import type { IndexKind } from "typescript";
+import type { LogType } from "vite";
 
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
@@ -126,8 +128,7 @@ const occStyles = {
           const style = occStyles[state];
           const occText = total > 0 ? `${used}/${total} spots full` : "—";
           const typeText = lot.kind === "Parking" ? "Parking" : "Bike Rack";
-          const permitTxt = (kind: string, permit: string | null): string =>
-            kind === "Parking" ? permit || "—" : "None";
+          const permitTxt = lot.kind === "Parking" ? lot.permitRequired: "None";
           const isAvailable = total > used ? "true" : "false";
 
           return (
