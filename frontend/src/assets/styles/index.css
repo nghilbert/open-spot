@@ -1,0 +1,13 @@
+.welcome-container {
+	background-color: hsla(0, 0%, 0%, 0.8);
+	border-radius: 1rem;
+	padding: 2rem;
+}
+
+body {
+	background-image: url("/login-bg.png") !important; /* get image from public/login-bg.png */
+}
+
+main {
+	height: 100%;
+}

@@ -1,6 +1,4 @@
 ---
-import "../assets/colors.css"
-
 interface Props {
     title?: HTMLElement | string;
 };
@@ -10,15 +8,18 @@ const { title } = Astro.props;
 
 <div class="card">
     { title && (<div class="title">{title}</div>) }
+    
     <div class="content">
         <slot />
     </div>
 </div>
 
 <style>
-    .card{
-        background:linear-gradient(180deg,var(--panel),var(--panel-2));
-        border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+    .card {
+        background: linear-gradient(180deg,var(--panel), var(--panel-2));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
     }
 
     .card .title {

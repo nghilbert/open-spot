@@ -1,23 +1,21 @@
 ---
-// Props: { passwordChangedAgo: string, emailNote: string }
+interface Props {
+	passwordChangedAgo: string;
+	emailNote: string;
+};
+
 const { passwordChangedAgo, emailNote } = Astro.props;
 ---
+
 <section class="card" aria-labelledby="security-heading">
-  <h3 class="section-title" id="security-heading">Security</h3>
-  <div class="security">
-    <div class="row">
-      <div>
-        <strong>Password</strong>
-        <div><small>Last changed: {passwordChangedAgo}</small></div>
-      </div>
-      <button class="btn" type="button" id="change-password">Change</button>
-    </div>
-    <div class="row">
-      <div>
-        <strong>Email</strong>
-        <div><small>{emailNote}</small></div>
-      </div>
-      <button class="btn" type="button" id="setup-2fa">Change</button>
-    </div>
-  </div>
+	<h3 class="section-title" id="security-heading">Security</h3>
+	<div class="security">
+		<div class="row">
+			<div>
+				<strong>Password</strong>
+				<div><small>Last changed: {passwordChangedAgo}</small></div>
+			</div>
+			<button class="btn btn-primary" type="button" id="change-password">Change</button>
+		</div>
+	</div>
 </section>

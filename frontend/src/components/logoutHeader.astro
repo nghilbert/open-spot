@@ -1,13 +1,29 @@
 ---
 const { csrfToken } = Astro.props;
 ---
+
 <header>
-  <div class="brand" aria-label="Site">
-    <span class="dot" aria-hidden="true"></span>
-    <span>Open Spot</span>
-  </div>
-  <form id="logout-form" action="/logout" method="POST" aria-label="Log out">
-    <input type="hidden" name="csrf" value={csrfToken} />
-    <button type="submit" class="btn danger" aria-label="Log out of your account">Log out</button>
-  </form>
+	<div class="brand" aria-label="Site">
+		<span class="dot" aria-hidden="true"></span>
+		<span>Open Spot</span>
+	</div>
+	<form id="logout-form" action="/logout" method="POST" aria-label="Log out">
+		<input type="hidden" name="csrf" value={csrfToken} />
+		<button type="submit" class="btn btn-danger" aria-label="Log out of your account">Log out</button>
+	</form>
 </header>
+
+<style is:global>
+	header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 16px 24px;
+		backdrop-filter: blur(8px);
+		background: linear-gradient(180deg, #0d1533cc, #0d153300);
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		border-bottom: 1px solid #0f1f4a;
+	}
+</style>

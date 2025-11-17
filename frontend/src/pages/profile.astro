@@ -1,291 +1,84 @@
 ---
-import LogoutHeader from '../components/logoutHeader.astro';
-import Avatar from '../components/avatar.astro';
-import ProfileDetails from '../components/ProfileDetails.astro';
-import ProtectedPanel from '../components/ProtectedPanel.astro'
-
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../assets/styles/profile.css";
+import LogoutHeader from "../components/logoutHeader.astro";
+import Avatar from "../components/Avatar.astro";
+import ProfileDetails from "../components/ProfileDetails.astro";
+import ProtectedPanel from "../components/ProtectedPanel.astro";
 
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 
-const res = await fetch(`${Astro.url.origin}/api/user/profile`, { headers: {
-    Cookie: `session=${Astro.cookies.get("session")?.value}`
-  }
+const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
+	headers: {
+		Cookie: `session=${Astro.cookies.get("session")?.value}`,
+	},
 });
 
 if (!res.ok) {
-  throw new Error('Unauthorized');
+	throw new Error("HTTP ");
 }
 
 const user = await res.json();
-
-// const user = {
-//   name: 'Lake Reynolds',
-//   username: 'example',
-//   email: 'studentemail@ilstu.edu',
-//   memberSince: 'Aug 2023',
-//   role: 'Member',
-//   status: 'Active',
-//   avatarUrl: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-//   passwordChangedAgo: '90 days ago',
-//   emailNote: 'Must be an ilstu email',
-// };
-
-
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Account</title>
-</head>
-<body>
-  <LogoutHeader />
+<BaseLayout title="Account">
+	<LogoutHeader />
+	<main>
+		<div class="wrap">
+			<div class="topActions">
+				<button onclick="window.location.href='/dashboard'" class="btn btn-outline-light" id="backBtn">
+					Back to dashboard
+				</button>
+			</div>
+			<section class="card profile" aria-labelledby="profile-heading">
+				<Avatar avatarUrl={user.avatarUrl} role={user.role} />
+				<ProfileDetails {...user} />
+			</section>
 
-  <main>
-    <div class="wrap">
-      <div class="topActions">
-        <a href="/dashboard" class="btn secondary" id="backBtn">Back to dashboard</a>
-      </div>
-      <section class="card profile" aria-labelledby="profile-heading">
-        
-        <Avatar avatarUrl={user.avatarUrl} role={user.role} />
-        <ProfileDetails {...user} />
-          
-      </section>
+			<ProtectedPanel passwordChangedAgo={user.passwordChangedAgo} emailNote={user.emailNote} />
+		</div>
+	</main>
 
-      <ProtectedPanel passwordChangedAgo={user.passwordChangedAgo} emailNote={user.emailNote} />
+	<script>
+		// Handle logout with fetch (comment out e.preventDefault() to use native form POST instead)
+		const form = document.getElementById("logout-form");
 
-    </div>
-  </main>
+		if (form) {
+			form.addEventListener("submit", async (e) => {
+				e.preventDefault();
+				try {
+					const res = await fetch("api/user/logout", { method: "POST", credentials: "include" });
+					if (res.ok) {
+						window.location.href = "../";
+					} else {
+						alert("Logout failed. Please try again.");
+					}
+				} catch (err) {
+					alert("Network error.");
+				}
+			});
+		}
 
-  <footer>
-    © <span id="year"></span> Open Spot. • <a href="#">Privacy</a>
-  </footer>
-</body>
-</html>
+		// Footer year
+		const yearEl = document.getElementById("year");
+		if (yearEl) yearEl.textContent = new Date().getFullYear().toString();
 
-<script>
-  // Handle logout with fetch (comment out e.preventDefault() to use native form POST instead)
-  const form = document.getElementById('logout-form');
+		// Example button handlers (replace with real routes/modals)
+		document.getElementById("change-password")?.addEventListener("click", () => {
+			window.location.href = "/reset_password";
+		});
 
-  if(form){
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        const res = await fetch('api/user/logout', { method: 'POST', credentials: 'include' });
-        if (res.ok) {
-          window.location.href = '../';
-        } else {
-          alert('Logout failed. Please try again.');
-        }
-      } catch (err) {
-        alert('Network error.');
-      }
-    });
-  }
+		document.getElementById("setup-2fa")?.addEventListener("click", () => {
+			window.location.href = "/settings/2fa";
+		});
 
-  // Footer year
-  const yearEl = document.getElementById('year');
-  if(yearEl)
-    yearEl.textContent = new Date().getFullYear().toString();
+		document.getElementById("edit-profile")?.addEventListener("click", () => {
+			window.location.href = "/edit_profile";
+		});
 
-  // Example button handlers (replace with real routes/modals)
-  document.getElementById('change-password')?.addEventListener('click', () => {
-    window.location.href = '/settings/password';
-  });
-
-  document.getElementById('setup-2fa')?.addEventListener('click', () => {
-    window.location.href = '/settings/2fa';
-  });
-
-  document.getElementById('edit-profile')?.addEventListener('click', () => {
-    window.location.href = '/edit_profile';
-  });
-
-  document.getElementById('change-photo')?.addEventListener('click', () => {
-    window.location.href = '/settings/avatar';
-  });
-</script>
-
-<style is:global>
-  :root {
-    --bg: #0b1020;
-    --panel: #0f1a3a;
-    --panel-2: #13224d;
-    --text: #eef3ff;
-    --muted: #b9c6ff;
-    --primary: #2b6fff;
-    --primary-2: #1e56c7;
-    --border: #27407e;
-    --success: #00c389;
-    --danger: #ff5c5c;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    --radius: 18px;
-  }
-
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    color: var(--text);
-    background: radial-gradient(1200px 600px at 10% -10%, #122156 0%, #0b1020 55%),
-                radial-gradient(1000px 600px at 110% -20%, #0a6bff22 0%, #0b1020 40%);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 24px;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    backdrop-filter: blur(8px);
-    background: linear-gradient(180deg, #0d1533cc, #0d153300);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-bottom: 1px solid #0f1f4a;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 700;
-    letter-spacing: .2px;
-  }
-  .brand .dot {
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 0 0 0 4px #2b6fff33, 0 0 24px #2b6fff;
-  }
-
-  .btn {
-    appearance: none;
-    border: 0;
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-weight: 600;
-    color: white;
-    background: var(--primary);
-    cursor: pointer;
-    transition: transform .06s ease, filter .2s ease, background .2s ease;
-    box-shadow: var(--shadow);
-  }
-  .btn:hover { filter: brightness(1.05); }
-  .btn:active { transform: translateY(1px) scale(0.99); }
-  .btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--muted); box-shadow: none; }
-  .btn.danger { background: linear-gradient(180deg, var(--danger), #ff4242); }
-
-  main { display: grid; place-items: center; padding: 12px; }
-
-  .wrap { width: min(1050px, 94vw); display: grid; gap: 22px; }
-
-  .card {
-    background: linear-gradient(180deg, var(--panel), var(--panel-2));
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-
-  .profile {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 24px;
-    padding: 28px;
-  }
-
-  @media (max-width: 760px) {
-    .profile { grid-template-columns: 1fr; }
-  }
-
-  .avatar {
-    align-self: start;
-    display: grid;
-    gap: 12px;
-    justify-items: center;
-    background: linear-gradient(180deg, #0c1738, #0e1d49);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-  }
-
-  .avatar img {
-    width: 148px; height: 148px; border-radius: 50%; object-fit: cover;
-    border: 3px solid #2b6fff33; box-shadow: 0 0 24px #2b6fff44;
-  }
-
-  .badge { font-size: 12px; color: #a9b7ff; background: #213264; border: 1px solid #2a3e7a; padding: 4px 8px; border-radius: 999px; }
-
-  .details { display: grid; gap: 18px; }
-
-  .details h2 { margin: 0; font-size: 26px; }
-  .muted { color: var(--muted); }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px;
-  }
-
-  .kv {
-    background: #0e1a3f;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-
-  .kv label {
-    display: block;
-    font-size: 12px;
-    letter-spacing: .4px;
-    text-transform: uppercase;
-    color: #9db0ff;
-    margin-bottom: 6px;
-  }
-  .kv .value { font-size: 16px; }
-
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
-
-  .topActions { display:flex; gap:12px; align-items:center; margin-bottom:6px; }
-
-  .section-title {
-    font-weight: 700;
-    margin: 0;
-    padding: 16px 22px;
-    border-bottom: 1px solid var(--border);
-    background: #0d1533;
-  }
-
-  .security { padding: 16px 22px; display: grid; gap: 14px; }
-  .security .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    border: 1px solid var(--border);
-    background: #0e1a3f;
-    padding: 14px 16px;
-    border-radius: 12px;
-  }
-  .security .row small { color: var(--muted); }
-
-  footer { text-align: center; color: #8ea3ff; padding: 10px 0 24px; font-size: 13px; opacity: .9; }
-
-  /* Link styles with broad fallback */
-  a {
-    color: #2b6fff; /* fallback for older engines */
-    color: var(--primary);
-    text-decoration: underline; /* ensure underline exists */
-  }
-  /* Only apply if supported */
-  @supports (text-underline-offset: 3px) {
-    a { text-underline-offset: 3px; }
-  }
-</style>
+		document.getElementById("change-photo")?.addEventListener("click", () => {
+			window.location.href = "/settings/avatar";
+		});
+	</script>
+</BaseLayout>

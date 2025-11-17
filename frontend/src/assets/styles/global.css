@@ -1,0 +1,36 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Bootstrap already has styles applied to html and body. Only height is needed */
+html,
+body {
+	height: 100%;
+}
+
+body {
+	background-image: url("/site-bg.svg"); /* get image from public/site-bg.svg */
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+/* Custom global styling */
+.site-footer {
+	width: 100%;
+	text-align: center;
+}
+
+.flex-center-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.flex-column-center-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}

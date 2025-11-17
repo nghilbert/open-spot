@@ -11,17 +11,18 @@
     "start": "node ./frontend/server/entry.mjs"
   },
   "dependencies": {
-    "@openspot/shared": "*",
     "@astrojs/node": "^9.4.4",
     "@astrojs/react": "^4.4.0",
+    "@openspot/shared": "*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
     "astro": "^5.14.1",
+    "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.2.0",
-    "chart.js": "^4.5.0",
-    "chartjs-adapter-date-fns": "^3.0.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "http-proxy-middleware": "^3.0.5",

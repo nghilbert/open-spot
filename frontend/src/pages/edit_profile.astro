@@ -1,8 +1,7 @@
 ---
 import Card from "src/components/Card.astro";
-import Layout from "src/layouts/Layout.astro";
+import Layout from "src/layouts/BaseLayout.astro";
 import StatusLine from "src/components/StatusLine";
-import "../assets/colors.css";
 
 const title = "Open Spot — Edit Profile";
 ---
@@ -63,7 +62,25 @@ const title = "Open Spot — Edit Profile";
   </div>
 </Layout>
 
-<style>
+<style is:global>
+  :root{
+    --bg: #0b1020;
+    --panel: #111936;
+    --panel-2: #0e1530;
+    --text: #fff;
+    --muted: #dfe5f5;
+    --primary: #5aa2ff;
+    --primary-600: #4a8ae0;
+    --ring: rgba(90, 162, 255, 0.349);
+    --radius: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 10px 30px #00000073;
+    --border: rgba(255,255,255,.10);
+    --border-2: rgba(255,255,255,.18);
+    --field-bg: rgba(255,255,255,.06);
+    --field-border: rgba(255,255,255,.18);
+  }
+
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
   body{
@@ -129,11 +146,6 @@ const title = "Open Spot — Edit Profile";
   .btn:active{transform:translateY(1px)}
   .btn.primary{ background:linear-gradient(180deg,var(--primary),var(--primary-600)); color:#05122a; border-color:rgba(90,162,255,.6) }
   .btn.ghost{ background:transparent }
-
-  /* .status{padding:0 18px 14px 18px; display:none}
-  .status.show{display:block}
-  .status.ok{color:#bbf7d0}
-  .status.err{color:#fecaca} */
 
   @media (min-width: 720px){
     .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px }
