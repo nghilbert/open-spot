@@ -1,159 +1,60 @@
 ---
 import Card from "src/components/Card.astro";
-import Layout from "src/layouts/BaseLayout.astro";
+import NavBar from "../components/NavBar.astro";
+import BaseLayout from "src/layouts/BaseLayout.astro";
 import StatusLine from "src/components/StatusLine";
 
 const title = "Open Spot — Edit Profile";
 ---
 
-<Layout title={title}>
-  <div class="shell">
-    <div class="nav">
-      <div class="brand">
-        <img src="/favicon.svg" alt="Open Spot logo" />
-        <div class="title">{title}</div>
-      </div>
-      <div class="navBtns"></div>
-    </div>
-
+<BaseLayout title={title}>
+  <NavBar />
+  <main class="flex-center-content">
     <Card title="Profile">
       <form class="body" id="profileForm" autocomplete="on" novalidate>
-        <div class="grid-2">
-          <div class="field">
+        <div class="row">
+          <div class="col">
             <label class="label" for="name">Name</label>
-            <input id="name" name="name" class="input" type="text" placeholder="Full name" required />
+            <input id="name" name="name" class="form-control" type="text" placeholder="Full name" required />
           </div>
 
-          <div class="field">
+          <div class="col">
             <label class="label" for="username">Username</label>
-            <input id="username" name="username" class="input" type="text" placeholder="username" required />
+            <input id="username" name="username" class="form-control" type="text" placeholder="username" required />
           </div>
         </div>
 
-        <div class="grid-2">
-          <div class="field">
+        <div class="row mb-3">
+          <div class="col">
             <label class="label" for="type">Type</label>
-            <select id="type" name="type" class="select" required>
+            <select id="type" name="type" class="form-select" required>
               <option value="Driver">Driver</option>
               <option value="Cyclist">Cyclist</option>
             </select>
-            <div class="hint">Selecting <b>Driver</b> enables permit selection.</div>
+            <small class="text-muted">Selecting <b>Driver</b> enables permit selection.</small>
           </div>
-
+          
           <!-- Permit: only shown when Type = Driver -->
-          <div class="field hidden" id="permitField">
-            <label class="label" for="permit">Permit</label>
-            <select id="permit" name="permit" class="select" disabled>
-              <option value="Commuter">Commuter</option>
-              <option value="Faculty">Faculty/Staff</option>
-              <option value="All">All Parking Garage Zone</option>
-            </select>
-            <div class="hint">Drivers must have a parking permit.</div>
+          <div class="col" id="permitField">
+              <label class="label" for="permit">Permit</label>
+              <select id="permit" name="permit" class="form-select" disabled>
+                <option value="Commuter">Commuter</option>
+                <option value="Faculty">Faculty/Staff</option>
+                <option value="All">All Parking Garage Zone</option>
+              </select>
+              <small class="text-muted">Drivers must have a parking permit.</small>
           </div>
         </div>
 
         <StatusLine eventIdentifier="edit_status" client:load />
-        <div class="actions">
-          <a href="/dashboard" class="btn ghost" id="cancelBtn">Cancel</a>
-          <button type="submit" class="btn primary" id="saveBtn">Save Changes</button>
+        <div class="col">
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+          <button onclick="window.location.href='/dashboard'" class="btn btn-secondary" id="cancelBtn">Cancel</a>
         </div>
       </form>
     </Card>
-  </div>
-</Layout>
-
-<style is:global>
-  :root{
-    --bg: #0b1020;
-    --panel: #111936;
-    --panel-2: #0e1530;
-    --text: #fff;
-    --muted: #dfe5f5;
-    --primary: #5aa2ff;
-    --primary-600: #4a8ae0;
-    --ring: rgba(90, 162, 255, 0.349);
-    --radius: 16px;
-    --radius-sm: 12px;
-    --shadow: 0 10px 30px #00000073;
-    --border: rgba(255,255,255,.10);
-    --border-2: rgba(255,255,255,.18);
-    --field-bg: rgba(255,255,255,.06);
-    --field-border: rgba(255,255,255,.18);
-  }
-
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0}
-  body{
-    background: radial-gradient(1200px 800px at 10% -10%, #13214a 0%, var(--bg) 40%, #090e1d 100%);
-    color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  }
-  a{color:var(--primary); text-underline-offset:3px}
-  .shell{max-width:900px; margin:0 auto; padding:24px}
-
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .brand img{width:36px;height:36px;border-radius:10px;display:block;box-shadow:0 8px 20px rgba(90,162,255,.35)}
-  .brand .title{font-weight:750;letter-spacing:-.02em}
-
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--panel-2));
-    border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
-  }
-  .card .hdr{padding:16px 18px; border-bottom:1px solid var(--border-2); font-weight:800; letter-spacing:-.01em}
-  .card .body{padding:18px; display:grid; gap:14px}
-
-  .field{display:grid; gap:8px}
-  .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.12em}
-  .input, .select{
-    width:100%;
-    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-    color:var(--text);
-    border:1px solid rgba(255,255,255,.28);
-    border-radius:12px;
-    padding:12px 14px;
-    outline:none;
-  }
-
-  /* Custom styling for select dropdowns */
-  .select {
-    appearance: none;
-    padding-right: 36px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'><path fill='%23ffffff' d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-
-  /* Style the options in the dropdown */
-  .select option {
-    background-color: var(--panel);
-    color: var(--text);
-    padding: 8px;
-  }
-
-  .input:focus, .select:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 6px var(--ring);
-  }
-
-  .hint{font-size:12px; color:var(--muted)}
-
-  .actions{display:flex; gap:10px; justify-content:flex-end; padding:14px 18px; border-top:1px solid var(--border-2)}
-  .btn{
-    appearance:none; border:1px solid var(--border-2); background:rgba(255,255,255,.06);
-    color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
-    transition:transform .06s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn.primary{ background:linear-gradient(180deg,var(--primary),var(--primary-600)); color:#05122a; border-color:rgba(90,162,255,.6) }
-  .btn.ghost{ background:transparent }
-
-  @media (min-width: 720px){
-    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px }
-  }
-
-  /* visually disable hidden permit field area to avoid layout jump */
-  .hidden{ display:none }
-</style>
+  </main>
+</BaseLayout>
 
 <script>
   // Import types
