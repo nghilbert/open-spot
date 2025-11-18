@@ -8,190 +8,188 @@ const title = "Open Spot — Edit Profile";
 ---
 
 <BaseLayout title={title}>
-  <NavBar />
-  <main class="flex-center-content">
-    <Card title="Profile">
-      <form class="body" id="profileForm" autocomplete="on" novalidate>
-        <div class="row">
-          <div class="col">
-            <label class="label" for="name">Name</label>
-            <input id="name" name="name" class="form-control" type="text" placeholder="Full name" required />
-          </div>
+	<NavBar />
+	<main class="flex-center-content">
+		<Card title="Profile">
+			<form class="body" id="profileForm" autocomplete="on" novalidate>
+				<div class="row">
+					<div class="col">
+						<label class="label" for="name">Name</label>
+						<input id="name" name="name" class="form-control" type="text" placeholder="Full name" required />
+					</div>
 
-          <div class="col">
-            <label class="label" for="username">Username</label>
-            <input id="username" name="username" class="form-control" type="text" placeholder="username" required />
-          </div>
-        </div>
+					<div class="col">
+						<label class="label" for="username">Username</label>
+						<input id="username" name="username" class="form-control" type="text" placeholder="username" required />
+					</div>
+				</div>
 
-        <div class="row mb-3">
-          <div class="col">
-            <label class="label" for="type">Type</label>
-            <select id="type" name="type" class="form-select" required>
-              <option value="Driver">Driver</option>
-              <option value="Cyclist">Cyclist</option>
-            </select>
-            <small class="text-muted">Selecting <b>Driver</b> enables permit selection.</small>
-          </div>
-          
-          <!-- Permit: only shown when Type = Driver -->
-          <div class="col" id="permitField">
-              <label class="label" for="permit">Permit</label>
-              <select id="permit" name="permit" class="form-select" disabled>
-                <option value="Commuter">Commuter</option>
-                <option value="Faculty">Faculty/Staff</option>
-                <option value="All">All Parking Garage Zone</option>
-              </select>
-              <small class="text-muted">Drivers must have a parking permit.</small>
-          </div>
-        </div>
+				<div class="row mb-3">
+					<div class="col">
+						<label class="label" for="type">Type</label>
+						<select id="type" name="type" class="form-select" required>
+							<option value="Driver">Driver</option>
+							<option value="Cyclist">Cyclist</option>
+						</select>
+						<small class="text-muted">Selecting <b>Driver</b> enables permit selection.</small>
+					</div>
 
-        <StatusLine eventIdentifier="edit_status" client:load />
-        <div class="col">
-          <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
-          <button onclick="window.location.href='/dashboard'" class="btn btn-secondary" id="cancelBtn">Cancel</a>
-        </div>
-      </form>
-    </Card>
-  </main>
+					<!-- Permit: only shown when Type = Driver -->
+					<div class="col" id="permitField">
+						<label class="label" for="permit">Permit</label>
+						<select id="permit" name="permit" class="form-select" disabled>
+							<option value="Commuter">Commuter</option>
+							<option value="Faculty">Faculty/Staff</option>
+							<option value="All">All Parking Garage Zone</option>
+						</select>
+						<small class="text-muted">Drivers must have a parking permit.</small>
+					</div>
+				</div>
+
+				<StatusLine eventIdentifier="edit_status" client:load />
+				<div class="col">
+					<button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+					<button onclick="window.location.href='/dashboard'" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+				</div>
+			</form>
+		</Card>
+	</main>
 </BaseLayout>
 
 <script>
-  // Import types
-  import { StatusLineEvent } from "src/components/StatusLine";
+	// Import types
+	import { StatusLineEvent } from "src/components/StatusLine";
 
-  // Find all the elements within the page
-  const form = document.getElementById("profileForm") as HTMLFormElement;
-  const nameEl = document.getElementById("name") as HTMLInputElement;
-  const userEl = document.getElementById("username") as HTMLInputElement;
-  const typeEl = document.getElementById("type") as HTMLSelectElement;
-  const permitWrap = document.getElementById("permitField") as HTMLDivElement;
-  const permitEl = document.getElementById("permit") as HTMLSelectElement;
+	// Find all the elements within the page
+	const form = document.getElementById("profileForm") as HTMLFormElement;
+	const nameEl = document.getElementById("name") as HTMLInputElement;
+	const userEl = document.getElementById("username") as HTMLInputElement;
+	const typeEl = document.getElementById("type") as HTMLSelectElement;
+	const permitWrap = document.getElementById("permitField") as HTMLDivElement;
+	const permitEl = document.getElementById("permit") as HTMLSelectElement;
 
-  // Declare some helper functions
-  function showStatus(msg?: string, kind: "ok"|"err" = "ok"){
-    // Sets the status element and its message. Pass undefined to hide
-    const event = new StatusLineEvent("edit_status", {
-      detail: {
-        message: msg,
-        type: kind,
-        timeout: 2000
-      }
-    });
+	// Declare some helper functions
+	function showStatus(msg?: string, kind: "ok" | "err" = "ok") {
+		// Sets the status element and its message. Pass undefined to hide
+		const event = new StatusLineEvent("edit_status", {
+			detail: {
+				message: msg,
+				type: kind,
+				timeout: 2000,
+			},
+		});
 
-    window.dispatchEvent(event);
-  }
+		window.dispatchEvent(event);
+	}
 
-  function setPermitEnabled(enabled: boolean){
-    // Sets the permit option enabled or disabled. This is because cyclists should not be able to set a permit type
-    permitWrap.classList.toggle("hidden", !enabled);
-    permitEl.disabled = !enabled;
+	function setPermitEnabled(enabled: boolean) {
+		// Sets the permit option enabled or disabled. This is because cyclists should not be able to set a permit type
+		permitWrap.classList.toggle("hidden", !enabled);
+		permitEl.disabled = !enabled;
 
-    if(!enabled){
-      // Simple book keeping to keep the permit type empty if its a cyclist.
-      permitEl.value = '';
-    }
-  }
+		if (!enabled) {
+			// Simple book keeping to keep the permit type empty if its a cyclist.
+			permitEl.value = "";
+		}
+	}
 
-  async function loadProfile(){
-    // Runs the fetch to obtain profile data and populates it into the respective fields
-    try {
-      const res = await fetch("/api/user/profile", {
-        credentials: "include"
-      });
+	async function loadProfile() {
+		// Runs the fetch to obtain profile data and populates it into the respective fields
+		try {
+			const res = await fetch("/api/user/profile", {
+				credentials: "include",
+			});
 
-      if(!res.ok)
-        throw new Error(await res.text());
+			if (!res.ok) throw new Error(await res.text());
 
-      // Convert response body to json, as the backend payload sends a json
-      const p = await res.json(); // Expected: { name, username, type: 'Driver'|'Cyclist', permit?: string|null }
+			// Convert response body to json, as the backend payload sends a json
+			const p = await res.json(); // Expected: { name, username, type: 'Driver'|'Cyclist', permit?: string|null }
 
-      if(!p)
-        throw new Error("Invalid payload from server");
+			if (!p) throw new Error("Invalid payload from server");
 
-      // Populate fields if they exist
-      nameEl.value = p.name ?? "";
-      userEl.value = p.username ?? "";
-      typeEl.value = (p.userType === "CYCLIST") ? "Cyclist" : "Driver";
+			// Populate fields if they exist
+			nameEl.value = p.name ?? "";
+			userEl.value = p.username ?? "";
+			typeEl.value = p.userType === "CYCLIST" ? "Cyclist" : "Driver";
 
-      // Check if the permit section should be opened up
-      const isDriver = typeEl.value === "Driver";
-      setPermitEnabled(isDriver);
+			// Check if the permit section should be opened up
+			const isDriver = typeEl.value === "Driver";
+			setPermitEnabled(isDriver);
 
-      if(isDriver){
-        // Convert the permit payload type to a human readable value
-        if(p.permit == "COMMUTER"){
-          permitEl.value = "Commuter";
-        } else if(p.permit == "FACULTY"){
-          permitEl.value = "Faculty";
-        } else if(p.permit == "ALL"){
-          permitEl.value = "All";
-        }
-      }
-    } catch(err) {
-      // Error out
-      setPermitEnabled(typeEl.value === 'Driver'); // Default UI state
-      showStatus("Could not load profile.", "err");
-      console.error(err);
-    }
-  }
+			if (isDriver) {
+				// Convert the permit payload type to a human readable value
+				if (p.permit == "COMMUTER") {
+					permitEl.value = "Commuter";
+				} else if (p.permit == "FACULTY") {
+					permitEl.value = "Faculty";
+				} else if (p.permit == "ALL") {
+					permitEl.value = "All";
+				}
+			}
+		} catch (err) {
+			// Error out
+			setPermitEnabled(typeEl.value === "Driver"); // Default UI state
+			showStatus("Could not load profile.", "err");
+			console.error(err);
+		}
+	}
 
-  // Populate event listeners
-  typeEl.addEventListener("change", () => {
-    // This function keeps the permit enabled dependant on the type of driver/cyclist
-    const isDriver = typeEl.value === "Driver";
-    setPermitEnabled(isDriver);
+	// Populate event listeners
+	typeEl.addEventListener("change", () => {
+		// This function keeps the permit enabled dependant on the type of driver/cyclist
+		const isDriver = typeEl.value === "Driver";
+		setPermitEnabled(isDriver);
 
-    if(isDriver && !permitEl.value){
-      // Default to Commuter if none selected
-      permitEl.value = "Commuter";
-    }
-  });
+		if (isDriver && !permitEl.value) {
+			// Default to Commuter if none selected
+			permitEl.value = "Commuter";
+		}
+	});
 
-  form.addEventListener("submit", async (event) => {
-    // Save profile when the form is submitted
-    event.preventDefault(); // Stop the form from trying to redirect
-    const isDriver = typeEl.value === "Driver";
-    
-    // Basic client validation
-    if(!nameEl.value.trim() || !userEl.value.trim()){
-      showStatus("Name and username are required.", "err");
-      return;
-    }
-    
-    if(isDriver && !permitEl.value){
-      showStatus("Please select a permit for Driver type.", "err");
-      return;
-    }
-    
-    // Construct a payload to send to the server
-    const payload = {
-      name: nameEl.value.trim(),
-      username: userEl.value.trim(),
-      type: typeEl.value,
-      permit: isDriver ? permitEl.value : null
-    };
+	form.addEventListener("submit", async (event) => {
+		// Save profile when the form is submitted
+		event.preventDefault(); // Stop the form from trying to redirect
+		const isDriver = typeEl.value === "Driver";
 
-    // Attempt sending the payload to the server to update the user
-    try {
-      const res = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+		// Basic client validation
+		if (!nameEl.value.trim() || !userEl.value.trim()) {
+			showStatus("Name and username are required.", "err");
+			return;
+		}
 
-      if(!res.ok){
-        // Error out if the result was not okay
-        const msg = await res.text();
-        throw new Error(msg || "Failed to save");
-      }
+		if (isDriver && !permitEl.value) {
+			showStatus("Please select a permit for Driver type.", "err");
+			return;
+		}
 
-      showStatus("Profile updated successfully!", "ok");
-    } catch(err) {
-      showStatus(`Save failed: ${err}`, "err");
-    }
-  });
+		// Construct a payload to send to the server
+		const payload = {
+			name: nameEl.value.trim(),
+			username: userEl.value.trim(),
+			type: typeEl.value,
+			permit: isDriver ? permitEl.value : null,
+		};
 
-  // Kick off initial load
-  loadProfile();
+		// Attempt sending the payload to the server to update the user
+		try {
+			const res = await fetch("/api/user/profile", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+
+			if (!res.ok) {
+				// Error out if the result was not okay
+				const msg = await res.text();
+				throw new Error(msg || "Failed to save");
+			}
+
+			showStatus("Profile updated successfully!", "ok");
+		} catch (err) {
+			showStatus(`Save failed: ${err}`, "err");
+		}
+	});
+
+	// Kick off initial load
+	loadProfile();
 </script>
