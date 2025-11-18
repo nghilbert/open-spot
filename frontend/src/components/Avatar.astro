@@ -7,10 +7,10 @@ interface Props {
 const { avatarUrl, role } = Astro.props;
 ---
 
-<div class="avatar">
+<div class="avatar p-3 gap-2 border rounded">
 	<img src={avatarUrl} />
-	<span class="badge" title="Account status">{role}</span>
-	<div class="gap-2 flex-column-center-content">
+	<span title="Account status">{role}</span>
+	<div class="gap-2 row flex-column-center-content">
 		<button class="btn btn-primary" type="button" id="change-photo">Change photo</button>
 		<button class="btn btn-primary" type="button" id="edit-profile">Edit profile</button>
 	</div>
@@ -20,12 +20,7 @@ const { avatarUrl, role } = Astro.props;
 	.avatar {
 		align-self: center;
 		display: grid;
-		gap: 12px;
 		justify-items: center;
-		background: linear-gradient(180deg, #0c1738, #0e1d49);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 20px;
 	}
 	.avatar img {
 		width: 148px;

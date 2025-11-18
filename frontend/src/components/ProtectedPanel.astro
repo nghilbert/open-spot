@@ -3,19 +3,15 @@ interface Props {
 	passwordChangedAgo: string;
 	emailNote: string;
 };
+import Card from "./Card.astro"
 
 const { passwordChangedAgo, emailNote } = Astro.props;
 ---
 
-<section class="card" aria-labelledby="security-heading">
-	<h3 class="section-title" id="security-heading">Security</h3>
-	<div class="security">
-		<div class="row">
-			<div>
-				<strong>Password</strong>
-				<div><small>Last changed: {passwordChangedAgo}</small></div>
-			</div>
-			<button class="btn btn-primary" type="button" id="change-password">Change</button>
-		</div>
+<Card title="Security">
+	<div class="row border rounded gap-2 p-2 m-1">
+		<strong>Password</strong>
+		<small>Last changed: {passwordChangedAgo}</small>
+		<button class="btn btn-primary" type="button" id="change-password">Change</button>
 	</div>
-</section>
+</Card>
