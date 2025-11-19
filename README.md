@@ -1,8 +1,16 @@
 # Open Spot
 
 - [MVC Diagram](#mvc-diagram)
-- [Project Overview](#project-overview)
+- [Layered Architecture Interaction Overview](#layered-architecture-interaction-overview)
+    - [Presentation Layer -> Business Layer](#presentation-layer---business-layer)
+    - [Business Layer -> Data Layer](#presentation-layer---business-layer)
+    - [Data Layer (Foundational)](#data-layer-foundational)
 - [Getting Started](#getting-started)
+
+
+### Project Overview
+
+Open Spot aims to streamline the process of finding open parking and bike spots for Illinois State University students. Users can create accounts, log in, manage profiles, and save favorite spots for quick access. The project is in its early stages, and we welcome contributions to help build a robust and user-friendly application.
 
 ## MVC Diagram
 
@@ -10,7 +18,7 @@
 
 The diagram above shows the Model-View-Controller architecture for our project.
 
-# Layered Architecture Interaction Overview
+## Layered Architecture Interaction Overview
 
 This architecture consists of three layers:
 
@@ -21,13 +29,13 @@ This architecture consists of three layers:
 ---
 
 
-## Presentation Layer → Business Layer
+### Presentation Layer -> Business Layer
 
-### How It Talks
+#### How It Talks
 - UI components (e.g., Login, Dashboard, Edit Profile) trigger controllers in the Business Layer.
 - Communication happens via user actions like form submissions, button clicks, or page loads.
 
-### Why It Depends
+#### Why It Depends
 - Presentation Layer does **not handle logic** like authentication or session management.
 - It relies on Business Layer for:
   - Authenticating users (`LoginController`)
@@ -35,7 +43,7 @@ This architecture consists of three layers:
   - Managing sessions (`LogoutController`)
   - Fetching data (`ParkingLotController`, `RackController`)
 
-### Components:
+#### Components:
 - Index (Login/Create) Page -> Start
 - Onboarding Page
 - Edit Profile Page
@@ -44,7 +52,7 @@ This architecture consists of three layers:
 - Reset Password Page
 - Admin Page
 
-### Dependencies:
+#### Dependencies:
 - `Index` → `Onboarding`, `Reset Password`
   - After login/create, users may be routed to onboarding or password recovery.
 - `Onboarding` → `Dashboard`, `Index`
@@ -61,13 +69,13 @@ This architecture consists of three layers:
 ---
 
 
-## Business Layer → Data Layer
+### Business Layer -> Data Layer
 
-### How It Talks
+#### How It Talks
 - Controllers invoke data access objects or services to query/update persistent data.
 - Example: `LoginController` might call `Verify`, `Password`, and `Session`.
 
-### Why It Depends
+#### Why It Depends
 - Business Layer needs the Data Layer to:
   - Validate credentials (`Verify`, `Password`)
   - Store/retrieve user data (`User`, `Session`, `Location`)
@@ -76,7 +84,7 @@ This architecture consists of three layers:
   - Resolve addresses (`Address`)
 
 
-### Controllers:
+#### Controllers:
 - CreateAccountController
 - LoginController
 - EmailController
@@ -85,7 +93,7 @@ This architecture consists of three layers:
 - ParkingLotController
 - RackController
 
-### Dependencies:
+#### Dependencies:
 - `CreateAccountController` → `EmailController`, `AccountController`
   - Sends verification email and creates user record.
 - `LoginController` → `AccountController`, `LogoutController`
@@ -102,18 +110,18 @@ This architecture consists of three layers:
 ---
 
 
-## Data Layer (Foundational)
+### Data Layer (Foundational)
 
-### How It Talks
+#### How It Talks
 - It **does not initiate communication**.
 - It only responds to requests from the Business Layer.
 
-### Why It’s Independent
+#### Why It’s Independent
 - It’s the **source of truth** for all persistent data.
 - Designed to be reusable and agnostic of business logic or UI concerns.
 
 ---
-### Entities:
+#### Entities:
 - Verify
 - User
 - Password
@@ -123,7 +131,7 @@ This architecture consists of three layers:
 - Address
 - OAuth
 
-### Dependencies:
+#### Dependencies:
 - `Verify` → `User`, `Password`
   - Verifies identity using stored credentials.
 - `Password` → `ResetToken`
@@ -134,12 +142,6 @@ This architecture consists of three layers:
   - Location data includes address resolution.
 - `OAuth` → `User`, `Session`
   - OAuth flows create sessions and link to users.
-
-
-
-## Project Overview
-
-Open Spot aims to streamline the process of finding open parking and bike spots for Illinois State University students. Users can create accounts, log in, manage profiles, and save favorite spots for quick access. The project is in its early stages, and we welcome contributions to help build a robust and user-friendly application.
 
 
 ## Getting Started
