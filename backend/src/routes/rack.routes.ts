@@ -10,7 +10,7 @@ export default function createRackRoutes() {
 		const { address, spotCapacity, name } = req.body;
 
 		// Attempt to create a parking lot object
-		if (await bikeRackController.addRack(address, spotCapacity, name)) {
+		if (await bikeRackController.addLocation(address, spotCapacity, name)) {
 			// Successful creation
 			res.status(200).json({ success: true });
 		} else {
