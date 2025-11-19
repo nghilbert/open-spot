@@ -1,3 +1,7 @@
+## MVC Diagram:
+
+![MVC Diagram](./readme-images/MVC-diagram.png)
+
 # Open Spot
 
 Open Spot is an application designed to help students at Illinois State University locate available parking and bike spots on campus. This project is in active development, and this README provides an overview for users and developers contributing to the app.
@@ -13,64 +17,6 @@ Open Spot is an application designed to help students at Illinois State Universi
 ## Project Overview
 
 Open Spot aims to streamline the process of finding open parking and bike spots for Illinois State University students. Users can create accounts, log in, manage profiles, and save favorite spots for quick access. The project is in its early stages, and we welcome contributions to help build a robust and user-friendly application.
-
-## Features in Development
-
-The following features are currently being implemented:
-
-- **Create Account**: Register with a valid email and password.
-- **Log In**: Authenticate users using email and password.
-- **Log Out**: Securely end user sessions.
-- **Manage User Profile**: View and update user profile information.
-
-## Class Structure
-
-### Interface: `AccountManager`
-
-Defines core account management functionality.
-
-Abstract Class: Account
-Implements AccountManager and serves as the base class for user accounts.
-
-Class: User
-Extends Account to represent a user with additional functionality, such as managing favorite spots.
-
-```typescript
-interface AccountManager {
-	createAccount(email: String, password: String): boolean;
-	emailExists(email: String): boolean;
-	login(email: String, password: String): Account;
-	logout(): boolean;
-}
-
-abstract class Account implements AccountManager {
-	private email: String = "";
-	private memberName: String = "";
-	private password: String = "";
-	private validEmail: boolean = false;
-
-	public createAccount(email: String, password: String): boolean {
-		throw new Error("Method not implemented.");
-	}
-
-	public emailExists(email: String): boolean {
-		throw new Error("Method not implemented.");
-	}
-
-	public login(email: String, password: String): Account {
-		throw new Error("Method not implemented.");
-	}
-
-	public logout(): boolean {
-		throw new Error("Method not implemented.");
-	}
-}
-
-type Spot = number;
-class User extends Account {
-	private favorite: Spot[] = [];
-}
-```
 
 ## Getting Started
 
@@ -121,5 +67,3 @@ Push your branch to origin (git push origin feature/your-feature-name).
 Submit a pull request with a detailed description of your changes.
 
 Please follow the existing code style and include comments for clarity. For major changes, open an issue first to discuss your ideas.
-
-![MVC Diagram](./readme-images/MVC-diagram.png)
