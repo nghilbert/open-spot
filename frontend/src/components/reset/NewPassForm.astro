@@ -1,15 +1,14 @@
 ---
+import Card from "../Card.astro"
 ---
-<div>
-    <form id="reset-form">
-        <input type="password" id="password" name="password" placeholder="Password" required>
-        <div class="line-break" />
-        <input type="password" id="confirm" name="confirm" placeholder="Confirm password" required><br>
-    
-        <button type="submit">Submit</button>
+<Card title="Select a new password">
+    <form id="reset-form" class="d-grid gap-3">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        <input type="password" class="form-control" id="confirm" name="confirm" placeholder="Confirm password" required>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-    <p id="error"></p>
-</div>
+    <small id="error"></small>
+</Card>
 
 <script>
     // Get token
@@ -57,75 +56,3 @@
         });
       }
 </script>
-
-<style>
-  #reset-form {
-    padding: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .line-break {
-    width: 100%;
-    padding-top: 5px;
-  }
-
-  input {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.02)
-    );
-    flex-grow: 1;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    color: var(--text);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    outline: none;
-    transition:
-      box-shadow 0.12s ease,
-      border-color 0.12s ease,
-      background 0.12s ease;
-  }
-
-  #reset-form button {
-    width: 100%;
-    margin-top: 10px;
-    appearance: none;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text);
-    padding: 12px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 650;
-    transition:
-      transform 60ms ease,
-      filter 120ms ease,
-      background 120ms ease,
-      box-shadow 120ms ease,
-      border-color 120ms ease;
-  }
-  #reset-form button:active {
-    transform: translateY(1px);
-  }
-  #reset-form button.primary {
-    background: linear-gradient(
-      180deg,
-      var(--primary) 0%,
-      var(--primary-600) 100%
-    );
-    border-color: rgba(90, 162, 255, 0.6);
-    color: #05122a;
-    box-shadow:
-      0 10px 20px rgba(90, 162, 255, 0.25),
-      inset 0 0 8px rgba(255, 255, 255, 0.25);
-  }
-  #reset-form button.primary:disabled {
-    filter: grayscale(0.7);
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-</style>
