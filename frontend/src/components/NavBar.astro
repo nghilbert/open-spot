@@ -25,24 +25,19 @@ const { title, buttonList } = Astro.props;
 		</div>
 	</div>
 	<div class="navBtns d-flex gap-2">
-	{buttonList &&
-  buttonList.map((button: ButtonLink) =>
-    button.type === "submit" ? (
-      <button
-        type="submit"
-        form={button.form}
-        class={button.class}
-      >
-        {button.label}
-      </button>
-    ) : (
-      <a href={button.href} class={button.class}>
-        {button.label}
-      </a>
-    )
-  )
-}
-
-
+		{
+			buttonList &&
+				buttonList.map((button: ButtonLink) =>
+					button.type === "submit" ? (
+						<button type="submit" form={button.form} class={button.class}>
+							{button.label}
+						</button>
+					) : (
+						<a href={button.href} class={button.class}>
+							{button.label}
+						</a>
+					)
+				)
+		}
 	</div>
 </header>
