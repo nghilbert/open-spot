@@ -1,39 +1,40 @@
 ---
-import Card from "../Card.astro"
+import Card from "../Card.astro";
 ---
+
 <Card title="Enter your email for a password reset link">
-  <form id="email-form">
-    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required /><br />
-    <button type="submit" class="btn btn-primary">Reset password</button>
-  </form>
-  <small id="feedback" class="text-muted"></small>
+	<form id="email-form">
+		<input type="email" class="form-control" id="email" name="email" placeholder="Email" required /><br />
+		<button type="submit" class="btn btn-primary">Reset password</button>
+	</form>
+	<small id="feedback" class="text-muted"></small>
 </Card>
 
 <script>
-  // Add event listener for the form
-  const form = document.getElementById("email-form") as HTMLFormElement;
-  const feedback = document.getElementById("feedback") as HTMLParagraphElement;
+	// Add event listener for the form
+	const form = document.getElementById("email-form") as HTMLFormElement;
+	const feedback = document.getElementById("feedback") as HTMLParagraphElement;
 
-  if (form) {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+	if (form) {
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
 
-      const formData = new FormData(form);
-      const jsonData = Object.fromEntries(formData.entries());
-      const response = await fetch(`/api/user/reset/${jsonData.email}`, {
-        method: "GET",
-        credentials: "include",
-      });
+			const formData = new FormData(form);
+			const jsonData = Object.fromEntries(formData.entries());
+			const response = await fetch(`/api/user/reset/${jsonData.email}`, {
+				method: "GET",
+				credentials: "include",
+			});
 
-      if (response.ok) {
-        console.log("Password reset sent");
-        feedback.innerHTML = "Password reset link sent to email!";
-        form.style.display = "none";
-      } else {
-        // Handle errors
-        console.error("Form submission failed:", response.statusText);
-        feedback.innerHTML = "Email does not exist!";
-      }
-    });
-  }
+			if (response.ok) {
+				console.log("Password reset sent");
+				feedback.innerHTML = "Password reset link sent to email!";
+				form.style.display = "none";
+			} else {
+				// Handle errors
+				console.error("Form submission failed:", response.statusText);
+				feedback.innerHTML = "Email does not exist!";
+			}
+		});
+	}
 </script>
