@@ -1,7 +1,5 @@
 # Open Spot
 
-## Table of Contents
-
 - [MVC Diagram](#mvc-diagram)
 - [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
@@ -11,6 +9,16 @@
 
 ![MVC Diagram](./readme-images/MVC-diagram.png)
 
+The diagram above shows the Model-View-Controller architecture for our project.
+
+1. Presentation Layer (View)
+
+   - Index is the launch page
+
+2. Business Layer (Controller)
+
+3. Data layer (Data Layer)
+
 ## Project Overview
 
 Open Spot aims to streamline the process of finding open parking and bike spots for Illinois State University students. Users can create accounts, log in, manage profiles, and save favorite spots for quick access. The project is in its early stages, and we welcome contributions to help build a robust and user-friendly application.
@@ -19,10 +27,13 @@ Open Spot aims to streamline the process of finding open parking and bike spots 
 
 ### Connecting to github:
 
-in terminal,
-#Generate a new SSH key pair using:
+In a terminal, generate a new SSH key pair using:
+
+```bash
 ssh-keygen -t ed25519 -C "your_email@example.com"
-Press Enter to save the key in the default location
+```
+
+Then, press Enter to save the key in the default location.
 Optionally, enter a strong passphrase when prompted for added security.
 
 ### Copy the Public SSH Key:
@@ -43,11 +54,12 @@ Optionally, enter a strong passphrase when prompted for added security.
 
 ### Set Up the Environment:
 
-- Install git by following this guide: https://github.com/git-guides/install-git
-- Install Node.js here: https://nodejs.org/en/download
+- Install Git: https://github.com/git-guides/install-git
+- Install Node.js: https://nodejs.org/en/download
 - Install Visual Studio Code: https://code.visualstudio.com/download
-- inside VS Code Extensions install Git Graph, GitLens Inspect, and Prisma.
 
 ### Clone the Repository:
 
+```bash
 git clone https://github.com/nghilbert/open-spot
+```
