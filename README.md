@@ -2,8 +2,8 @@
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
 - [MVC Diagram](#mvc-diagram)
+- [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 
@@ -51,14 +51,3 @@ Optionally, enter a strong passphrase when prompted for added security.
 ### Clone the Repository:
 
 git clone https://github.com/nghilbert/open-spot
-
-## Contributing
-
-To contribute:
-
-Create a feature or bug-fix branch (git checkout -b feature/your-feature-name).
-Commit changes with clear, concise messages. (git commit -m "update you are making.")
-Push your branch to origin (git push origin feature/your-feature-name).
-Submit a pull request with a detailed description of your changes.
-
-Please follow the existing code style and include comments for clarity. For major changes, open an issue first to discuss your ideas.
