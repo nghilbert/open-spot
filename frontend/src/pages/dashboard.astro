@@ -16,251 +16,221 @@ const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
 
 //redirects user before the page load to the login page if they are not logged in
 if (!res.ok) {
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "/",
-    },
-  });
+	return new Response(null, {
+		status: 302,
+		headers: {
+			Location: "/",
+		},
+	});
 }
 const user = await res.json();
 
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
 //the list of buttons to be given to the header
-const buttonList = [
-  { label: "Profile", href: "/profile", class: "btn btn-outline-light", onclick: "" },
-];
+const buttonList = [{ label: "Profile", href: "/profile", class: "btn btn-outline-light" }];
 //if the user is an Admin the will see the admin dashboard button
-if (user.role === "ADMIN"){
-buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light", onclick: "" });
+if (user.role === "ADMIN") {
+	buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light" });
 }
 //Temp list for the lots, needs to be remove once pulling from database
 const lots = [
-  {
-    id: 1,
-    name: "South Garage",
-    address: "123 Oak St",
-    kind: "Parking",
-    permitRequired: "Commuter",
-    availability: { used: 11, total: 50 },
-  },
-  {
-    id: 2,
-    name: "Library Deck",
-    address: "45 Campus Way",
-    kind: "Parking",
-    permitRequired: "All Parking Garage Zone",
-    availability: { used: 50, total: 50 },
-  },
-  {
-    id: 3,
-    name: "Rec Center Racks",
-    address: "200 Fitness Dr",
-    kind: "Bike",
-    permitRequired: null,
-    availability: { used: 12, total: 60 },
-  },
-  {
-    id: 4,
-    name: "North Lot",
-    address: "800 Maple Ave",
-    kind: "Parking",
-    permitRequired: "Faculty/Staff",
-    availability: { used: 22, total: 40 },
-  },
-  {
-    id: 5,
-    name: "Arts Quad Racks",
-    address: "10 Studio Ln",
-    kind: "Bike",
-    permitRequired: null,
-    availability: { used: 2, total: 40 },
-  },
+	{
+		id: 1,
+		name: "South Garage",
+		address: "123 Oak St",
+		kind: "Parking",
+		permitRequired: "Commuter",
+		availability: { used: 11, total: 50 },
+	},
+	{
+		id: 2,
+		name: "Library Deck",
+		address: "45 Campus Way",
+		kind: "Parking",
+		permitRequired: "All Parking Garage Zone",
+		availability: { used: 50, total: 50 },
+	},
+	{
+		id: 3,
+		name: "Rec Center Racks",
+		address: "200 Fitness Dr",
+		kind: "Bike",
+		permitRequired: null,
+		availability: { used: 12, total: 60 },
+	},
+	{
+		id: 4,
+		name: "North Lot",
+		address: "800 Maple Ave",
+		kind: "Parking",
+		permitRequired: "Faculty/Staff",
+		availability: { used: 22, total: 40 },
+	},
+	{
+		id: 5,
+		name: "Arts Quad Racks",
+		address: "10 Studio Ln",
+		kind: "Bike",
+		permitRequired: null,
+		availability: { used: 2, total: 40 },
+	},
 ];
 //Available Filter options
 const availOptions = [
-  { label: "All", value: "" },
-  { label: "Available Spots", value: "available" },
-  { label: "Full", value: "full" },
+	{ label: "All", value: "" },
+	{ label: "Available Spots", value: "available" },
+	{ label: "Full", value: "full" },
 ];
 //Type Filter options
 const typeOptions = [
-  { label: "Any", value: "" },
-  { label: "Parking", value: "Parking" },
-  { label: "Bike Rack", value: "Bike" },
+	{ label: "Any", value: "" },
+	{ label: "Parking", value: "Parking" },
+	{ label: "Bike Rack", value: "Bike" },
 ];
 //Permit Filter options
 const permitOptions = [
-  { label: "Any", value: "" },
-  { label: "None", value: "None" },
-  { label: "Commuter", value: "Commuter" },
-  { label: "Faculty/Staff", value: "Faculty/Staff" },
-  { label: "All Parking Garage Zone", value: "All Parking Garage Zone" },
+	{ label: "Any", value: "" },
+	{ label: "None", value: "None" },
+	{ label: "Commuter", value: "Commuter" },
+	{ label: "Faculty/Staff", value: "Faculty/Staff" },
+	{ label: "All Parking Garage Zone", value: "All Parking Garage Zone" },
 ];
 
-const clamp = (n: number, a: number, b: number): number =>
-  Math.max(a, Math.min(b, n));
-const pct = (used: number, total: number): number =>
-  total > 0 ? clamp(Math.round((used / total) * 100), 0, 100) : 0;
-const occ = (p: number): "green" | "yellow" | "red" =>
-  p >= 100 ? "red" : p >= 50 ? "yellow" : "green";
-const permitLabel = (
-  kind: "Parking" | "Bike",
-  permit: string | null
-): string => (kind === "Parking" ? permit || "—" : "None");
+const clamp = (n: number, a: number, b: number): number => Math.max(a, Math.min(b, n));
+const pct = (used: number, total: number): number => (total > 0 ? clamp(Math.round((used / total) * 100), 0, 100) : 0);
+const occ = (p: number): "green" | "yellow" | "red" => (p >= 100 ? "red" : p >= 50 ? "yellow" : "green");
+const permitLabel = (kind: "Parking" | "Bike", permit: string | null): string =>
+	kind === "Parking" ? permit || "—" : "None";
 
 const occStyles = {
-  green: { bg: "#11341e", br: "#2fb36a", fg: "#eafff1" },
-  yellow: { bg: "#3b2a0e", br: "#f5a623", fg: "#fff4cf" },
-  red: { bg: "#3a1515", br: "#f06464", fg: "#ffe3e3" },
+	green: { bg: "#11341e", br: "#2fb36a", fg: "#eafff1" },
+	yellow: { bg: "#3b2a0e", br: "#f5a623", fg: "#fff4cf" },
+	red: { bg: "#3a1515", br: "#f06464", fg: "#ffe3e3" },
 };
 ---
 
 <BaseLayout title={`Open Spot — ${title}`}>
-  <div class="container py-4">
-    <NavBar title={title} buttonList={buttonList} />
+	<div class="container py-4">
+		<NavBar title={title} buttonList={buttonList} />
 
-    <!-- Filters -->
-    <section
-      class="card shadow-lg rounded-4 border"
-      style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
-    >
-      <div class="p-3 d-grid gap-3">
-        <Filter
-          searchLabel="Search"
-          availOptions={availOptions}
-          typeOptions={typeOptions}
-          permitOptions={permitOptions}
-          onSubmit="#"
-        />
-        <ColorScore />
-      </div>
-    </section>
+		<!-- Filters -->
+		<section
+			class="card shadow-lg rounded-4 border"
+			style="background:linear-gradient(180deg,#111936,#0e1530); border-color:rgba(255,255,255,.10);"
+		>
+			<div class="p-3 d-grid gap-3">
+				<Filter
+					searchLabel="Search"
+					availOptions={availOptions}
+					typeOptions={typeOptions}
+					permitOptions={permitOptions}
+					onSubmit="#"
+				/>
+				<ColorScore />
+			</div>
+		</section>
 
-    <!-- List -->
-    <section class="d-grid gap-4 mt-4" id="list">
-      {
-        lots.map((lot) => {
-          const used = Number(lot.availability?.used ?? 0);
-          const total = Number(lot.availability?.total ?? 0);
-          const p = pct(used, total);
-          const state = occ(p);
-          const style = occStyles[state];
-          const occText = total > 0 ? `${used}/${total} spots full` : "—";
-          const typeText = lot.kind === "Parking" ? "Parking" : "Bike Rack";
-          const permitTxt = lot.kind === "Parking" ? lot.permitRequired: "None";
-          const isAvailable = total > used ? "true" : "false";
+		<!-- List -->
+		<section class="d-grid gap-4 mt-4" id="list">
+			{
+				lots.map((lot) => {
+					const used = Number(lot.availability?.used ?? 0);
+					const total = Number(lot.availability?.total ?? 0);
+					const p = pct(used, total);
+					const state = occ(p);
+					const style = occStyles[state];
+					const occText = total > 0 ? `${used}/${total} spots full` : "—";
+					const typeText = lot.kind === "Parking" ? "Parking" : "Bike Rack";
+					const permitTxt = lot.kind === "Parking" ? lot.permitRequired : "None";
+					const isAvailable = total > used ? "true" : "false";
 
-          return (
-            <article
-              class="card p-3 rounded-4 border lotCard"
-              data-name={lot.name}
-              data-address={lot.address}
-              data-kind={lot.kind}
-              data-permit={permitTxt}
-              data-available={isAvailable}
-              style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
-            >
-              <div class="d-grid gap-3" style="grid-template-columns:1fr auto;">
-                <div class="d-grid gap-1">
-                  <div class="fw-bold lh-sm">{lot.name}</div>
-                  <div class="small text-opacity-75">{lot.address}</div>
-                  <div class="d-flex flex-wrap gap-2">
-                    <span
-                      class="badge rounded-pill border"
-                      style="background:rgba(255,255,255,.08);"
-                    >
-                      {typeText}
-                    </span>
-                    <span
-                      class="badge rounded-pill border"
-                      style="background:rgba(255,255,255,.08);"
-                    >
-                      Permit: {permitTxt}
-                    </span>
-                    <span
-                      class="badge rounded-pill border"
-                      style="background:rgba(255,255,255,.08);"
-                    >
-                      {occText}
-                    </span>
-                  </div>
-                </div>
-                <div class="text-end">
-                  <div
-                    class="fw-bold fs-5 px-3 py-2 rounded-pill border"
-                    style="background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.28);"
-                  >
-                    {p}%
-                  </div>
-                </div>
-              </div>
-              <div
-                class="progress rounded-pill bg-dark-subtle mt-3"
-                style="height:8px;"
-              >
-                <div
-                  class="progress-bar"
-                  role="progressbar"
-                  style={`width:${p}%; background:rgba(255,255,255,.92);`}
-                />
-              </div>
-            </article>
-          );
-        })
-      }
-    </section>
+					return (
+						<article
+							class="card p-3 rounded-4 border lotCard"
+							data-name={lot.name}
+							data-address={lot.address}
+							data-kind={lot.kind}
+							data-permit={permitTxt}
+							data-available={isAvailable}
+							style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
+						>
+							<div class="d-grid gap-3" style="grid-template-columns:1fr auto;">
+								<div class="d-grid gap-1">
+									<div class="fw-bold lh-sm">{lot.name}</div>
+									<div class="small text-opacity-75">{lot.address}</div>
+									<div class="d-flex flex-wrap gap-2">
+										<span class="badge rounded-pill border" style="background:rgba(255,255,255,.08);">
+											{typeText}
+										</span>
+										<span class="badge rounded-pill border" style="background:rgba(255,255,255,.08);">
+											Permit: {permitTxt}
+										</span>
+										<span class="badge rounded-pill border" style="background:rgba(255,255,255,.08);">
+											{occText}
+										</span>
+									</div>
+								</div>
+								<div class="text-end">
+									<div
+										class="fw-bold fs-5 px-3 py-2 rounded-pill border"
+										style="background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.28);"
+									>
+										{p}%
+									</div>
+								</div>
+							</div>
+							<div class="progress rounded-pill bg-dark-subtle mt-3" style="height:8px;">
+								<div class="progress-bar" role="progressbar" style={`width:${p}%; background:rgba(255,255,255,.92);`} />
+							</div>
+						</article>
+					);
+				})
+			}
+		</section>
 
-    <div class="text-center py-4 text-muted" id="empty" style="display:none">
-      No locations match your filters.
-    </div>
-  </div>
+		<div class="text-center py-4 text-muted" id="empty" style="display:none">No locations match your filters.</div>
+	</div>
 
-  <script>
-    $(function () {
-      function applyFilters() {
-        const q = ($("#search").val() ?? "").toString().toLowerCase().trim();
-        const avail = $("#avail").val();
-        const type = $("#type").val();
-        const permit = ($("#permit").val() ?? "").toString().toLowerCase();
+	<script>
+		$(function () {
+			function applyFilters() {
+				const q = ($("#search").val() ?? "").toString().toLowerCase().trim();
+				const avail = $("#avail").val();
+				const type = $("#type").val();
+				const permit = ($("#permit").val() ?? "").toString().toLowerCase();
 
-        let visible = 0;
+				let visible = 0;
 
-        $(".lotCard").each(function () {
-          const $card = $(this);
-          const name = ($card.data("name") || "").toLowerCase();
-          const address = ($card.data("address") || "").toLowerCase();
-          const kind = $card.data("kind");
-          const cardPermit = ($card.data("permit") || "").toLowerCase();
-          const isAvailable =
-            $card.data("available") === true ||
-            $card.data("available") === "true";
+				$(".lotCard").each(function () {
+					const $card = $(this);
+					const name = ($card.data("name") || "").toLowerCase();
+					const address = ($card.data("address") || "").toLowerCase();
+					const kind = $card.data("kind");
+					const cardPermit = ($card.data("permit") || "").toLowerCase();
+					const isAvailable = $card.data("available") === true || $card.data("available") === "true";
 
-          const matchText = !q || name.includes(q) || address.includes(q);
-          const matchType = !type || kind === type;
-          const matchPermit = !permit || cardPermit === permit;
-          const matchAvail =
-            !avail ||
-            (avail === "available" && isAvailable) ||
-            (avail === "full" && !isAvailable);
+					const matchText = !q || name.includes(q) || address.includes(q);
+					const matchType = !type || kind === type;
+					const matchPermit = !permit || cardPermit === permit;
+					const matchAvail = !avail || (avail === "available" && isAvailable) || (avail === "full" && !isAvailable);
 
-          const show = matchText && matchType && matchPermit && matchAvail;
-          $card.toggle(show);
-          if (show) visible++;
-        });
+					const show = matchText && matchType && matchPermit && matchAvail;
+					$card.toggle(show);
+					if (show) visible++;
+				});
 
-        $("#empty").toggle(visible === 0);
-      }
+				$("#empty").toggle(visible === 0);
+			}
 
-      $("#search, #avail, #type, #permit").on("input change", applyFilters);
-      $("#resetFilters").on("click", function (e) {
-        e.preventDefault();
-        $("#search, #avail, #type, #permit").val("");
-        applyFilters();
-      });
+			$("#search, #avail, #type, #permit").on("input change", applyFilters);
+			$("#resetFilters").on("click", function (e) {
+				e.preventDefault();
+				$("#search, #avail, #type, #permit").val("");
+				applyFilters();
+			});
 
-      applyFilters();
-    });
-  </script>
+			applyFilters();
+		});
+	</script>
 </BaseLayout>

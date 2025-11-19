@@ -18,12 +18,12 @@ const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
 
 //redirects user before the page load to the login page if they are not logged in
 if (!res.ok) {
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "/",
-    },
-  });
+	return new Response(null, {
+		status: 302,
+		headers: {
+			Location: "/",
+		},
+	});
 }
 
 const user = await res.json();
@@ -31,16 +31,14 @@ const user = await res.json();
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Profile";
 //the list of buttons to be given to the header
-const buttonList = [
-  {label: "Logout", class: "btn btn-danger", type: "submit", form: "LogoutForm"}
-];
+const buttonList = [{ label: "Logout", class: "btn btn-danger", type: "submit", form: "LogoutForm" }];
 ---
 
-<BaseLayout title= {`Open Spot — ${title}`}>
+<BaseLayout title={`Open Spot — ${title}`}>
 	<form id="LogoutForm" aria-label="Log out">
 		<NavBar title={title} buttonList={buttonList} />
 	</form>
-	
+
 	<main class="flex-center-content mt-5">
 		<div class="wrap">
 			<section class="card profile" aria-labelledby="profile-heading">
