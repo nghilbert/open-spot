@@ -5,6 +5,7 @@ import LogoutHeader from "../components/logoutHeader.astro";
 import Avatar from "../components/Avatar.astro";
 import ProfileDetails from "../components/ProfileDetails.astro";
 import ProtectedPanel from "../components/ProtectedPanel.astro";
+import NavBar from "src/components/NavBar.astro";
 
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
@@ -15,22 +16,33 @@ const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
 	},
 });
 
+//redirects user before the page load to the login page if they are not logged in
 if (!res.ok) {
-	throw new Error("HTTP ");
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: "/",
+    },
+  });
 }
 
 const user = await res.json();
+
+// Title of the page, to be shown on the internet tab and at the top of the page
+const title = "Profile";
+//the list of buttons to be given to the header
+const buttonList = [
+  {label: "Logout", class: "btn btn-danger", type: "submit", form: "LogoutForm"}
+];
 ---
 
-<BaseLayout title="Account">
-	<LogoutHeader />
+<BaseLayout title= {`Open Spot — ${title}`}>
+	<form id="LogoutForm" aria-label="Log out">
+		<NavBar title={title} buttonList={buttonList} />
+	</form>
+	
 	<main class="flex-center-content mt-5">
 		<div class="wrap">
-			<div class="topActions">
-				<button onclick="window.location.href='/dashboard'" class="btn btn-outline-light" id="backBtn">
-					Back to dashboard
-				</button>
-			</div>
 			<section class="card profile" aria-labelledby="profile-heading">
 				<Avatar avatarUrl={user.avatarUrl} role={user.role} />
 				<ProfileDetails {...user} />
@@ -42,7 +54,7 @@ const user = await res.json();
 
 	<script>
 		// Handle logout with fetch (comment out e.preventDefault() to use native form POST instead)
-		const form = document.getElementById("logout-form");
+		const form = document.getElementById("LogoutForm");
 
 		if (form) {
 			form.addEventListener("submit", async (e) => {

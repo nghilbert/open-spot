@@ -29,11 +29,11 @@ const user = await res.json();
 const title = "Dashboard";
 //the list of buttons to be given to the header
 const buttonList = [
-  { label: "Profile", href: "/profile", class: "btn btn-outline-light" },
+  { label: "Profile", href: "/profile", class: "btn btn-outline-light", onclick: "" },
 ];
 //if the user is an Admin the will see the admin dashboard button
 if (user.role === "ADMIN"){
-buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light" });
+buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light", onclick: "" });
 }
 //Temp list for the lots, needs to be remove once pulling from database
 const lots = [
