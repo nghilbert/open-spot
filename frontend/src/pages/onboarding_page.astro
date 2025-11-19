@@ -7,162 +7,178 @@ const title = "Finish setting up your profile";
 ---
 
 <BaseLayout title={title}>
-  <NavBar/>
-  <main class="flex-center-content">
-    <Card title="Onboarding">       
-        <form id="onboardingForm" class="d-grid gap-3" novalidate>
-          <!-- Username -->
-          <div class="p-2 border rounded form-group">
-            <label for="username" class="form-label">Username</label>
-            <input id="username" name="username" class="form-control" type="text" placeholder="Choose a username" required />
-            <small class="text-muted">This will be your public username (no spaces).</small>
-          </div>
+	<NavBar />
+	<main class="flex-center-content">
+		<Card title="Onboarding">
+			<form id="onboardingForm" class="d-grid gap-3" novalidate>
+				<!-- Username -->
+				<div class="p-2 border rounded form-group">
+					<label for="username" class="form-label">Username</label>
+					<input
+						id="username"
+						name="username"
+						class="form-control"
+						type="text"
+						placeholder="Choose a username"
+						required
+					/>
+					<small class="text-muted">This will be your public username (no spaces).</small>
+				</div>
 
-          <!-- Account Type -->
-          <div class="p-2 border rounded form-group">
-            <label id="acctTypeLabel" class="form-label d-block mb-2">Account Type</label>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-labelledby="acctTypeLabel">
-              <input type="radio" class="btn-check" name="accountType" id="accountTypeDriver" value="Driver" checked/>
-              <label class="btn btn-outline-secondary btn-sm" for="accountTypeDriver">Driver</label>
+				<!-- Account Type -->
+				<div class="p-2 border rounded form-group">
+					<label id="acctTypeLabel" class="form-label d-block mb-2">Account Type</label>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-labelledby="acctTypeLabel">
+						<input type="radio" class="btn-check" name="accountType" id="accountTypeDriver" value="Driver" checked />
+						<label class="btn btn-outline-secondary btn-sm" for="accountTypeDriver">Driver</label>
 
-              <input type="radio" class="btn-check" name="accountType" id="accountTypeCyclist" value="Cyclist" autocomplete="off"/>
-              <label class="btn btn-outline-secondary btn-sm" for="accountTypeCyclist">Cyclist</label>
-            </div>
-          </div>
+						<input
+							type="radio"
+							class="btn-check"
+							name="accountType"
+							id="accountTypeCyclist"
+							value="Cyclist"
+							autocomplete="off"
+						/>
+						<label class="btn btn-outline-secondary btn-sm" for="accountTypeCyclist">Cyclist</label>
+					</div>
+				</div>
 
-          <!-- Parking permit (only for Drivers) -->
-          <div id="permitGroup" class="border p-2 rounded form-group">
-            <label for="permit" class="form-label">Parking Permit</label>
-            <select id="permit" name="permit" class="form-select" required>
-              <option value="" disabled selected>Select your permit…</option>
-              <option value="Commuter">Commuter</option>
-              <option value="Faculty/Staff">Faculty/Staff</option>
-              <option value="All Parking Garage Zone">All Parking Garage Zone</option>
-            </select>
-            <small class="text-muted">Required for Drivers. Not needed for Cyclists.</small>
-          </div>
+				<!-- Parking permit (only for Drivers) -->
+				<div id="permitGroup" class="border p-2 rounded form-group">
+					<label for="permit" class="form-label">Parking Permit</label>
+					<select id="permit" name="permit" class="form-select" required>
+						<option value="" disabled selected>Select your permit…</option>
+						<option value="Commuter">Commuter</option>
+						<option value="Faculty/Staff">Faculty/Staff</option>
+						<option value="All Parking Garage Zone">All Parking Garage Zone</option>
+					</select>
+					<small class="text-muted">Required for Drivers. Not needed for Cyclists.</small>
+				</div>
 
-          <div id="msg" class="status" aria-live="polite"></div>
-            <button type="button" class="btn btn-outline-secondary" id="SkipForNow">Skip for now</button>
-            <button type="submit" class="btn btn-primary" id="submitBtn">Save & Continue</button>
-          
-        </form>
-      </div>
-      <div id="toast" class="toast" role="status" aria-live="polite">Profile saved. You’re all set!</div>
-    </Card>
-  </main>
+				<div id="msg" class="status" aria-live="polite"></div>
+				<button type="button" class="btn btn-outline-secondary" id="SkipForNow">Skip for now</button>
+				<button type="submit" class="btn btn-primary" id="submitBtn">Save & Continue</button>
+			</form>
+		</Card>
+		<div id="toast" class="toast" role="status" aria-live="polite">Profile saved. You’re all set!</div>
+	</main>
 </BaseLayout>
 
-    <script type="module">
-      const form = document.getElementById('onboardingForm');
-      const permitGroup = document.getElementById('permitGroup');
-      const permitSelect = document.getElementById('permit');
-      const usernameEl = document.getElementById('username');
-      const msg = document.getElementById('msg');
-      const toast = document.getElementById('toast');
-      const submitBtn = document.getElementById('submitBtn');
+<script type="module">
+	const form = document.getElementById("onboardingForm");
+	const permitGroup = document.getElementById("permitGroup");
+	const permitSelect = document.getElementById("permit");
+	const usernameEl = document.getElementById("username");
+	const msg = document.getElementById("msg");
+	const toast = document.getElementById("toast");
+	const submitBtn = document.getElementById("submitBtn");
 
-      function setAccountType() {
-        const selected = document.querySelector('input[name="accountType"]:checked');
-        if (!selected) return;
-        const value = selected.value;
+	function setAccountType() {
+		const selected = document.querySelector('input[name="accountType"]:checked');
+		if (!selected) return;
+		const value = selected.value;
 
-        const isDriver = value === 'Driver';
-        permitGroup.classList.toggle('hidden', !isDriver);
-        permitSelect.required = isDriver;
-        if (!isDriver) permitSelect.value = '';
-        msg.textContent = isDriver
-          ? 'Drivers must select a parking permit.'
-          : 'Cyclists don’t need a parking permit.';
-      }
+		const isDriver = value === "Driver";
+		permitGroup.classList.toggle("hidden", !isDriver);
+		permitSelect.required = isDriver;
+		if (!isDriver) permitSelect.value = "";
+		msg.textContent = isDriver ? "Drivers must select a parking permit." : "Cyclists don’t need a parking permit.";
+	}
 
-      document.querySelectorAll('input[name="accountType"]').forEach(radio => {
-        radio.addEventListener('change', setAccountType);
-      });
+	document.querySelectorAll('input[name="accountType"]').forEach((radio) => {
+		radio.addEventListener("change", setAccountType);
+	});
 
-      function validate() {
-        msg.textContent = '';
-        const problems = [];
-        const acct = accountTypeHidden.value;
-        if (!usernameEl || !usernameEl.value.trim() || /\s/.test(usernameEl.value)) problems.push('Please choose a username (no spaces).');
-        if (acct === 'Driver' && !permitSelect.value) problems.push('Please choose a parking permit.');
-        if (problems.length) { msg.textContent = problems.join(' '); return false; }
-        return true;
-      }
+	function validate() {
+		msg.textContent = "";
+		const problems = [];
+		const acct = accountTypeHidden.value;
+		if (!usernameEl || !usernameEl.value.trim() || /\s/.test(usernameEl.value))
+			problems.push("Please choose a username (no spaces).");
+		if (acct === "Driver" && !permitSelect.value) problems.push("Please choose a parking permit.");
+		if (problems.length) {
+			msg.textContent = problems.join(" ");
+			return false;
+		}
+		return true;
+	}
 
-      // Form submit (normal save)
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!validate()) return;
-        submitBtn.disabled = true;
+	// Form submit (normal save)
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		if (!validate()) return;
+		submitBtn.disabled = true;
 
-        const payload = {
-          accountType: accountTypeHidden.value,
-          permit: accountTypeHidden.value === 'Driver' ? permitSelect.value : null,
-          username: usernameEl ? usernameEl.value.trim() : null,
-        };
+		const payload = {
+			accountType: accountTypeHidden.value,
+			permit: accountTypeHidden.value === "Driver" ? permitSelect.value : null,
+			username: usernameEl ? usernameEl.value.trim() : null,
+		};
 
-        try {
-          const res = await fetch('/api/onboarding', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-            },
-            body: JSON.stringify({ action: 'save_onboarding', ...payload }),
-            credentials: "include"
-          });
-          if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
+		try {
+			const res = await fetch("/api/onboarding", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+				},
+				body: JSON.stringify({ action: "save_onboarding", ...payload }),
+				credentials: "include",
+			});
+			if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
 
-          toast.classList.add('show');
-          msg.textContent = 'Saved! Redirecting…';
-          setTimeout(() => { window.location.href = '/dashboard'; }, 900);
-        } catch (err) {
-          console.error(err);
-          msg.textContent = 'Something went wrong saving your profile. Please try again.';
-        } finally {
-          submitBtn.disabled = false;
-        }
-      });
+			toast.classList.add("show");
+			msg.textContent = "Saved! Redirecting…";
+			setTimeout(() => {
+				window.location.href = "/dashboard";
+			}, 900);
+		} catch (err) {
+			console.error(err);
+			msg.textContent = "Something went wrong saving your profile. Please try again.";
+		} finally {
+			submitBtn.disabled = false;
+		}
+	});
 
-      // Skip-for-now POST
-      document.getElementById('SkipForNow').addEventListener('click', async () => {
-        const endpoint = '/api/onboarding';
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              action: 'skip_onboarding',
-              timestamp: new Date().toISOString()
-            }),
-            credentials: "include"
-          });
+	// Skip-for-now POST
+	document.getElementById("SkipForNow").addEventListener("click", async () => {
+		const endpoint = "/api/onboarding";
+		try {
+			const res = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					action: "skip_onboarding",
+					timestamp: new Date().toISOString(),
+				}),
+				credentials: "include",
+			});
 
-          if (!res.ok) {
-            const text = await res.text().catch(() => '');
-            throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
-          }
+			if (!res.ok) {
+				const text = await res.text().catch(() => "");
+				throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
+			}
 
-          if (toast) {
-            toast.textContent = 'Preference saved. Redirecting…';
-            toast.classList.add('show');
-          }
-          window.location.href = '/';
-        } catch (err) {
-          console.error(err);
-          if (msg) msg.textContent = 'Couldn’t save your preference. Please try again.';
-        }
-      });
+			if (toast) {
+				toast.textContent = "Preference saved. Redirecting…";
+				toast.classList.add("show");
+			}
+			window.location.href = "/";
+		} catch (err) {
+			console.error(err);
+			if (msg) msg.textContent = "Couldn’t save your preference. Please try again.";
+		}
+	});
 
-      document.querySelector('.seg')?.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          const current = accountTypeHidden.value;
-          setAccountType(current === 'Driver' ? 'Cyclist' : 'Driver');
-        }
-      });
-    </script>
+	document.querySelector(".seg")?.addEventListener("keydown", (e) => {
+		if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+			e.preventDefault();
+			const current = accountTypeHidden.value;
+			setAccountType(current === "Driver" ? "Cyclist" : "Driver");
+		}
+	});
+</script>
