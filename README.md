@@ -1,8 +1,10 @@
-## MVC Diagram:
+# Open Spot
+
+## MVC Diagram
 
 ![MVC Diagram](./readme-images/MVC-diagram.png)
 
-# Open Spot
+## About our project
 
 Open Spot is an application designed to help students at Illinois State University locate available parking and bike spots on campus. This project is in active development, and this README provides an overview for users and developers contributing to the app.
 
