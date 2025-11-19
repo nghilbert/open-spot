@@ -40,7 +40,7 @@ This architecture consists of three layers:
 - It relies on Business Layer for:
   - Authenticating users (`LoginController`)
   - Creating accounts (`CreateAccountController`)
-  - Managing sessions (`LogoutController`)
+  - Managing sessions (`AccountController`,`LogoutController`)
   - Fetching data (`ParkingLotController`, `RackController`)
 
 #### Components:
