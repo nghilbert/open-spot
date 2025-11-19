@@ -120,7 +120,6 @@ This architecture consists of three layers:
 - It’s the **source of truth** for all persistent data.
 - Designed to be reusable and agnostic of business logic or UI concerns.
 
----
 #### Entities:
 - Verify
 - User
@@ -142,6 +141,7 @@ This architecture consists of three layers:
   - Location data includes address resolution.
 - `OAuth` → `User`, `Session`
   - OAuth flows create sessions and link to users.
+---
 
 
 ## Getting Started
