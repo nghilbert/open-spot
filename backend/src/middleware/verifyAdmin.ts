@@ -1,15 +1,11 @@
-import { prismaClient } from "../prismaClient";
 import { Request, Response, NextFunction } from "express";
+import { AuthenticatedRequest } from "../types/authenticatedRequest";
 
+// This middleware must always be chained after requestAuth
 export async function verifyAdmin(req: Request, res: Response, next: NextFunction) {
-	const sessionToken = req.body.sessionToken;
+	const user = (req as unknown as AuthenticatedRequest).user;
 
-	const session = await prismaClient.session.findUnique({
-		where: { sessionToken: sessionToken },
-		include: { user: true },
-	});
-
-	if (!session?.user || session.user.role !== "ADMIN") {
+	if (!user || user.role !== "ADMIN") {
 		return res.status(403).json({ error: "Forbidden" });
 	}
 
