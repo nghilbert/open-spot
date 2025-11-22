@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
-import { verifyAdmin } from "../middleware/verifyAdmin";
+import { requireAuth, verifyAdmin } from "../middleware";
 import { parkingLotController } from "../controllers";
 
 export default function createLotRoutes() {
 	const router = Router();
 
-	router.post("/add", verifyAdmin, async (req: Request, res: Response) => {
+	router.post("/add", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		// Extract values from request body
 		const { address, spotCapacity, name } = req.body;
 
