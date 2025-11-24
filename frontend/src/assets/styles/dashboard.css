@@ -20,3 +20,11 @@ select.form-select option {
   background-color: #1e293b;
   color: #f8fafc;
 }
+
+/* Navigation icon on lot cards */
+.navIcon{
+  display:inline-grid;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);color:inherit;text-decoration:none
+}
+.navIcon svg{width:18px;height:18px;display:block}
+.navIcon:hover{filter:brightness(1.08);transform:translateY(-1px)}
