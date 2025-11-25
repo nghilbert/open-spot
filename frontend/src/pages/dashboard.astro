@@ -171,13 +171,32 @@ const occStyles = {
 										</span>
 									</div>
 								</div>
-								<div class="text-end">
+								<div class="text-end d-grid gap-2" style="align-items: start;">
 									<div
 										class="fw-bold fs-5 px-3 py-2 rounded-pill border"
 										style="background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.28);"
 									>
 										{p}%
 									</div>
+									{user.role === "ADMIN" && (
+										<button
+											class="editBtn"
+											data-lot-id={lot.id}
+											data-lot-name={lot.name}
+											data-lot-address={lot.address}
+											data-lot-kind={lot.kind}
+											data-lot-permit={lot.permitRequired || "None"}
+											data-lot-used={Number(lot.availability?.used ?? 0)}
+											data-lot-total={Number(lot.availability?.total ?? 0)}
+											title="Edit location"
+											aria-label="Edit location"
+										>
+											<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+												<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="currentColor" />
+												<path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor" />
+											</svg>
+										</button>
+									)}
 								</div>
 							</div>
 							<div class="progress rounded-pill bg-dark-subtle mt-3" style="height:8px;">
@@ -192,7 +211,130 @@ const occStyles = {
 		<div class="text-center py-4 text-muted" id="empty" style="display:none">No locations match your filters.</div>
 	</div>
 
+	<!-- Edit Modal -->
+	<div id="editModal" class="editModal">
+		<div class="editModal-content">
+			<div class="editModal-header">
+				<h2>Edit Location</h2>
+				<button class="editModal-close" aria-label="Close modal">&times;</button>
+			</div>
+			<form id="editForm">
+				<div class="editModal-body">
+					<div class="editModal-field">
+						<label for="modalName">Location Name</label>
+						<input type="text" id="modalName" name="name" required />
+					</div>
+					<div class="editModal-field">
+						<label for="modalAddress">Address</label>
+						<input type="text" id="modalAddress" name="address" required />
+					</div>
+					<div class="editModal-field">
+						<label for="modalKind">Type</label>
+						<select id="modalKind" name="kind" required>
+							<option value="Parking">Parking</option>
+							<option value="Bike">Bike Rack</option>
+						</select>
+					</div>
+					<div class="editModal-field">
+						<label for="modalPermit">Permit Required</label>
+						<select id="modalPermit" name="permit">
+							<option value="None">None</option>
+							<option value="Commuter">Commuter</option>
+							<option value="Faculty/Staff">Faculty/Staff</option>
+							<option value="All Parking Garage Zone">All Parking Garage Zone</option>
+						</select>
+					</div>
+					<div class="editModal-field">
+						<label for="modalUsed">Spots Used</label>
+						<input type="number" id="modalUsed" name="used" min="0" required />
+					</div>
+					<div class="editModal-field">
+						<label for="modalTotal">Total Spots</label>
+						<input type="number" id="modalTotal" name="total" min="0" required />
+					</div>
+				</div>
+				<div class="editModal-footer">
+					<button type="button" class="editModal-btn" id="modalCancel">Cancel</button>
+					<button type="submit" class="editModal-btn primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
 	<script>
+		// Edit modal functionality
+		const editModal = document.getElementById('editModal');
+		const editForm = document.getElementById('editForm');
+		const modalCloseBtn = document.querySelector('.editModal-close');
+		const modalCancelBtn = document.getElementById('modalCancel');
+		let currentLotId = null;
+
+		function openEditModal(btn) {
+			currentLotId = btn.dataset.lotId;
+			document.getElementById('modalName').value = btn.dataset.lotName || '';
+			document.getElementById('modalAddress').value = btn.dataset.lotAddress || '';
+			document.getElementById('modalKind').value = btn.dataset.lotKind || 'Parking';
+			document.getElementById('modalPermit').value = btn.dataset.lotPermit || 'None';
+			document.getElementById('modalUsed').value = btn.dataset.lotUsed || 0;
+			document.getElementById('modalTotal').value = btn.dataset.lotTotal || 0;
+			editModal.classList.add('show');
+		}
+
+		function closeEditModal() {
+			editModal.classList.remove('show');
+			currentLotId = null;
+		}
+
+		// Event listeners for modal
+		document.querySelectorAll('.editBtn').forEach(btn => {
+			btn.addEventListener('click', () => openEditModal(btn));
+		});
+
+		modalCloseBtn.addEventListener('click', closeEditModal);
+		modalCancelBtn.addEventListener('click', closeEditModal);
+
+		// Close modal when clicking outside
+		editModal.addEventListener('click', (e) => {
+			if (e.target === editModal) closeEditModal();
+		});
+
+		// Handle form submission
+		editForm.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const formData = new FormData(editForm);
+			const data = Object.fromEntries(formData);
+			
+			try {
+				const res = await fetch(`/api/locations/${currentLotId}`, {
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						name: data.name,
+						address: data.address,
+						kind: data.kind,
+						permitRequired: data.permit !== 'None' ? data.permit : null,
+						availability: {
+							used: parseInt(data.used),
+							total: parseInt(data.total)
+						}
+					}),
+					credentials: 'include'
+				});
+				if (res.ok) {
+					alert('Location updated successfully!');
+					closeEditModal();
+					location.reload();
+				} else {
+					alert('Error updating location. Please try again.');
+				}
+			} catch (err) {
+				console.error(err);
+				alert('An error occurred while updating the location.');
+			}
+		});
+
 		$(function () {
 			function applyFilters() {
 				const q = ($("#search").val() ?? "").toString().toLowerCase().trim();
