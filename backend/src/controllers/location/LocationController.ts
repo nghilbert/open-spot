@@ -1,7 +1,5 @@
 import { prismaClient } from "../../prismaClient";
-import { Address } from "@openspot/shared";
-
-export type LocationType = "BIKE_RACK" | "PARKING_LOT";
+import { Address, LocationType } from "@openspot/shared";
 
 export abstract class LocationController {
 	protected abstract type: LocationType;
