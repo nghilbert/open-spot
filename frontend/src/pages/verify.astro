@@ -1,4 +1,6 @@
 ---
+import BaseLayout from "src/layouts/BaseLayout.astro";
+
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 
@@ -23,34 +25,28 @@ if (tokenQuery) {
 }
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<title>Verify Email</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-		<style></style>
-	</head>
-	<body>
-		<div class="wrap">
-			<div class="header">
-				<img src="/favicon.svg" alt="Open Spot logo" class="logo" />
-				<div class="h1">Verifying your email...</div>
-				<div class="sub">
-					{!validToken ? "Invalid verification token." : emailVerified ? "Success!" : "Email failed to verify."}
-				</div>
-			</div>
+<BaseLayout title="Verify Email">
+	<main class="flex-center-content container min-vh-100">
+		<div class="border rounded p-4 bg-body text-center w-50">
+			<img src="/favicon.svg" alt="Open Spot logo" class="img-fluid w-25" />
+			{
+				emailVerified ? (
+					<p class="text-success">Success! Your email was verified. Redirecting...</p>
+				) : (
+					<p class="text-danger">Email verification failed.</p>
+				)
+			}
 		</div>
-	</body>
-</html>
+	</main>
+</BaseLayout>
 
 <script define:vars={{ emailVerified }}>
 	// This is inline implicitly because of define:vars
 	// as such, no typescript.
 	if (emailVerified) {
-		// If the email is verified, redirect after 5 seconds
+		// If the email is verified, redirect after 3 seconds
 		setTimeout(() => {
 			window.location.href = "/dashboard";
-		}, 1000 * 5);
+		}, 3000);
 	}
 </script>
