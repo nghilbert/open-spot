@@ -3,6 +3,7 @@ import { LoginController } from "./account/LoginController";
 import { CreateAccountController } from "./account/CreateAccountController";
 import { LogoutController } from "./account/LogoutController";
 import { EmailController } from "./account/EmailController";
+import { LocationController } from "./location/LocationController";
 import { ParkingLotController } from "./location/ParkingLotController";
 import { BikeRackController } from "./location/BikeRackController";
 
@@ -10,6 +11,7 @@ export const accountController = new AccountController();
 export const loginController = new LoginController();
 export const createAccountController = new CreateAccountController();
 export const logoutController = new LogoutController();
+export const locationController = new LocationController();
 export const parkingLotController = new ParkingLotController();
 export const bikeRackController = new BikeRackController();
 export const emailController = new EmailController();

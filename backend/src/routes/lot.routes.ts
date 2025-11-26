@@ -10,7 +10,7 @@ export default function createLotRoutes() {
 		const { address, spotCapacity, name } = req.body;
 
 		// Attempt to create a parking lot object
-		if (await parkingLotController.addLocation(address, spotCapacity, name)) {
+		if (await parkingLotController.add(address, spotCapacity, name)) {
 			// Successful creation
 			res.status(200).json({ success: true });
 		} else {
