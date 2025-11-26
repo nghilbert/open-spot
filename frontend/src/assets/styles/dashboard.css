@@ -1,26 +1,3 @@
-.form-control,
-.form-select {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(255, 255, 255, 0.02)
-  );
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #fff;
-}
-
-/* Force light text and dark background for select and options */
-select.form-select {
-  background-color: #1e293b; /* dark blue-gray */
-  color: #f8fafc; /* light text */
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-select.form-select option {
-  background-color: #1e293b;
-  color: #f8fafc;
-}
-
 /* Navigation icon on lot cards */
 .navIcon{
   display:inline-grid;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;
