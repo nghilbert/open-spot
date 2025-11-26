@@ -1,12 +1,10 @@
 import { prismaClient } from "../../prismaClient";
-import { Address } from "@openspot/shared";
+import { Location, Address, LocationType } from "@openspot/shared";
 
-export type LocationType = "BIKE_RACK" | "PARKING_LOT";
+export class LocationController {
+	protected type: LocationType = "NONE";
 
-export abstract class LocationController {
-	protected abstract type: LocationType;
-
-	async addLocation(address: Address, spotCapacity: number, name?: string): Promise<boolean> {
+	async add(address: Address, spotCapacity: number, name?: string): Promise<boolean> {
 		// Validate arguments
 		if (!address || !Number.isInteger(spotCapacity) || spotCapacity <= 0) {
 			return false;
@@ -29,5 +27,17 @@ export abstract class LocationController {
 		}
 
 		return true;
+	}
+
+	async getAll(): Promise<Location[] | null> {
+		try {
+			const locations = await prismaClient.location.findMany({
+				include: { address: true },
+			});
+			return locations;
+		} catch (error) {
+			console.error("Failed to get locations: ", error);
+			return null;
+		}
 	}
 }
