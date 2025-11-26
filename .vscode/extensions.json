@@ -1,8 +1,9 @@
 {
-    "recommendations": [
-        "dbaeumer.vscode-eslint",
-        "github.vscode-github-actions",
-        "xabikos.javascriptsnippets",
-        "astro-build.astro-vscode"
-    ]
+	"recommendations": [
+		"astro-build.astro-vscode"
+		"Prisma.prisma",
+		"mhutchie.git-graph",
+		"eamodio.gitlens",
+		"esbenp.prettier-vscode",
+	]
 }
