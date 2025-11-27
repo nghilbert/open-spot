@@ -3,12 +3,13 @@ import BaseLayout from "src/layouts/BaseLayout.astro";
 import NavBar from "../components/NavBar.astro";
 import Filter from "../components/FilterComponent.astro";
 import ColorScore from "../components/ColorScore.astro";
+import type { Location } from "@openspot/shared";
 import "../assets/styles/dashboard.css";
 
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 //request user session and makes sure it is vaild and active
-const res = await fetch(`${Astro.url.origin}/api/user/profile`, {
+var res = await fetch(`${Astro.url.origin}/api/user/profile`, {
 	headers: {
 		Cookie: `session=${Astro.cookies.get("session")?.value}`,
 	},
@@ -25,6 +26,20 @@ if (!res.ok) {
 }
 const user = await res.json();
 
+res = await fetch(`${Astro.url.origin}/api/location/getAll`, {
+	headers: {
+		Cookie: `session=${Astro.cookies.get("session")?.value}`,
+	},
+});
+
+var lots = await res.json(); 
+
+if (!res.ok) {
+	lots = [];
+}
+
+
+
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
 //the list of buttons to be given to the header
@@ -33,49 +48,7 @@ const buttonList = [{ label: "Profile", href: "/profile", class: "btn btn-outlin
 if (user.role === "ADMIN") {
 	buttonList.push({ label: "Admin", href: "/admin", class: "btn btn-outline-light" });
 }
-//Temp list for the lots, needs to be remove once pulling from database
-const lots = [
-	{
-		id: 1,
-		name: "South Garage",
-		address: "123 Oak St",
-		kind: "Parking",
-		permitRequired: "Commuter",
-		availability: { used: 11, total: 50 },
-	},
-	{
-		id: 2,
-		name: "Library Deck",
-		address: "45 Campus Way",
-		kind: "Parking",
-		permitRequired: "All Parking Garage Zone",
-		availability: { used: 50, total: 50 },
-	},
-	{
-		id: 3,
-		name: "Rec Center Racks",
-		address: "200 Fitness Dr",
-		kind: "Bike",
-		permitRequired: null,
-		availability: { used: 12, total: 60 },
-	},
-	{
-		id: 4,
-		name: "North Lot",
-		address: "800 Maple Ave",
-		kind: "Parking",
-		permitRequired: "Faculty/Staff",
-		availability: { used: 22, total: 40 },
-	},
-	{
-		id: 5,
-		name: "Arts Quad Racks",
-		address: "10 Studio Ln",
-		kind: "Bike",
-		permitRequired: null,
-		availability: { used: 2, total: 40 },
-	},
-];
+
 //Available Filter options
 const availOptions = [
 	{ label: "All", value: "" },
@@ -85,16 +58,16 @@ const availOptions = [
 //Type Filter options
 const typeOptions = [
 	{ label: "Any", value: "" },
-	{ label: "Parking", value: "Parking" },
-	{ label: "Bike Rack", value: "Bike" },
+	{ label: "Parking", value: "PARKING_LOT" },
+	{ label: "Bike Rack", value: "BIKE_RACK" },
 ];
 //Permit Filter options
 const permitOptions = [
 	{ label: "Any", value: "" },
-	{ label: "None", value: "None" },
-	{ label: "Commuter", value: "Commuter" },
-	{ label: "Faculty/Staff", value: "Faculty/Staff" },
-	{ label: "All Parking Garage Zone", value: "All Parking Garage Zone" },
+	{ label: "None", value: "NONE" },
+	{ label: "Commuter", value: "COMMUTER" },
+	{ label: "Employee", value: "EMPLOYEE" },
+	{ label: "Garage Zone", value: "GARAGE" },
 ];
 
 const clamp = (n: number, a: number, b: number): number => Math.max(a, Math.min(b, n));
@@ -134,23 +107,23 @@ const occStyles = {
 		<!-- List -->
 		<section class="d-grid gap-4 mt-4" id="list">
 			{
-				lots.map((lot) => {
-					const used = Number(lot.availability?.used ?? 0);
-					const total = Number(lot.availability?.total ?? 0);
+				lots.map((lot: Location) => {
+					const used = lot.spotCapacity - lot.spotAvailability;
+					const total = lot.spotCapacity;
 					const p = pct(used, total);
 					const state = occ(p);
 					const style = occStyles[state];
 					const occText = total > 0 ? `${used}/${total} spots full` : "—";
-					const typeText = lot.kind === "Parking" ? "Parking" : "Bike Rack";
-					const permitTxt = lot.kind === "Parking" ? lot.permitRequired : "None";
+					const typeText = lot.type === "PARKING_LOT" ? "Parking Lot" : lot.type === "BIKE_RACK" ? "Bike Rack" : "None";
+					const permitTxt = lot.permit;
 					const isAvailable = total > used ? "true" : "false";
-
+					const addressString = lot.address.number + " " + lot.address.street + " " + lot.address.city + ", " + lot.address.state + " " + lot.address.zip;
 					return (
 						<article
 							class="card p-3 rounded-4 border lotCard"
 							data-name={lot.name}
-							data-address={lot.address}
-							data-kind={lot.kind}
+							data-address={addressString}
+							data-kind={lot.type}
 							data-permit={permitTxt}
 							data-available={isAvailable}
 							style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
@@ -158,7 +131,7 @@ const occStyles = {
 							<div class="d-grid gap-3" style="grid-template-columns:1fr auto;">
 								<div class="d-grid gap-1">
 									<div class="fw-bold lh-sm">{lot.name}</div>
-									<div class="small text-opacity-75">{lot.address}</div>
+									<div class="small text-opacity-75">{addressString}</div>
 									<div class="d-flex flex-wrap gap-2">
 										<span class="badge rounded-pill border" style="background:rgba(255,255,255,.08);">
 											{typeText}
@@ -183,13 +156,17 @@ const occStyles = {
 											class="editBtn"
 											data-bs-toggle="modal"
 											data-bs-target="#editModal"
-											data-lot-id= {lot.id};
-											data-lot-name={lot.name};
-											data-lot-address={lot.address};
-											data-lot-kind={lot.kind};
-											data-lot-permit={lot.permitRequired || 'None'};
-											data-lot-used={Number(lot.availability?.used ?? 0)};
-											data-lot-total={Number(lot.availability?.total ?? 0)};
+											data-lot-id={lot.id}
+											data-lot-name={lot.name}
+											data-lot-number={lot.address.number}
+											data-lot-street={lot.address.street}
+											data-lot-city={lot.address.city}
+											data-lot-state={lot.address.state}
+											data-lot-zip={lot.address.zip}
+											data-lot-kind={lot.type}
+											data-lot-permit={lot.permit || 'None'}
+											data-lot-used={used}
+											data-lot-total={total}
 											title="Edit location"
 											aria-label="Edit location"
 											>
@@ -198,11 +175,11 @@ const occStyles = {
 									)}
 											<a
 												class="navIcon mt-2"
-												href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lot.address || lot.name)}`}
+												href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressString || lot.name)}`}
 												target="_blank"
 												rel="noopener noreferrer"
 												title="Open in Google Maps"
-												aria-label={`Open ${lot.address || lot.name} in Google Maps`}
+												aria-label={`Open ${addressString || lot.name} in Google Maps`}
 											>
 												<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 													<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor" />
@@ -238,23 +215,39 @@ const occStyles = {
             <input type="text" class="form-control" id="modalName" name="name" required>
           </div>
           <div class="mb-3">
-            <label for="modalAddress" class="form-label">Address</label>
-            <input type="text" class="form-control" id="modalAddress" name="address" required>
-          </div>
+			<label for="modalNumber" class="form-label">Number</label>
+			<input type="text" class="form-control" id="modalNumber" name="number" required>
+			</div>
+			<div class="mb-3">
+			<label for="modalStreet" class="form-label">Street</label>
+			<input type="text" class="form-control" id="modalStreet" name="street" required>
+			</div>
+			<div class="mb-3">
+			<label for="modalCity" class="form-label">City</label>
+			<input type="text" class="form-control" id="modalCity" name="city" required>
+			</div>
+			<div class="mb-3">
+			<label for="modalState" class="form-label">State</label>
+			<input type="text" class="form-control" id="modalState" name="state" required>
+			</div>
+			<div class="mb-3">
+			<label for="modalZip" class="form-label">Zip</label>
+			<input type="number" class="form-control" id="modalZip" name="zip" required>
+			</div>
           <div class="mb-3">
             <label for="modalKind" class="form-label">Type</label>
             <select class="form-select" id="modalKind" name="kind" required>
-              <option value="Parking">Parking</option>
-              <option value="Bike">Bike Rack</option>
+              <option value="PARKING_LOT">Parking Lot</option>
+              <option value="BIKE_RACK">Bike Rack</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="modalPermit" class="form-label">Permit Required</label>
             <select class="form-select" id="modalPermit" name="permit">
-              <option value="None">None</option>
-              <option value="Commuter">Commuter</option>
-              <option value="Faculty/Staff">Faculty/Staff</option>
-              <option value="All Parking Garage Zone">All Parking Garage Zone</option>
+              <option value="NONE">None</option>
+              <option value="COMMUTER">Commuter</option>
+              <option value="EMPLOYEE">Employee</option>
+              <option value="GARAGE">Garage Zone</option>
             </select>
           </div>
           <div class="row">
@@ -286,15 +279,25 @@ const occStyles = {
 
 if (editModal) {
   editModal.addEventListener('show.bs.modal', (event: any) => {
-    // Bootstrap passes the clicked button here
     const btn = event.relatedTarget as HTMLElement;
 
-    // Fill inputs with the button's dataset values
     (document.getElementById('modalName') as HTMLInputElement).value =
       btn.dataset.lotName || '';
 
-    (document.getElementById('modalAddress') as HTMLInputElement).value =
-      btn.dataset.lotAddress || '';
+    (document.getElementById('modalNumber') as HTMLInputElement).value =
+      btn.dataset.lotNumber || '';
+
+    (document.getElementById('modalStreet') as HTMLInputElement).value =
+      btn.dataset.lotStreet || '';
+
+    (document.getElementById('modalCity') as HTMLInputElement).value =
+      btn.dataset.lotCity || '';
+
+    (document.getElementById('modalState') as HTMLInputElement).value =
+      btn.dataset.lotState || '';
+
+    (document.getElementById('modalZip') as HTMLInputElement).value =
+      btn.dataset.lotZip || '';
 
     (document.getElementById('modalKind') as HTMLSelectElement).value =
       btn.dataset.lotKind || 'Parking';

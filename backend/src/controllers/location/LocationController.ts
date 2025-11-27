@@ -29,7 +29,7 @@ export class LocationController {
 		return true;
 	}
 
-	async getAll(): Promise<Location[] | null> {
+	async getAll(): Promise<Location[]> {
 		try {
 			const locations = await prismaClient.location.findMany({
 				include: { address: true },
@@ -37,7 +37,7 @@ export class LocationController {
 			return locations;
 		} catch (error) {
 			console.error("Failed to get locations: ", error);
-			return null;
+			return [];
 		}
 	}
 }

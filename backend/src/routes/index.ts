@@ -1,7 +1,7 @@
 import { Router } from "express";
 import createUserRoutes from "./user.routes";
 import createEmailRoutes from "./email.routes";
-import createLocationRoutes from "./lot.routes";
+import createLocationRoutes from "./location.routes";
 import createLotRoutes from "./lot.routes";
 import createRackRoutes from "./rack.routes";
 

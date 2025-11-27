@@ -11,5 +11,6 @@ model Location {
   name String
   spotCapacity Int
   spotAvailability Int
+  permit Permit @default(NONE)
   type Type @default(NONE)
 }

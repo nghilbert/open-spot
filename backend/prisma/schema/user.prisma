@@ -10,13 +10,6 @@ enum UserType {
   NONE
 }
 
-enum Permit {
-  COMMUTER
-  FACULTY
-  ALL
-  NONE
-}
-
 model User {
   id            Int        @id @default(autoincrement())
   username      String     @default("")
