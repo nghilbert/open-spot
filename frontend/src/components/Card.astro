@@ -1,12 +1,13 @@
 ---
 interface Props {
 	title?: HTMLElement | string;
+	class?: string;
 }
 
-const { title } = Astro.props;
+const { title, class: classes } = Astro.props;
 ---
 
-<div class="card">
+<div class={`card ${classes ?? ""}`}>
 	{title && <div class="card-header fw-bold">{title}</div>}
 
 	<div class="card-body d-grid gap-3">
