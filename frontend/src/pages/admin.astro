@@ -1,416 +1,243 @@
 ---
-const title = "Admin Dashboard";
+import BaseLayout from "src/layouts/BaseLayout.astro";
+import NavBar from "src/components/NavBar.astro";
+import Card from "src/components/Card.astro";
+import "../assets/styles/admin.css";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{title}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <style>
-      /* ===== Same theme as onboarding.astro ===== */
-      :root {
-        --bg: #0b1020;
-        --panel: #111936;
-        --panel-2: #0e1530;
-        --text: #ffffff;
-        --muted: #dfe5f5;
-        --primary: #5aa2ff;
-        --primary-600: #4a8ae0;
-        --ring: rgba(90, 162, 255, 0.35);
-        --radius: 16px;
-        --radius-sm: 10px;
-        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+<BaseLayout title="Admin Dashboard">
+	<NavBar />
+	<main class="container d-flex flex-column gap-2 min-vh-100">
+		<!-- Top Reports -->
+		<Card title="Reports">
+			<div class="d-flex gap-4 justify-content-between">
+				<Card title="Environmental Hazards" class="flex-fill">
+					<div class="value" id="hazardsCount">—</div>
+				</Card>
 
-        --border: rgba(255,255,255,0.10);
-        --border-2: rgba(255,255,255,0.18);
+				<Card title="Maintenance Needed" class="flex-fill">
+					<div class="value" id="maintenanceCount">—</div>
+				</Card>
+				<Card title="Feedback Flagged" class="flex-fill">
+					<div class="value" id="feedbackCount">—</div>
+				</Card>
+				<Card title="App Bugs Reported" class="flex-fill">
+					<div class="value" id="bugsCount">—</div>
+				</Card>
+			</div>
+		</Card>
 
-        /* Field (matches onboarding inputs) */
-        --field-bg: rgba(255,255,255,0.04);
-        --field-border: rgba(255,255,255,0.18);
-      }
+		<!-- Peak Parking Hours / User Usage -->
+		<Card title="Peak Parking Hours / User Usage">
+			<div class="d-flex gap-3">
+				<input type="datetime-local" class="form-select" id="fromDate" />
+				<input type="datetime-local" class="form-select" id="toDate" />
+				<select id="usageLocation" class="form-select"></select>
+			</div>
+			<div class="border rounded bg-secondary text-center">USAGE CHART GOES HERE</div>
+			<small class="text-muted">Select a date range and location to view trends.</small>
+		</Card>
 
-      * { box-sizing: border-box; }
-      html, body { height: 100%; margin: 0; }
-      body {
-        background: radial-gradient(1200px 800px at 10% -10%, #13214a 0%, var(--bg) 40%, #090e1d 100%);
-        color: var(--text);
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-        line-height: 1.45;
-      }
+		<div class="d-flex gap-2">
+			<!-- Location Management -->
+			<Card title="Location Management" class="flex-fill">
+				<input type="search" class="form-control" placeholder="Search locations…" />
+				<button class="btn btn-primary" id="manageLocationsBtn">Add Location</button>
+				<div class="table-responsive">
+					<table class="table table-striped table-hover" id="locationsTable">
+						<thead>
+							<tr>
+								<th>Location</th>
+								<th>Rules</th>
+								<th>Availability</th>
+								<th class="right">Actions</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<small class="text-muted">Set time limits, pricing, and permit requirements.</small>
+			</Card>
 
-      a { color: var(--primary); text-underline-offset: 3px; }
+			<!-- User Management -->
+			<Card title="User Management" class="flex-fill">
+				<input type="search" class="form-control" id="userSearch" placeholder="Search users…" />
+				<button class="btn btn-primary">Add User</button>
+				<div class="table-responsive">
+					<table class="table table-striped table-hover" id="usersTable">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Email</th>
+								<th>Role</th>
+								<th>Activity</th>
+								<th class="right">Actions</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</Card>
+		</div>
+	</main>
 
-      /* Layout */
-      .shell { max-width: 1200px; margin: 0 auto; padding: 24px; }
-      header.nav {
-        display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px;
-      }
-      .brand { display: flex; align-items: center; gap: 10px; }
-      .brand img { width: 36px; height: 36px; border-radius: 10px; box-shadow: 0 8px 20px rgba(90,162,255,.35); display:block; }
-      .brand .title { font-weight: 750; letter-spacing: -0.02em; }
-
-      .navBtns { display: flex; gap: 10px; }
-      .btn {
-        appearance: none; border: 1px solid var(--border-2); background: rgba(255,255,255,0.04);
-        color: var(--text); padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 650;
-        transition: transform 60ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-      }
-      .btn:active { transform: translateY(1px); }
-      .btn.primary { background: linear-gradient(180deg, var(--primary), var(--primary-600)); color: #05122a; border-color: rgba(90,162,255,.6); }
-      .btn.active { outline: 2px solid var(--primary); box-shadow: 0 0 0 6px var(--ring); }
-
-      .grid { display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
-      .span-12 { grid-column: span 12; }
-      .span-6 { grid-column: span 6; }
-      .span-4 { grid-column: span 4; }
-      .span-3 { grid-column: span 3; }
-      @media (max-width: 960px) { .span-6, .span-4, .span-3 { grid-column: span 12; } }
-
-      .card {
-        background: linear-gradient(180deg, var(--panel), var(--panel-2));
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 16px;
-      }
-      .card h3 {
-        margin: 0 0 10px 0;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: .14em;
-        color: var(--muted);
-      }
-
-      /* Top report tiles */
-      .tiles {
-        display: grid; gap: 12px;
-        grid-template-columns: repeat(4, 1fr);
-      }
-      @media (max-width: 960px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
-      .tile {
-        background: var(--field-bg);
-        border: 1px solid var(--field-border);
-        border-radius: 12px;
-        padding: 12px;
-      }
-      .tile .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
-      .tile .value { font-size: 24px; font-weight: 800; margin-top: 4px; }
-
-      .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-      input[type="text"], input[type="search"], input[type="datetime-local"], select {
-        background: var(--field-bg); border: 1px solid var(--field-border); color: var(--text);
-        border-radius: var(--radius-sm); padding: 10px 12px; outline: none;
-      }
-      input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 6px var(--ring); }
-
-      table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
-      thead th {
-        text-align: left; padding: 10px 8px; color: var(--muted); border-bottom: 1px solid var(--border);
-        position: sticky; top: 0; background: linear-gradient(180deg, var(--panel), var(--panel-2)); z-index: 1;
-      }
-      tbody td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
-      .right { text-align: right; }
-
-      /* Mini chart placeholder */
-      .chart {
-        width: 100%; height: 120px; border: 1px solid var(--field-border); border-radius: 12px;
-        background: var(--field-bg); display: grid; place-items: center; color: var(--muted);
-      }
-
-      .note { font-size: 12px; color: var(--muted); }
-      .hidden { display: none !important; }
-
-      .toast {
-        position: fixed; inset: auto 24px 24px auto; display: none;
-        background: #0a1a0f; color: #eafff1; border: 1px solid rgba(34,197,94,.4);
-        padding: 12px 14px; border-radius: 12px; box-shadow: var(--shadow);
-      }
-      .toast.show { display: block; }
-    </style>
-  </head>
-  <body>
-    <div class="shell">
-      <!-- Nav Bar -->
-      <header class="nav">
-        <div class="brand">
-          <img src="/favicon.svg" alt="Open Spot logo" />
-          <div class="title">Open Spot — Admin</div>
-        </div>
-        <nav class="navBtns">
-          <a href="/" class="btn">Home</a>
-          <button class="btn" id="adminBtn">Admin Dashboard</button>
-        </nav>
-      </header>
-
-      <!-- Top Reports -->
-      <section class="card span-12">
-        <h3>Reports</h3>
-        <div class="tiles" id="tiles">
-          <div class="tile">
-            <div class="label">Environmental Hazards</div>
-            <div class="value" id="hazardsCount">—</div>
-          </div>
-          <div class="tile">
-            <div class="label">Maintenance Needed</div>
-            <div class="value" id="maintenanceCount">—</div>
-          </div>
-          <div class="tile">
-            <div class="label">Feedback Flagged</div>
-            <div class="value" id="feedbackCount">—</div>
-          </div>
-          <div class="tile">
-            <div class="label">App Bugs Reported</div>
-            <div class="value" id="bugsCount">—</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Peak Parking Hours / User Usage -->
-      <section class="card span-12">
-        <h3>Peak Parking Hours / User Usage</h3>
-        <div class="toolbar">
-          <input type="datetime-local" id="fromDate" />
-          <input type="datetime-local" id="toDate" />
-          <select id="usageLocation"></select>
-          <button class="btn" id="refreshUsageBtn">Refresh</button>
-        </div>
-        <div class="chart">
-          <svg id="usageSpark" viewBox="0 0 600 120" width="100%" height="120" aria-label="Usage trend"></svg>
-        </div>
-        <div class="note" id="usageNote">Select a date range and location to view trends.</div>
-      </section>
-
-      <!-- Main Grid -->
-      <section class="grid" style="margin-top:16px">
-        <!-- Location Management -->
-        <div class="card span-6">
-          <h3>Location Management</h3>
-          <div class="toolbar">
-            <button class="btn primary" id="manageLocationsBtn">Manage Locations</button>
-            <button class="btn" id="refreshLocationsBtn">Refresh</button>
-          </div>
-          <table id="locationsTable" aria-label="Locations">
-            <thead><tr><th>Location</th><th>Rules</th><th>Availability</th><th class="right">Actions</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <div class="note">Set time limits, pricing, and permit requirements.</div>
-        </div>
-
-        <!-- User Management -->
-        <div class="card span-6">
-          <h3>User Management</h3>
-          <div class="toolbar">
-            <input type="search" id="userSearch" placeholder="Search users…" />
-            <button class="btn" id="refreshUsersBtn">Refresh</button>
-          </div>
-          <table id="usersTable" aria-label="Users">
-            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Activity</th><th class="right">Actions</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <!-- Issue Reporting -->
-        <div class="card span-6">
-          <h3>Issue Reporting</h3>
-          <div class="toolbar">
-            <select id="issueFilter">
-              <option value="">All Statuses</option>
-              <option>Open</option>
-              <option>In Progress</option>
-              <option>Resolved</option>
-            </select>
-            <button class="btn" id="refreshIssuesBtn">Refresh</button>
-          </div>
-          <table id="issuesTable" aria-label="Issues">
-            <thead><tr><th>ID</th><th>Type</th><th>Location</th><th>Status</th><th>Assignee</th><th class="right">Actions</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <!-- Analytics & Reports -->
-        <div class="card span-6">
-          <h3>Analytics & Reports</h3>
-          <div class="toolbar">
-            <button class="btn" id="runReportBtn">Run Usage Report</button>
-            <button class="btn" id="exportUsageBtn">Export Usage CSV</button>
-            <button class="btn" id="exportIssuesBtn">Export Issues CSV</button>
-            <button class="btn" id="exportLocationsBtn">Export Locations CSV</button>
-          </div>
-          <div class="note" id="reportSummary">Pick a date range and filters above, then run the report.</div>
-        </div>
-
-        <!-- Audit Logs -->
-        <div class="card span-6">
-          <h3>Audit Logs</h3>
-          <div class="toolbar">
-            <input type="search" id="logAdminSearch" placeholder="Filter by admin name…" />
-            <select id="logActionType">
-              <option value="">All Actions</option>
-              <option>Location Edit</option>
-              <option>Role Change</option>
-              <option>Issue Update</option>
-              <option>Export</option>
-              <option>Access</option>
-            </select>
-            <button class="btn" id="refreshLogsBtn">Refresh</button>
-          </div>
-          <table id="logsTable" aria-label="Audit logs">
-            <thead><tr><th>Timestamp</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <!-- Access Control -->
-        <div class="card span-6">
-          <h3>Access Control</h3>
-          <div class="toolbar">
-            <input type="email" id="inviteEmail" placeholder="Invite admin by email" />
-            <select id="inviteRole">
-              <option>Admin</option>
-              <option>Manager</option>
-              <option>Viewer</option>
-            </select>
-            <button class="btn primary" id="inviteBtn">Send Invite</button>
-          </div>
-          <table id="rolesTable" aria-label="Admin roles">
-            <thead><tr><th>User</th><th>Email</th><th>Role</th><th class="right">Actions</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-
-    <div id="toast" class="toast" role="status" aria-live="polite">Done.</div>
-
-    <script type="module">
-      /* =============================
+	<script type="module">
+		/* =============================
          Utilities & API wrapper
       ==============================*/
-      const toast = document.getElementById('toast');
-      const showToast = (t) => { toast.textContent = t; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1800); };
-      const token = () => localStorage.getItem('token') || '';
+		const toast = document.getElementById("toast");
+		const showToast = (t) => {
+			toast.textContent = t;
+			toast.classList.add("show");
+			setTimeout(() => toast.classList.remove("show"), 1800);
+		};
+		const token = () => localStorage.getItem("token") || "";
 
-      const api = {
-        get: (path) => fetch(`${path}`, { headers: { 'Authorization': `Bearer ${token()}` }, credentials: "include" }),
-        post: (path, body={}) => fetch(`${path}`, { method:'POST', headers: { 'Authorization': `Bearer ${token()}`, 'Content-Type':'application/json' }, body: JSON.stringify(body), credentials: "include" }),
-        put: (path, body={}) => fetch(`${path}`, { method:'PUT', headers: { 'Authorization': `Bearer ${token()}`, 'Content-Type':'application/json' }, body: JSON.stringify(body), credentials: "include" }),
-        del: (path) => fetch(`${path}`, { method:'DELETE', headers: { 'Authorization': `Bearer ${token()}` }, credentials: "include" }),
-      };
+		const api = {
+			get: (path) => fetch(`${path}`, { headers: { Authorization: `Bearer ${token()}` }, credentials: "include" }),
+			post: (path, body = {}) =>
+				fetch(`${path}`, {
+					method: "POST",
+					headers: { Authorization: `Bearer ${token()}`, "Content-Type": "application/json" },
+					body: JSON.stringify(body),
+					credentials: "include",
+				}),
+			put: (path, body = {}) =>
+				fetch(`${path}`, {
+					method: "PUT",
+					headers: { Authorization: `Bearer ${token()}`, "Content-Type": "application/json" },
+					body: JSON.stringify(body),
+					credentials: "include",
+				}),
+			del: (path) =>
+				fetch(`${path}`, {
+					method: "DELETE",
+					headers: { Authorization: `Bearer ${token()}` },
+					credentials: "include",
+				}),
+		};
 
-      /* =============================
+		/* =============================
          Admin role awareness
       ==============================*/
-      const adminBtn = document.getElementById('adminBtn');
+		const adminBtn = document.getElementById("adminBtn");
 
-      async function checkRoleAndActivate() {
-        try {
-          const res = await api.get('/api/me'); // expects { roles: ['Admin', ...] }
-          if (!res.ok) throw new Error();
-          const me = await res.json();
-          const isAdmin = (me.roles || []).includes('Admin');
-          if (isAdmin) {
-            adminBtn.classList.add('active');
-            adminBtn.disabled = false;
-          } else {
-            adminBtn.classList.remove('active');
-            adminBtn.disabled = true;
-          }
-        } catch {
-          adminBtn.classList.remove('active');
-          adminBtn.disabled = true;
-        }
-      }
+		async function checkRoleAndActivate() {
+			try {
+				const res = await api.get("/api/me"); // expects { roles: ['Admin', ...] }
+				if (!res.ok) throw new Error();
+				const me = await res.json();
+				const isAdmin = (me.roles || []).includes("Admin");
+				if (isAdmin) {
+					adminBtn.classList.add("active");
+					adminBtn.disabled = false;
+				} else {
+					adminBtn.classList.remove("active");
+					adminBtn.disabled = true;
+				}
+			} catch {
+				adminBtn.classList.remove("active");
+				adminBtn.disabled = true;
+			}
+		}
 
-      // Click → GET with Authorization; backend may redirect or return JSON with redirect
-      adminBtn.addEventListener('click', async () => {
-        try {
-          const res = await api.get('/api/admin/authorize');
-          // If backend returns JSON { redirectUrl, token? }
-          const ct = res.headers.get('content-type') || '';
-          if (ct.includes('application/json')) {
-            const data = await res.json();
-            if (data.redirectUrl) {
-              const url = new URL(data.redirectUrl, window.location.origin);
-              if (data.token) url.searchParams.set('token', data.token);
-              window.location.href = url.toString();
-              return;
-            }
-          }
-          if (res.ok) showToast('Admin authorized.');
-          else showToast('Not authorized.');
-        } catch {
-          showToast('Authorization failed.');
-        }
-      });
+		// Click → GET with Authorization; backend may redirect or return JSON with redirect
+		adminBtn.addEventListener("click", async () => {
+			try {
+				const res = await api.get("/api/admin/authorize");
+				// If backend returns JSON { redirectUrl, token? }
+				const ct = res.headers.get("content-type") || "";
+				if (ct.includes("application/json")) {
+					const data = await res.json();
+					if (data.redirectUrl) {
+						const url = new URL(data.redirectUrl, window.location.origin);
+						if (data.token) url.searchParams.set("token", data.token);
+						window.location.href = url.toString();
+						return;
+					}
+				}
+				if (res.ok) showToast("Admin authorized.");
+				else showToast("Not authorized.");
+			} catch {
+				showToast("Authorization failed.");
+			}
+		});
 
-      /* =============================
+		/* =============================
          Data targets
       ==============================*/
-      const hazardsCount     = document.getElementById('hazardsCount');
-      const maintenanceCount = document.getElementById('maintenanceCount');
-      const feedbackCount    = document.getElementById('feedbackCount');
-      const bugsCount        = document.getElementById('bugsCount');
+		const hazardsCount = document.getElementById("hazardsCount");
+		const maintenanceCount = document.getElementById("maintenanceCount");
+		const feedbackCount = document.getElementById("feedbackCount");
+		const bugsCount = document.getElementById("bugsCount");
 
-      const usageSpark = document.getElementById('usageSpark');
-      const usageLocation = document.getElementById('usageLocation');
-      const usageNote = document.getElementById('usageNote');
-      const fromDate = document.getElementById('fromDate');
-      const toDate = document.getElementById('toDate');
+		const usageSpark = document.getElementById("usageSpark");
+		const usageLocation = document.getElementById("usageLocation");
+		const usageNote = document.getElementById("usageNote");
+		const fromDate = document.getElementById("fromDate");
+		const toDate = document.getElementById("toDate");
 
-      const locationsTable = document.querySelector('#locationsTable tbody');
-      const usersTable = document.querySelector('#usersTable tbody');
-      const issuesTable = document.querySelector('#issuesTable tbody');
-      const logsTable = document.querySelector('#logsTable tbody');
-      const rolesTable = document.querySelector('#rolesTable tbody');
+		const locationsTable = document.querySelector("#locationsTable tbody");
+		const usersTable = document.querySelector("#usersTable tbody");
+		const issuesTable = document.querySelector("#issuesTable tbody");
+		const logsTable = document.querySelector("#logsTable tbody");
+		const rolesTable = document.querySelector("#rolesTable tbody");
 
-      /* =============================
+		/* =============================
          Loaders (replace endpoints with your API)
       ==============================*/
-      async function loadTopTiles() {
-        try {
-          const res = await api.get('/api/reports/top');
-          if (!res.ok) throw new Error();
-          const d = await res.json(); // { hazards, maintenance, feedback, bugs }
-          hazardsCount.textContent = d.hazards ?? 0;
-          maintenanceCount.textContent = d.maintenance ?? 0;
-          feedbackCount.textContent = d.feedback ?? 0;
-          bugsCount.textContent = d.bugs ?? 0;
-        } catch {
-          hazardsCount.textContent = maintenanceCount.textContent = feedbackCount.textContent = bugsCount.textContent = '—';
-        }
-      }
+		async function loadTopTiles() {
+			try {
+				const res = await api.get("/api/reports/top");
+				if (!res.ok) throw new Error();
+				const d = await res.json(); // { hazards, maintenance, feedback, bugs }
+				hazardsCount.textContent = d.hazards ?? 0;
+				maintenanceCount.textContent = d.maintenance ?? 0;
+				feedbackCount.textContent = d.feedback ?? 0;
+				bugsCount.textContent = d.bugs ?? 0;
+			} catch {
+				hazardsCount.textContent =
+					maintenanceCount.textContent =
+					feedbackCount.textContent =
+					bugsCount.textContent =
+						"—";
+			}
+		}
 
-      async function loadUsage() {
-        const qs = new URLSearchParams();
-        if (fromDate.value) qs.set('from', fromDate.value);
-        if (toDate.value) qs.set('to', toDate.value);
-        if (usageLocation.value) qs.set('location', usageLocation.value);
-        try {
-          const res = await api.get(`/api/analytics/usage?${qs.toString()}`);
-          if (!res.ok) throw new Error();
-          const d = await res.json(); // { trend:[numbers], peak:'2–3pm' , locations:[{id,name}]? }
-          if (d.locations && !usageLocation.options.length) {
-            usageLocation.innerHTML = `<option value="">All Locations</option>` + d.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
-          }
-          drawSpark(d.trend || []);
-          usageNote.textContent = d.peak ? `Peak hour: ${d.peak}` : 'No peak data.';
-        } catch {
-          drawSpark([]);
-          usageNote.textContent = 'Failed to load usage.';
-        }
-      }
+		async function loadUsage() {
+			const qs = new URLSearchParams();
+			if (fromDate.value) qs.set("from", fromDate.value);
+			if (toDate.value) qs.set("to", toDate.value);
+			if (usageLocation.value) qs.set("location", usageLocation.value);
+			try {
+				const res = await api.get(`/api/analytics/usage?${qs.toString()}`);
+				if (!res.ok) throw new Error();
+				const d = await res.json(); // { trend:[numbers], peak:'2–3pm' , locations:[{id,name}]? }
+				if (d.locations && !usageLocation.options.length) {
+					usageLocation.innerHTML =
+						`<option value="">All Locations</option>` +
+						d.locations.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
+				}
+				drawSpark(d.trend || []);
+				usageNote.textContent = d.peak ? `Peak hour: ${d.peak}` : "No peak data.";
+			} catch {
+				drawSpark([]);
+				usageNote.textContent = "Failed to load usage.";
+			}
+		}
 
-      async function loadLocations() {
-        try {
-          const res = await api.get('/api/locations');
-          if (!res.ok) throw new Error();
-          const list = await res.json(); // [{id,name,rules:{timeLimit,pricing,permit}, availability:{open,total}}]
-          locationsTable.innerHTML = list.map(loc=>{
-            const avail = loc.availability ? `${loc.availability.open}/${loc.availability.total}` : '—';
-            const rules = loc.rules ? `${loc.rules.timeLimit || '—'} | ${loc.rules.pricing || '—'} | ${loc.rules.permit || '—'}` : '—';
-            return `<tr>
+		async function loadLocations() {
+			try {
+				const res = await api.get("/api/locations");
+				if (!res.ok) throw new Error();
+				const list = await res.json(); // [{id,name,rules:{timeLimit,pricing,permit}, availability:{open,total}}]
+				locationsTable.innerHTML = list
+					.map((loc) => {
+						const avail = loc.availability ? `${loc.availability.open}/${loc.availability.total}` : "—";
+						const rules = loc.rules
+							? `${loc.rules.timeLimit || "—"} | ${loc.rules.pricing || "—"} | ${loc.rules.permit || "—"}`
+							: "—";
+						return `<tr>
               <td>${loc.name}</td>
               <td>${rules}</td>
               <td>${avail}</td>
@@ -419,225 +246,327 @@ const title = "Admin Dashboard";
                 <button class="btn" data-rule-loc="${loc.id}">Set Rules</button>
               </td>
             </tr>`;
-          }).join('');
-          // Fill usage location filter if empty
-          if (!usageLocation.options.length) {
-            usageLocation.innerHTML = `<option value="">All Locations</option>` + list.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
-          }
-        } catch {
-          locationsTable.innerHTML = `<tr><td colspan="4">Failed to load locations.</td></tr>`;
-        }
-      }
+					})
+					.join("");
+				// Fill usage location filter if empty
+				if (!usageLocation.options.length) {
+					usageLocation.innerHTML =
+						`<option value="">All Locations</option>` +
+						list.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
+				}
+			} catch {
+				locationsTable.innerHTML = `<tr><td colspan="4">Failed to load locations.</td></tr>`;
+			}
+		}
 
-      async function loadUsers() {
-        try {
-          const res = await api.get('/api/users');
-          if (!res.ok) throw new Error();
-          const list = await res.json(); // [{id,name,email,role,activity}]
-          usersTable.innerHTML = list.map(u=>`
+		async function loadUsers() {
+			try {
+				const res = await api.get("/api/users");
+				if (!res.ok) throw new Error();
+				const list = await res.json(); // [{id,name,email,role,activity}]
+				usersTable.innerHTML = list
+					.map(
+						(u) => `
             <tr>
-              <td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.activity || '—'}</td>
+              <td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.activity || "—"}</td>
               <td class="right">
                 <button class="btn" data-promote="${u.id}">Promote</button>
                 <button class="btn" data-demote="${u.id}">Remove Admin</button>
               </td>
-            </tr>`).join('');
-        } catch {
-          usersTable.innerHTML = `<tr><td colspan="5">Failed to load users.</td></tr>`;
-        }
-      }
+            </tr>`
+					)
+					.join("");
+			} catch {
+				usersTable.innerHTML = `<tr><td colspan="5">Failed to load users.</td></tr>`;
+			}
+		}
 
-      async function loadIssues() {
-        try {
-          const status = document.getElementById('issueFilter').value;
-          const res = await api.get(`/api/issues${status ? `?status=${encodeURIComponent(status)}` : ''}`);
-          if (!res.ok) throw new Error();
-          const list = await res.json(); // [{id,type,location,status,assignee}]
-          issuesTable.innerHTML = list.map(i=>`
+		async function loadIssues() {
+			try {
+				const status = document.getElementById("issueFilter").value;
+				const res = await api.get(`/api/issues${status ? `?status=${encodeURIComponent(status)}` : ""}`);
+				if (!res.ok) throw new Error();
+				const list = await res.json(); // [{id,type,location,status,assignee}]
+				issuesTable.innerHTML = list
+					.map(
+						(i) => `
             <tr>
-              <td>#${i.id}</td><td>${i.type}</td><td>${i.location}</td><td>${i.status}</td><td>${i.assignee || 'Unassigned'}</td>
+              <td>#${i.id}</td><td>${i.type}</td><td>${i.location}</td><td>${i.status}</td><td>${i.assignee || "Unassigned"}</td>
               <td class="right">
                 <button class="btn" data-assign="${i.id}">Assign</button>
                 <button class="btn" data-note="${i.id}">Add Note</button>
                 <button class="btn" data-resolve="${i.id}">Resolve</button>
                 <button class="btn" data-progress="${i.id}">In Progress</button>
               </td>
-            </tr>`).join('');
-        } catch {
-          issuesTable.innerHTML = `<tr><td colspan="6">Failed to load issues.</td></tr>`;
-        }
-      }
+            </tr>`
+					)
+					.join("");
+			} catch {
+				issuesTable.innerHTML = `<tr><td colspan="6">Failed to load issues.</td></tr>`;
+			}
+		}
 
-      async function loadLogs() {
-        try {
-          const name = (document.getElementById('logAdminSearch').value || '').trim();
-          const action = document.getElementById('logActionType').value;
-          const qs = new URLSearchParams();
-          if (name) qs.set('admin', name);
-          if (action) qs.set('action', action);
-          const res = await api.get(`/api/audit?${qs.toString()}`);
-          if (!res.ok) throw new Error();
-          const list = await res.json(); // [{ts, admin, action, details}]
-          logsTable.innerHTML = list.map(l=>`
+		async function loadLogs() {
+			try {
+				const name = (document.getElementById("logAdminSearch").value || "").trim();
+				const action = document.getElementById("logActionType").value;
+				const qs = new URLSearchParams();
+				if (name) qs.set("admin", name);
+				if (action) qs.set("action", action);
+				const res = await api.get(`/api/audit?${qs.toString()}`);
+				if (!res.ok) throw new Error();
+				const list = await res.json(); // [{ts, admin, action, details}]
+				logsTable.innerHTML = list
+					.map(
+						(l) => `
             <tr>
               <td>${new Date(l.ts).toLocaleString()}</td>
               <td>${l.admin}</td>
               <td>${l.action}</td>
-              <td>${l.details || '—'}</td>
-            </tr>`).join('');
-        } catch {
-          logsTable.innerHTML = `<tr><td colspan="4">Failed to load logs.</td></tr>`;
-        }
-      }
+              <td>${l.details || "—"}</td>
+            </tr>`
+					)
+					.join("");
+			} catch {
+				logsTable.innerHTML = `<tr><td colspan="4">Failed to load logs.</td></tr>`;
+			}
+		}
 
-      async function loadRoles() {
-        try {
-          const res = await api.get('/api/admins');
-          if (!res.ok) throw new Error();
-          const list = await res.json(); // [{id,name,email,role}]
-          rolesTable.innerHTML = list.map(a=>`
+		async function loadRoles() {
+			try {
+				const res = await api.get("/api/admins");
+				if (!res.ok) throw new Error();
+				const list = await res.json(); // [{id,name,email,role}]
+				rolesTable.innerHTML = list
+					.map(
+						(a) => `
             <tr>
               <td>${a.name}</td><td>${a.email}</td><td>${a.role}</td>
               <td class="right">
                 <button class="btn" data-change-role="${a.id}">Change Role</button>
                 <button class="btn" data-remove-admin="${a.id}">Remove</button>
               </td>
-            </tr>`).join('');
-        } catch {
-          rolesTable.innerHTML = `<tr><td colspan="4">Failed to load admins.</td></tr>`;
-        }
-      }
+            </tr>`
+					)
+					.join("");
+			} catch {
+				rolesTable.innerHTML = `<tr><td colspan="4">Failed to load admins.</td></tr>`;
+			}
+		}
 
-      /* =============================
+		/* =============================
          Actions
       ==============================*/
-      // Location actions
-      document.getElementById('refreshLocationsBtn').addEventListener('click', loadLocations);
-      document.getElementById('manageLocationsBtn').addEventListener('click', ()=> { window.location.href = '/admin/locations'; });
-      locationsTable.addEventListener('click', async (e)=>{
-        const b = e.target.closest('button'); if (!b) return;
-        if (b.dataset.ruleLoc) {
-          const id = b.dataset.ruleLoc;
-          const timeLimit = prompt('New time limit (e.g., 2h):');
-          const pricing = prompt('Pricing (e.g., $2/hr):');
-          const permit = prompt('Permit (e.g., Commuter):');
-          if (timeLimit || pricing || permit) {
-            await api.put(`/api/locations/${id}/rules`, { timeLimit, pricing, permit });
-            showToast('Rules updated'); loadLocations();
-          }
-        }
-        if (b.dataset.editLoc) { window.location.href = `/admin/locations/${b.dataset.editLoc}`; }
-      });
+		// Location actions
+		document.getElementById("refreshLocationsBtn").addEventListener("click", loadLocations);
+		document.getElementById("manageLocationsBtn").addEventListener("click", () => {
+			window.location.href = "/admin/locations";
+		});
+		locationsTable.addEventListener("click", async (e) => {
+			const b = e.target.closest("button");
+			if (!b) return;
+			if (b.dataset.ruleLoc) {
+				const id = b.dataset.ruleLoc;
+				const timeLimit = prompt("New time limit (e.g., 2h):");
+				const pricing = prompt("Pricing (e.g., $2/hr):");
+				const permit = prompt("Permit (e.g., Commuter):");
+				if (timeLimit || pricing || permit) {
+					await api.put(`/api/locations/${id}/rules`, { timeLimit, pricing, permit });
+					showToast("Rules updated");
+					loadLocations();
+				}
+			}
+			if (b.dataset.editLoc) {
+				window.location.href = `/admin/locations/${b.dataset.editLoc}`;
+			}
+		});
 
-      // User actions
-      document.getElementById('refreshUsersBtn').addEventListener('click', loadUsers);
-      document.getElementById('userSearch').addEventListener('input', ()=>{
-        const q = (document.getElementById('userSearch').value || '').toLowerCase();
-        usersTable.querySelectorAll('tr').forEach(tr=>{
-          tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
-        });
-      });
-      usersTable.addEventListener('click', async (e)=>{
-        const b = e.target.closest('button'); if (!b) return;
-        if (b.dataset.promote) { await api.post(`/api/users/${b.dataset.promote}/role`, { role:'Admin' }); showToast('Promoted'); loadUsers(); loadRoles(); }
-        if (b.dataset.demote)  { await api.post(`/api/users/${b.dataset.demote}/role`,  { role:'User'  }); showToast('Demoted');  loadUsers(); loadRoles(); }
-      });
+		// User actions
+		document.getElementById("refreshUsersBtn").addEventListener("click", loadUsers);
+		document.getElementById("userSearch").addEventListener("input", () => {
+			const q = (document.getElementById("userSearch").value || "").toLowerCase();
+			usersTable.querySelectorAll("tr").forEach((tr) => {
+				tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
+			});
+		});
+		usersTable.addEventListener("click", async (e) => {
+			const b = e.target.closest("button");
+			if (!b) return;
+			if (b.dataset.promote) {
+				await api.post(`/api/users/${b.dataset.promote}/role`, { role: "Admin" });
+				showToast("Promoted");
+				loadUsers();
+				loadRoles();
+			}
+			if (b.dataset.demote) {
+				await api.post(`/api/users/${b.dataset.demote}/role`, { role: "User" });
+				showToast("Demoted");
+				loadUsers();
+				loadRoles();
+			}
+		});
 
-      // Issues actions
-      document.getElementById('refreshIssuesBtn').addEventListener('click', loadIssues);
-      document.getElementById('issueFilter').addEventListener('change', loadIssues);
-      issuesTable.addEventListener('click', async (e)=>{
-        const b = e.target.closest('button'); if (!b) return;
-        const id = b.dataset.assign || b.dataset.note || b.dataset.resolve || b.dataset.progress;
-        if (!id) return;
-        if (b.dataset.assign)  { const assignee = prompt('Assign to:'); if (assignee){ await api.post(`/api/issues/${id}/assign`, { assignee }); showToast('Assigned'); loadIssues(); } }
-        if (b.dataset.note)    { const note = prompt('Add response note:'); if (note){ await api.post(`/api/issues/${id}/note`, { note }); showToast('Note added'); loadIssues(); } }
-        if (b.dataset.resolve) { await api.post(`/api/issues/${id}/status`, { status:'Resolved' }); showToast('Resolved'); loadIssues(); }
-        if (b.dataset.progress){ await api.post(`/api/issues/${id}/status`, { status:'In Progress' }); showToast('In Progress'); loadIssues(); }
-      });
+		// Issues actions
+		document.getElementById("refreshIssuesBtn").addEventListener("click", loadIssues);
+		document.getElementById("issueFilter").addEventListener("change", loadIssues);
+		issuesTable.addEventListener("click", async (e) => {
+			const b = e.target.closest("button");
+			if (!b) return;
+			const id = b.dataset.assign || b.dataset.note || b.dataset.resolve || b.dataset.progress;
+			if (!id) return;
+			if (b.dataset.assign) {
+				const assignee = prompt("Assign to:");
+				if (assignee) {
+					await api.post(`/api/issues/${id}/assign`, { assignee });
+					showToast("Assigned");
+					loadIssues();
+				}
+			}
+			if (b.dataset.note) {
+				const note = prompt("Add response note:");
+				if (note) {
+					await api.post(`/api/issues/${id}/note`, { note });
+					showToast("Note added");
+					loadIssues();
+				}
+			}
+			if (b.dataset.resolve) {
+				await api.post(`/api/issues/${id}/status`, { status: "Resolved" });
+				showToast("Resolved");
+				loadIssues();
+			}
+			if (b.dataset.progress) {
+				await api.post(`/api/issues/${id}/status`, { status: "In Progress" });
+				showToast("In Progress");
+				loadIssues();
+			}
+		});
 
-      // Reports & CSV export
-      document.getElementById('refreshUsageBtn').addEventListener('click', loadUsage);
-      document.getElementById('runReportBtn').addEventListener('click', async ()=>{
-        const res = await api.get('/api/reports/usage');
-        if (res.ok) {
-          const d = await res.json(); // { count, avgOccupancy, trend }
-          document.getElementById('reportSummary').textContent = `Records: ${d.count ?? 0} • Avg Occupancy: ${d.avgOccupancy ?? '—'}`;
-          drawSpark(d.trend || []);
-        } else document.getElementById('reportSummary').textContent = 'Report failed.';
-      });
+		// Reports & CSV export
+		document.getElementById("refreshUsageBtn").addEventListener("click", loadUsage);
+		document.getElementById("runReportBtn").addEventListener("click", async () => {
+			const res = await api.get("/api/reports/usage");
+			if (res.ok) {
+				const d = await res.json(); // { count, avgOccupancy, trend }
+				document.getElementById("reportSummary").textContent =
+					`Records: ${d.count ?? 0} • Avg Occupancy: ${d.avgOccupancy ?? "—"}`;
+				drawSpark(d.trend || []);
+			} else document.getElementById("reportSummary").textContent = "Report failed.";
+		});
 
-      const exportCSV = (filename, rows) => {
-        const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(',')).join('\n');
-        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-      };
-      document.getElementById('exportUsageBtn').addEventListener('click', async ()=>{
-        const res = await api.get('/api/reports/usage.csv');
-        if (res.ok){ const text = await res.text(); const blob = new Blob([text], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='usage.csv'; a.click(); }
-      });
-      document.getElementById('exportIssuesBtn').addEventListener('click', ()=>{
-        const rows = [['ID','Type','Location','Status','Assignee']];
-        issuesTable.querySelectorAll('tr').forEach(tr=>{
-          const tds = tr.querySelectorAll('td'); if (tds.length) rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText]);
-        });
-        exportCSV('issues.csv', rows);
-      });
-      document.getElementById('exportLocationsBtn').addEventListener('click', ()=>{
-        const rows = [['Location','Rules','Availability']];
-        locationsTable.querySelectorAll('tr').forEach(tr=>{
-          const tds = tr.querySelectorAll('td'); if (tds.length) rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText]);
-        });
-        exportCSV('locations.csv', rows);
-      });
+		const exportCSV = (filename, rows) => {
+			const csv = rows.map((r) => r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+			const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+			const a = document.createElement("a");
+			a.href = URL.createObjectURL(blob);
+			a.download = filename;
+			a.click();
+		};
+		document.getElementById("exportUsageBtn").addEventListener("click", async () => {
+			const res = await api.get("/api/reports/usage.csv");
+			if (res.ok) {
+				const text = await res.text();
+				const blob = new Blob([text], { type: "text/csv" });
+				const a = document.createElement("a");
+				a.href = URL.createObjectURL(blob);
+				a.download = "usage.csv";
+				a.click();
+			}
+		});
+		document.getElementById("exportIssuesBtn").addEventListener("click", () => {
+			const rows = [["ID", "Type", "Location", "Status", "Assignee"]];
+			issuesTable.querySelectorAll("tr").forEach((tr) => {
+				const tds = tr.querySelectorAll("td");
+				if (tds.length)
+					rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText]);
+			});
+			exportCSV("issues.csv", rows);
+		});
+		document.getElementById("exportLocationsBtn").addEventListener("click", () => {
+			const rows = [["Location", "Rules", "Availability"]];
+			locationsTable.querySelectorAll("tr").forEach((tr) => {
+				const tds = tr.querySelectorAll("td");
+				if (tds.length) rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText]);
+			});
+			exportCSV("locations.csv", rows);
+		});
 
-      // Audit logs & roles
-      document.getElementById('refreshLogsBtn').addEventListener('click', loadLogs);
-      document.getElementById('logAdminSearch').addEventListener('input', ()=>{ clearTimeout(window._logT); window._logT = setTimeout(loadLogs, 300); });
-      document.getElementById('inviteBtn').addEventListener('click', async ()=>{
-        const email = (document.getElementById('inviteEmail').value||'').trim();
-        const role = document.getElementById('inviteRole').value;
-        if (!email) { showToast('Enter an email'); return; }
-        const res = await api.post('/api/admins/invite', { email, role });
-        showToast(res.ok ? 'Invite sent' : 'Invite failed');
-        if (res.ok) { document.getElementById('inviteEmail').value=''; loadRoles(); }
-      });
-      rolesTable.addEventListener('click', async (e)=>{
-        const b = e.target.closest('button'); if (!b) return;
-        if (b.dataset.changeRole){
-          const newRole = prompt('New role (Admin/Manager/Viewer):','Manager');
-          if (newRole){ await api.post(`/api/admins/${b.dataset.changeRole}/role`, { role:newRole }); showToast('Role updated'); loadRoles(); }
-        }
-        if (b.dataset.removeAdmin){
-          if (confirm('Remove this admin?')){ await api.del(`/api/admins/${b.dataset.removeAdmin}`); showToast('Admin removed'); loadRoles(); }
-        }
-      });
+		// Audit logs & roles
+		document.getElementById("refreshLogsBtn").addEventListener("click", loadLogs);
+		document.getElementById("logAdminSearch").addEventListener("input", () => {
+			clearTimeout(window._logT);
+			window._logT = setTimeout(loadLogs, 300);
+		});
+		document.getElementById("inviteBtn").addEventListener("click", async () => {
+			const email = (document.getElementById("inviteEmail").value || "").trim();
+			const role = document.getElementById("inviteRole").value;
+			if (!email) {
+				showToast("Enter an email");
+				return;
+			}
+			const res = await api.post("/api/admins/invite", { email, role });
+			showToast(res.ok ? "Invite sent" : "Invite failed");
+			if (res.ok) {
+				document.getElementById("inviteEmail").value = "";
+				loadRoles();
+			}
+		});
+		rolesTable.addEventListener("click", async (e) => {
+			const b = e.target.closest("button");
+			if (!b) return;
+			if (b.dataset.changeRole) {
+				const newRole = prompt("New role (Admin/Manager/Viewer):", "Manager");
+				if (newRole) {
+					await api.post(`/api/admins/${b.dataset.changeRole}/role`, { role: newRole });
+					showToast("Role updated");
+					loadRoles();
+				}
+			}
+			if (b.dataset.removeAdmin) {
+				if (confirm("Remove this admin?")) {
+					await api.del(`/api/admins/${b.dataset.removeAdmin}`);
+					showToast("Admin removed");
+					loadRoles();
+				}
+			}
+		});
 
-      /* =============================
+		/* =============================
          Simple sparkline (no libs)
       ==============================*/
-      function drawSpark(arr){
-        usageSpark.innerHTML = '';
-        const W = 600, H = 120, pad = 8;
-        if (!arr.length) return;
-        const max = Math.max(...arr), min = Math.min(...arr);
-        const x = (i)=> pad + i * ((W - 2*pad) / (arr.length - 1 || 1));
-        const y = (v)=> H - pad - ((v - min) / Math.max(1, (max - min))) * (H - 2*pad);
-        const d = arr.map((v,i)=> `${i? 'L':'M'}${x(i)} ${y(v)}`).join(' ');
-        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        path.setAttribute('d', d);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', 'currentColor');
-        path.setAttribute('stroke-width', '2');
-        usageSpark.appendChild(path);
-      }
+		function drawSpark(arr) {
+			usageSpark.innerHTML = "";
+			const W = 600,
+				H = 120,
+				pad = 8;
+			if (!arr.length) return;
+			const max = Math.max(...arr),
+				min = Math.min(...arr);
+			const x = (i) => pad + i * ((W - 2 * pad) / (arr.length - 1 || 1));
+			const y = (v) => H - pad - ((v - min) / Math.max(1, max - min)) * (H - 2 * pad);
+			const d = arr.map((v, i) => `${i ? "L" : "M"}${x(i)} ${y(v)}`).join(" ");
+			const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+			path.setAttribute("d", d);
+			path.setAttribute("fill", "none");
+			path.setAttribute("stroke", "currentColor");
+			path.setAttribute("stroke-width", "2");
+			usageSpark.appendChild(path);
+		}
 
-      /* =============================
+		/* =============================
          Initial load
       ==============================*/
-      checkRoleAndActivate();
-      Promise.all([loadTopTiles(), loadLocations(), loadUsers(), loadIssues(), loadLogs(), loadRoles(), loadUsage()])
-        .catch(()=>{ /* handled individually */ });
-    </script>
-  </body>
-</html>
+		checkRoleAndActivate();
+		Promise.all([
+			loadTopTiles(),
+			loadLocations(),
+			loadUsers(),
+			loadIssues(),
+			loadLogs(),
+			loadRoles(),
+			loadUsage(),
+		]).catch(() => {
+			/* handled individually */
+		});
+	</script>
+</BaseLayout>

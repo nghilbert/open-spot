@@ -1,5 +1,5 @@
 import { prismaClient } from "../../prismaClient";
-import { Location, Address, LocationType } from "@openspot/shared";
+import type { Location, Address, LocationType } from "@openspot/shared";
 
 export class LocationController {
 	protected type: LocationType = "NONE";
