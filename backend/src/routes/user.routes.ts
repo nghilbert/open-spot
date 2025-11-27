@@ -174,5 +174,22 @@ export default function createUserRoutes() {
 		}
 	});
 
+	router.post("/onboarding", async (req: Request, res: Response) => {
+  // gets the user by email from query string
+  const user = await accountController.getUserFromEmail(req.body.email as string);
+
+  if (!user || !user.id) {
+    return res.status(400).json({ success: false, message: "User not found" });
+  }
+
+  const updated = await accountController.updateAccount(user.id, undefined, undefined, undefined, req.body.payload.username, req.body.payload.accountType, req.body.payload.permit);
+
+  if (updated) {
+    res.status(200).json({ success: true });
+  } else {
+    res.status(400).json({ success: false });
+  }
+});
+
 	return router;
 }
