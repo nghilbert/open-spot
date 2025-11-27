@@ -28,18 +28,11 @@ const title = "Finish setting up your profile";
 				<!-- Account Type -->
 				<div class="p-2 border rounded form-group">
 					<label id="acctTypeLabel" class="form-label d-block mb-2">Account Type</label>
-					<div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-labelledby="acctTypeLabel">
+					<div class="btn-group btn-group-toggle" role="group" aria-labelledby="acctTypeLabel">
 						<input type="radio" class="btn-check" name="accountType" id="accountTypeDriver" value="Driver" checked />
 						<label class="btn btn-outline-secondary btn-sm" for="accountTypeDriver">Driver</label>
 
-						<input
-							type="radio"
-							class="btn-check"
-							name="accountType"
-							id="accountTypeCyclist"
-							value="Cyclist"
-							autocomplete="off"
-						/>
+						<input type="radio" class="btn-check" name="accountType" id="accountTypeCyclist" value="Cyclist" />
 						<label class="btn btn-outline-secondary btn-sm" for="accountTypeCyclist">Cyclist</label>
 					</div>
 				</div>
@@ -49,9 +42,9 @@ const title = "Finish setting up your profile";
 					<label for="permit" class="form-label">Parking Permit</label>
 					<select id="permit" name="permit" class="form-select" required>
 						<option value="" disabled selected>Select your permit…</option>
-						<option value="Commuter">Commuter</option>
-						<option value="Faculty/Staff">Faculty/Staff</option>
-						<option value="All Parking Garage Zone">All Parking Garage Zone</option>
+						<option value="COMMUTER">Commuter</option>
+						<option value="EMPLOYEE">Employee</option>
+						<option value="GARAGE">Garage Zone</option>
 					</select>
 					<small class="text-muted">Required for Drivers. Not needed for Cyclists.</small>
 				</div>
@@ -74,65 +67,58 @@ const title = "Finish setting up your profile";
 	const toast = document.getElementById("toast");
 	const submitBtn = document.getElementById("submitBtn");
 
-	function setAccountType() {
-		const selected = document.querySelector('input[name="accountType"]:checked');
-		if (!selected) return;
-		const value = selected.value;
+	// Helper
+	const getAccountType = () => document.querySelector('input[name="accountType"]:checked')?.value;
 
-		const isDriver = value === "Driver";
+	// Toggle permit visibility
+	function updateAccountTypeUI() {
+		const isDriver = getAccountType() === "Driver";
 		permitGroup.classList.toggle("hidden", !isDriver);
 		permitSelect.required = isDriver;
 		if (!isDriver) permitSelect.value = "";
-		msg.textContent = isDriver ? "Drivers must select a parking permit." : "Cyclists don’t need a parking permit.";
+		msg.textContent = isDriver
+			? "Drivers must select a parking permit."
+			: "Cyclists don’t need a parking permit.";
 	}
+	document.querySelectorAll('input[name="accountType"]').forEach(r => r.addEventListener("change", updateAccountTypeUI));
 
-	document.querySelectorAll('input[name="accountType"]').forEach((radio) => {
-		radio.addEventListener("change", setAccountType);
-	});
-
+	// Validation
 	function validate() {
-		msg.textContent = "";
 		const problems = [];
-		const acct = accountTypeHidden.value;
-		if (!usernameEl || !usernameEl.value.trim() || /\s/.test(usernameEl.value))
-			problems.push("Please choose a username (no spaces).");
+		const acct = getAccountType();
+		if (!usernameEl.value.trim() || /\s/.test(usernameEl.value)) problems.push("Please choose a username (no spaces).");
 		if (acct === "Driver" && !permitSelect.value) problems.push("Please choose a parking permit.");
-		if (problems.length) {
-			msg.textContent = problems.join(" ");
-			return false;
-		}
-		return true;
+		msg.textContent = problems.join(" ");
+		return problems.length === 0;
 	}
 
-	// Form submit (normal save)
-	form.addEventListener("submit", async (e) => {
+	// Submit
+	form.addEventListener("submit", async e => {
 		e.preventDefault();
 		if (!validate()) return;
 		submitBtn.disabled = true;
 
 		const payload = {
-			accountType: accountTypeHidden.value,
-			permit: accountTypeHidden.value === "Driver" ? permitSelect.value : null,
-			username: usernameEl ? usernameEl.value.trim() : null,
+			accountType: getAccountType(),
+			permit: getAccountType() === "Driver" ? permitSelect.value : null,
+			username: usernameEl.value.trim(),
 		};
 
 		try {
-			const res = await fetch("/api/onboarding", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-				},
-				body: JSON.stringify({ action: "save_onboarding", ...payload }),
-				credentials: "include",
-			});
+			const email = localStorage.getItem("pendingEmail");
+			console.log(email);
+			const res = await fetch("/api/user/onboarding", {
+			 	method: "POST",
+        		headers: { "Content-Type": "application/json" },
+        		body: JSON.stringify({ email: email , payload: payload })
+      		});
+
 			if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
 
 			toast.classList.add("show");
-			msg.textContent = "Saved! Redirecting…";
-			setTimeout(() => {
-				window.location.href = "/dashboard";
-			}, 900);
+			msg.textContent = "Saved! Redirecting… if you have not verified email will bring you back to login";
+			localStorage.removeItem("pendingEmail");
+			setTimeout(() => (window.location.href = "/dashboard"), 900);
 		} catch (err) {
 			console.error(err);
 			msg.textContent = "Something went wrong saving your profile. Please try again.";
@@ -141,44 +127,11 @@ const title = "Finish setting up your profile";
 		}
 	});
 
-	// Skip-for-now POST
+	// Skip-for-now
 	document.getElementById("SkipForNow").addEventListener("click", async () => {
-		const endpoint = "/api/onboarding";
-		try {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					action: "skip_onboarding",
-					timestamp: new Date().toISOString(),
-				}),
-				credentials: "include",
-			});
-
-			if (!res.ok) {
-				const text = await res.text().catch(() => "");
-				throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
-			}
-
-			if (toast) {
-				toast.textContent = "Preference saved. Redirecting…";
-				toast.classList.add("show");
-			}
+	toast.textContent = "Preference saved. Redirecting…";
+	localStorage.removeItem("pendingEmail");
+			toast.classList.add("show");
 			window.location.href = "/";
-		} catch (err) {
-			console.error(err);
-			if (msg) msg.textContent = "Couldn’t save your preference. Please try again.";
-		}
-	});
-
-	document.querySelector(".seg")?.addEventListener("keydown", (e) => {
-		if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-			e.preventDefault();
-			const current = accountTypeHidden.value;
-			setAccountType(current === "Driver" ? "Cyclist" : "Driver");
-		}
 	});
 </script>

@@ -132,7 +132,7 @@ import logo from "../assets/images/logo.svg";
 				createButton.addEventListener("click", async () => {
 					try {
 						const emailInput = document.getElementById("emailInput") as HTMLInputElement;
-						const newEmail = emailInput.value;
+						const newEmail = emailInput.value.trim();
 						// if not an ilstu email reject
 						if (!newEmail.endsWith("@ilstu.edu")) {
 							createStatus.textContent = "Invalid email, only Illinois State email can register for an account";
@@ -168,6 +168,7 @@ import logo from "../assets/images/logo.svg";
 
 						const result = await response.json();
 						if (response.status === 200) {
+							localStorage.setItem("pendingEmail", newEmail);
 							window.location.href = result.redirectTo;
 						} else if (response.status === 400) {
 							createStatus.textContent = "Email already in use";
