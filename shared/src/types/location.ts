@@ -1,4 +1,4 @@
-import type { Address } from "./address"; // adjust import path as needed
+import type { Address } from "./address";
 
 export type LocationType = "PARKING_LOT" | "BIKE_RACK" | "NONE";
 
