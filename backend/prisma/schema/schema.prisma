@@ -9,3 +9,10 @@ datasource db {
   provider = "sqlite"
   url = env("DATABASE_URL")
 }
+
+enum Permit {
+  COMMUTER
+  EMPLOYEE
+  GARAGE
+  NONE
+}
