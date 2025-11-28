@@ -1,0 +1,25 @@
+---
+import type { Location, Permit, User } from '../../../../shared/src';
+import PresentNumber from './PresentNumber.astro';
+import EditButton from './EditButton.astro';
+import NavIcon from './navIcon.astro';
+
+interface Props {
+    user: User;
+	lot: Location;
+	addressString: string;
+    used: number;
+    total: number;
+    p: number
+};
+
+const { user, lot, addressString, used, total, p } = Astro.props;
+---
+
+<div class="text-end d-grid gap-2" style="align-items: start;">
+	<PresentNumber p = {p}/>
+	{user.role === "ADMIN" && (
+		<EditButton lot = {lot} used={used} total={total}/>
+	)}
+	<NavIcon addressString={addressString} name={lot.name}/>
+</div>
