@@ -1,0 +1,14 @@
+---
+interface Props {
+	p: number;
+};
+
+const { p} = Astro.props;
+---
+
+<div
+	class="fw-bold fs-5 px-3 py-2 rounded-pill border"
+	style="background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.28);"
+	>
+		{p}%
+</div>

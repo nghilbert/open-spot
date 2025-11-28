@@ -1,0 +1,11 @@
+---
+interface Props {
+	p: number;
+};
+
+const { p} = Astro.props;
+---
+
+<div class="progress rounded-pill bg-dark-subtle mt-3" style="height:8px;">
+								<div class="progress-bar" role="progressbar" style={`width:${p}%; background:rgba(255,255,255,.92);`} />
+</div>
