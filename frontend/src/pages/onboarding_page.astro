@@ -76,11 +76,11 @@ const title = "Finish setting up your profile";
 		permitGroup.classList.toggle("hidden", !isDriver);
 		permitSelect.required = isDriver;
 		if (!isDriver) permitSelect.value = "";
-		msg.textContent = isDriver
-			? "Drivers must select a parking permit."
-			: "Cyclists don’t need a parking permit.";
+		msg.textContent = isDriver ? "Drivers must select a parking permit." : "Cyclists don’t need a parking permit.";
 	}
-	document.querySelectorAll('input[name="accountType"]').forEach(r => r.addEventListener("change", updateAccountTypeUI));
+	document
+		.querySelectorAll('input[name="accountType"]')
+		.forEach((r) => r.addEventListener("change", updateAccountTypeUI));
 
 	// Validation
 	function validate() {
@@ -93,7 +93,7 @@ const title = "Finish setting up your profile";
 	}
 
 	// Submit
-	form.addEventListener("submit", async e => {
+	form.addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (!validate()) return;
 		submitBtn.disabled = true;
@@ -108,10 +108,10 @@ const title = "Finish setting up your profile";
 			const email = localStorage.getItem("pendingEmail");
 			console.log(email);
 			const res = await fetch("/api/user/onboarding", {
-			 	method: "POST",
-        		headers: { "Content-Type": "application/json" },
-        		body: JSON.stringify({ email: email , payload: payload })
-      		});
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email: email, payload: payload }),
+			});
 
 			if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
 
@@ -129,9 +129,9 @@ const title = "Finish setting up your profile";
 
 	// Skip-for-now
 	document.getElementById("SkipForNow").addEventListener("click", async () => {
-	toast.textContent = "Preference saved. Redirecting…";
-	localStorage.removeItem("pendingEmail");
-			toast.classList.add("show");
-			window.location.href = "/";
+		toast.textContent = "Preference saved. Redirecting…";
+		localStorage.removeItem("pendingEmail");
+		toast.classList.add("show");
+		window.location.href = "/";
 	});
 </script>
