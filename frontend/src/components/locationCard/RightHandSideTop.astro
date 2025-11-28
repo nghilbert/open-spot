@@ -1,14 +1,14 @@
 ---
-import type { Location, Permit } from '../../../../shared/src';
-import DetailSection from './DetailSection.astro';
+import type { Location, Permit } from "../../../../shared/src";
+import DetailSection from "./DetailSection.astro";
 
 interface Props {
 	lot: Location;
 	addressString: string;
-    typeText: string;
-    permitTxt: Permit;
-    occText: string;
-};
+	typeText: string;
+	permitTxt: Permit;
+	occText: string;
+}
 
 const { lot, addressString, typeText, permitTxt, occText } = Astro.props;
 ---

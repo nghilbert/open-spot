@@ -1,25 +1,30 @@
 import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/requireAuth";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
-import { accountController, loginController, createAccountController, logoutController, emailController } from "../controllers";
+import {
+	accountController,
+	loginController,
+	createAccountController,
+	logoutController,
+	emailController,
+} from "../controllers";
 import { Permit, UserType } from "@prisma/client";
-
 
 export default function createUserRoutes() {
 	// Request typings
 	interface ResetQuery {
-		token: string
-	};
+		token: string;
+	}
 
 	interface ResetBody {
-		password: string
-	};
+		password: string;
+	}
 
 	interface PatchPayload {
-		name: string,
-		username: string,
-		type: UserType,
-		permit: Permit
+		name: string;
+		username: string;
+		type: UserType;
+		permit: Permit;
 	}
 
 	// Constants
@@ -36,7 +41,7 @@ export default function createUserRoutes() {
 
 		if (await createAccountController.register(email, password, name)) {
 			// Successful creation
-			res.status(200).json({redirectTo:"/onboarding_page"});
+			res.status(200).json({ redirectTo: "/onboarding_page" });
 		} else {
 			// Send an error
 			res.status(400).json({ success: false });
@@ -63,7 +68,7 @@ export default function createUserRoutes() {
 				sameSite: "lax",
 			});
 
-			res.status(200).json({redirectTo:"/dashboard"});
+			res.status(200).json({ redirectTo: "/dashboard" });
 		} else {
 			// Send an error
 			res.status(401).json({ success: false });
@@ -107,11 +112,21 @@ export default function createUserRoutes() {
 
 	router.patch("/profile", requireAuth, async (req: Request, res: Response) => {
 		// Edit profile route
-		const authReq = (req as unknown as AuthenticatedRequest);
+		const authReq = req as unknown as AuthenticatedRequest;
 		const user = authReq.user;
 		const payload = authReq.body as unknown as PatchPayload;
 
-		if(await accountController.updateAccount(user.id, undefined, undefined, payload.name, payload.username, payload.type, payload.permit)){
+		if (
+			await accountController.updateAccount(
+				user.id,
+				undefined,
+				undefined,
+				payload.name,
+				payload.username,
+				payload.type,
+				payload.permit
+			)
+		) {
 			res.status(200).end();
 		} else {
 			res.status(401).json({ error: "Invalid session" });
@@ -123,9 +138,9 @@ export default function createUserRoutes() {
 
 		if (sessionToken) {
 			let user = await accountController.getUserSession(sessionToken);
-			
+
 			if (user) {
-				if(user.password) delete user.password;
+				if (user.password) delete user.password;
 				res.status(200).json(user);
 			} else {
 				res.status(401).json({ error: "Invalid session" });
@@ -138,8 +153,8 @@ export default function createUserRoutes() {
 	router.get("/reset/:email", async (req: Request, res: Response) => {
 		const user = await accountController.getUserFromEmail(req.params.email);
 
-		if(user){
-			res.status(200).json({success: await accountController.createPasswordReset(user)});
+		if (user) {
+			res.status(200).json({ success: await accountController.createPasswordReset(user) });
 		} else {
 			res.status(400).json({ success: false });
 		}
@@ -154,19 +169,19 @@ export default function createUserRoutes() {
 		const { token } = query;
 		const { password } = body;
 
-		if(!token){
+		if (!token) {
 			// No token provided in the link, send an error
 			res.status(400).json({ success: false });
 		}
 
-		if(!password){
+		if (!password) {
 			// No password provided in body, send an error
 			res.status(400).json({ success: false });
 		}
 
 		// Token was sent, check if it was successful
-		if(await accountController.finishPasswordReset(token, password)){
-			// Successful reset link, 
+		if (await accountController.finishPasswordReset(token, password)) {
+			// Successful reset link,
 			res.status(200).json({ success: true });
 		} else {
 			// Unsuccessful reset link
@@ -175,21 +190,29 @@ export default function createUserRoutes() {
 	});
 
 	router.post("/onboarding", async (req: Request, res: Response) => {
-  // gets the user by email from query string
-  const user = await accountController.getUserFromEmail(req.body.email as string);
+		// gets the user by email from query string
+		const user = await accountController.getUserFromEmail(req.body.email as string);
 
-  if (!user || !user.id) {
-    return res.status(400).json({ success: false, message: "User not found" });
-  }
+		if (!user || !user.id) {
+			return res.status(400).json({ success: false, message: "User not found" });
+		}
 
-  const updated = await accountController.updateAccount(user.id, undefined, undefined, undefined, req.body.payload.username, req.body.payload.accountType, req.body.payload.permit);
+		const updated = await accountController.updateAccount(
+			user.id,
+			undefined,
+			undefined,
+			undefined,
+			req.body.payload.username,
+			req.body.payload.accountType,
+			req.body.payload.permit
+		);
 
-  if (updated) {
-    res.status(200).json({ success: true });
-  } else {
-    res.status(400).json({ success: false });
-  }
-});
+		if (updated) {
+			res.status(200).json({ success: true });
+		} else {
+			res.status(400).json({ success: false });
+		}
+	});
 
 	return router;
 }

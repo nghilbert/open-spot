@@ -1,69 +1,83 @@
 ---
-import type { Location, User } from '@openspot/shared';
-import RightHandSideTop from './locationCard/RightHandSideTop.astro';
-import LeftHandSideTop from './locationCard/LeftHandSideTop.astro';
-import ProgressBar from './locationCard/progressBar.astro';
+import type { Location, User } from "@openspot/shared";
+import RightHandSideTop from "./locationCard/RightHandSideTop.astro";
+import LeftHandSideTop from "./locationCard/LeftHandSideTop.astro";
+import ProgressBar from "./locationCard/progressBar.astro";
 
 interface Props {
-    user: User; 
-    lots: Location[];
-    pct: (used: number, total: number) => number;
-    occ: (p: number) => "green" | "yellow" | "red"
-    occStyles: {
-        green: {
-            bg: string;
-            br: string;
-            fg: string;
-        };
-        yellow: {
-            bg: string;
-            br: string;
-            fg: string;
-        };
-        red: {
-            bg: string;
-            br: string;
-            fg: string;
-        };
-    }
-};
+	user: User;
+	lots: Location[];
+	pct: (used: number, total: number) => number;
+	occ: (p: number) => "green" | "yellow" | "red";
+	occStyles: {
+		green: {
+			bg: string;
+			br: string;
+			fg: string;
+		};
+		yellow: {
+			bg: string;
+			br: string;
+			fg: string;
+		};
+		red: {
+			bg: string;
+			br: string;
+			fg: string;
+		};
+	};
+}
 
 const { user, lots, pct, occ, occStyles } = Astro.props;
 ---
 
 <section class="d-grid gap-4 mt-4" id="list">
-			{
-				lots.map((lot: Location) => {
-					const used = lot.spotCapacity - lot.spotAvailability;
-					const total = lot.spotCapacity;
-					const p = pct(used, total);
-					const state = occ(p);
-					const style = occStyles[state];
-					const occText = total > 0 ? `${used}/${total} spots full` : "—";
-					const typeText = lot.type === "PARKING_LOT" ? "Parking Lot" : lot.type === "BIKE_RACK" ? "Bike Rack" : "None";
-					const permitTxt = lot.permit;
-					const isAvailable = total > used ? "true" : "false";
-					const addressString = lot.address.number + " " + lot.address.street + " " + lot.address.city + ", " + lot.address.state + " " + lot.address.zip;
-					return (
-						<article
-							class="card p-3 rounded-4 border lotCard"
-							data-name={lot.name}
-							data-address={addressString}
-							data-kind={lot.type}
-							data-permit={permitTxt}
-							data-available={isAvailable}
-							style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
-						>
-							<div class="d-grid gap-3" style="grid-template-columns:1fr auto;">
-								<RightHandSideTop lot = {lot} addressString={addressString} typeText={typeText} permitTxt={permitTxt} occText={occText}/>
-								<LeftHandSideTop user = {user} lot ={lot} addressString ={addressString} used ={used} total={total} p = {p}/>
-							</div>
-							<ProgressBar p={p}/>
-						</article>
-					);
-				})
-			}
-		</section>
+	{
+		lots.map((lot: Location) => {
+			const used = lot.spotCapacity - lot.spotAvailability;
+			const total = lot.spotCapacity;
+			const p = pct(used, total);
+			const state = occ(p);
+			const style = occStyles[state];
+			const occText = total > 0 ? `${used}/${total} spots full` : "—";
+			const typeText = lot.type === "PARKING_LOT" ? "Parking Lot" : lot.type === "BIKE_RACK" ? "Bike Rack" : "None";
+			const permitTxt = lot.permit;
+			const isAvailable = total > used ? "true" : "false";
+			const addressString =
+				lot.address.number +
+				" " +
+				lot.address.street +
+				" " +
+				lot.address.city +
+				", " +
+				lot.address.state +
+				" " +
+				lot.address.zip;
+			return (
+				<article
+					class="card p-3 rounded-4 border lotCard"
+					data-name={lot.name}
+					data-address={addressString}
+					data-kind={lot.type}
+					data-permit={permitTxt}
+					data-available={isAvailable}
+					style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
+				>
+					<div class="d-grid gap-3" style="grid-template-columns:1fr auto;">
+						<RightHandSideTop
+							lot={lot}
+							addressString={addressString}
+							typeText={typeText}
+							permitTxt={permitTxt}
+							occText={occText}
+						/>
+						<LeftHandSideTop user={user} lot={lot} addressString={addressString} used={used} total={total} p={p} />
+					</div>
+					<ProgressBar p={p} />
+				</article>
+			);
+		})
+	}
+</section>
 
-        <div class="text-center py-4 text-muted" id="empty" style="display:none">No locations match your filters.</div>
-	</div>
+<div class="text-center py-4 text-muted" id="empty" style="display:none">No locations match your filters.</div>
