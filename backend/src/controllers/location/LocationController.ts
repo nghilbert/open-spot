@@ -30,6 +30,23 @@ export class LocationController {
 		return true;
 	}
 
+	async remove(id: number): Promise<boolean> {
+		// Validate arguments
+		if (!id || !Number.isInteger(id)) {
+			return false;
+		}
+
+		// Remove database object
+		try {
+			await prismaClient.location.delete({ where: { id } });
+		} catch (error) {
+			console.error(`Failed to remove a location of type ${this.type.toLowerCase()}:`, error);
+			return false;
+		}
+
+		return true;
+	}
+
 	async getAll(): Promise<Location[]> {
 		try {
 			const locations = await prismaClient.location.findMany({

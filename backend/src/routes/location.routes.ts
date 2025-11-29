@@ -15,6 +15,20 @@ export default function createLocationRoutes() {
 		}
 	});
 
+	router.post("/remove", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
+		// Extract id from request body
+		const { id } = req.body;
+
+		// Attempt to remove a parking lot object
+		if (await locationController.remove(id)) {
+			// Successful removal
+			res.status(200).json({ success: true });
+		} else {
+			// Send an error
+			res.status(400).json({ success: false });
+		}
+	});
+
 	router.post("/update", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		try {
 			const id = Number(req.body.data.modelLocationID);
