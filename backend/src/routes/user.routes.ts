@@ -67,10 +67,13 @@ export default function createUserRoutes() {
 				secure: false,
 				sameSite: "lax",
 			});
-
+			//tells the front end where to redirect the user, with session token
 			res.status(200).json({ redirectTo: "/dashboard" });
-		} else {
-			// Send an error
+		} else if (await accountController.emailExists(email)){
+			//email exist but is not verified
+			res.status(500).json({success: false});
+		} else{
+			// No record of User
 			res.status(401).json({ success: false });
 		}
 	});

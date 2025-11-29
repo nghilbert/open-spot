@@ -25,36 +25,38 @@ export class LoginController {
 	}
 
 	public async login(email: string, password: string): Promise<Session | null> {
-		// Simple login function to check for existing user and matching password.
-		// If authenticates, it will create a new session for the user
-		const prisma = this.prisma;
+  const prisma = this.prisma;
 
-		// Creates the password hash to check for
-		try {
-			const user: User | null = await prisma.user.findUnique({
-				where: {
-					email: email,
-				},
-				include: {
-					password: true
-				},
-			});
+  try {
+    const user: User | null = await prisma.user.findUnique({
+      where: { email },
+      include: { password: true },
+    });
 
-			let currentPassword = ""
-			if(user?.password){
-				currentPassword = user.password.passwordHash.toString();
-			}
+    // If no user found, bail early
+    if (!user) {
+      return null;
+    }
 
-			// Make sure the user exists and the password checks out
-			if (user && (await bcrypt.compare(password, currentPassword))) {
-				return this.generateSession(user);
-			} else {
-				// Email doesn't exist, return no session
-				return null;
-			}
-		} catch (error) {
-			console.error("Error finding user: ", error);
-			return null; // Errored out, so no session can be returned
-		}
-	}
+    // If email not verified, bail early
+    if (!user.emailVerified) {
+      return null;
+    }
+
+    // Extract stored hash
+    const currentPassword = user.password?.passwordHash ?? "";
+
+    // Check password AND verified status
+    const passwordMatches = await bcrypt.compare(password, String(currentPassword));
+
+    if (passwordMatches) {
+      return this.generateSession(user);
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error finding user: ", error);
+    return null;
+  }
+}
 }

@@ -110,7 +110,10 @@ import logo from "../assets/images/logo.svg";
 							} else if (response.status === 401) {
 								status.textContent = "Invalid email or password.";
 								status.style.display = "block";
-							} else {
+							} else if (response.status === 500){
+								status.textContent = "Email not verified, please check inbox";
+								status.style.display = "block";
+							}else {
 								status.textContent = "Unexpected error. Please try again.";
 								status.style.display = "block";
 							}
