@@ -1,5 +1,5 @@
 import { Permit, Type } from "@prisma/client";
-import { prismaClient} from "../../prismaClient";
+import { prismaClient } from "../../prismaClient";
 import type { Location, Address, LocationType } from "@openspot/shared";
 
 export class LocationController {
@@ -42,18 +42,30 @@ export class LocationController {
 		}
 	}
 
-	async getLocation(currentId: number): Promise<Location & { address: Address } | null> {
-  const location = await prismaClient.location.findUnique({
-    where: { id: currentId },
-    include: { address: true },
-  });
-  return location;
-}
+	async getLocation(currentId: number): Promise<(Location & { address: Address }) | null> {
+		const location = await prismaClient.location.findUnique({
+			where: { id: currentId },
+			include: { address: true },
+		});
+		return location;
+	}
 
-	async updateLocation(currentId:number, number: number, street:string, city:string, state: string, zip: number, name: string, spotCapacity: number, spotAvailability: number, permit: Permit, type: Type): Promise<boolean>{
-		try{
-			const location = await prismaClient.location.update({
-				where: {id: currentId},
+	async updateLocation(
+		currentId: number,
+		number: number,
+		street: string,
+		city: string,
+		state: string,
+		zip: number,
+		name: string,
+		spotCapacity: number,
+		spotAvailability: number,
+		permit: Permit,
+		type: Type
+	): Promise<boolean> {
+		try {
+			await prismaClient.location.update({
+				where: { id: currentId },
 				data: {
 					address: {
 						update: {
@@ -62,20 +74,18 @@ export class LocationController {
 							city: city,
 							state: state,
 							zip: zip,
-						}
-					}, 
+						},
+					},
 					name: name,
 					spotCapacity: spotCapacity,
 					spotAvailability: spotAvailability,
 					permit: permit,
 					type: type,
 				},
-			})
+			});
 			return true;
-		}catch{
-			return false
+		} catch {
+			return false;
 		}
-
-
 	}
 }
