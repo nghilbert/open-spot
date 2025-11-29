@@ -115,10 +115,12 @@ const occStyles = {
 
 		<script>
 			const editModal = document.getElementById("editModal");
-
+			var locationID = "";
+			//populates the form feilds with data from the element(location) that was clicked on 
 			if (editModal) {
 				editModal.addEventListener("show.bs.modal", (event: any) => {
 					const btn = event.relatedTarget as HTMLElement;
+					locationID = btn.dataset.lotId ?? "";
 
 					(document.getElementById("modalName") as HTMLInputElement).value = btn.dataset.lotName || "";
 
@@ -141,6 +143,45 @@ const occStyles = {
 					(document.getElementById("modalTotal") as HTMLInputElement).value = btn.dataset.lotTotal || "0";
 				});
 			}
+
+			//form on document
+			const form = document.getElementById("editForm") as HTMLFormElement;
+			const msg = document.getElementById("msg")as HTMLFormElement;
+			//when the form is submitted, make update call to backend
+			form.addEventListener("submit", async (e) => {
+				e.preventDefault();
+				const updates = {
+					modelLocationID: locationID,
+					modalName: (document.getElementById("modalStreet") as HTMLInputElement).value,
+					modelNumber: (document.getElementById("modalNumber") as HTMLInputElement).value,
+					modelStreet: (document.getElementById("modalStreet") as HTMLInputElement).value,
+					modelCity: (document.getElementById("modalCity") as HTMLInputElement).value,
+					modelState: (document.getElementById("modalState") as HTMLInputElement).value,
+					modelZip: (document.getElementById("modalZip") as HTMLInputElement).value,
+					modelType: (document.getElementById("modalKind") as HTMLSelectElement).value,
+					modelPermit: (document.getElementById("modalPermit") as HTMLSelectElement).value,
+					modelUsed: (document.getElementById("modalUsed") as HTMLInputElement).value,
+					modelTotal: (document.getElementById("modalTotal") as HTMLInputElement).value
+				}
+
+				try{
+					const updateCall = await fetch(`/api/location/update`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ data: updates }),
+						credentials: "include",
+					});
+
+					if (!updateCall.ok) throw new Error(`Save failed: ${updateCall.status} ${updateCall.statusText}`);
+
+					window.location.reload();
+				} catch (err) {
+					console.error(err);
+					msg.textContent = "Something went wrong saving your changes. Please try again.";
+				}
+			})
 
 			$(function () {
 				function applyFilters() {
