@@ -13,4 +13,5 @@ model Location {
   spotAvailability Int
   permit           Permit  @default(NONE)
   type             Type    @default(NONE)
+  timeLimitSecs    Int?
 }
