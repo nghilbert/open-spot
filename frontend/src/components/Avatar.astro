@@ -7,7 +7,7 @@ interface Props {
 const { avatarUrl, role } = Astro.props;
 ---
 
-<div class="avatar p-3 gap-2 border rounded">
+<div class="avatar p-3 gap-2">
 	<img src={avatarUrl} />
 	<span title="Account status">{role}</span>
 	<div class="gap-2 row flex-column-center-content">
