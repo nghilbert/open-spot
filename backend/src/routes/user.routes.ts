@@ -107,7 +107,7 @@ export default function createUserRoutes() {
 
 	router.get("/name", requireAuth, async (req: Request, res: Response) => {
 		// Ask the account manager to log the user in
-		res.end((req as unknown as AuthenticatedRequest).user!.name);
+		res.end((req as unknown as AuthenticatedRequest).user.name);
 	});
 
 	router.patch("/profile", requireAuth, async (req: Request, res: Response) => {
@@ -118,7 +118,7 @@ export default function createUserRoutes() {
 
 		if (
 			await accountController.updateAccount(
-				user!.id,
+				user.id,
 				undefined,
 				undefined,
 				payload.name,
