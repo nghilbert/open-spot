@@ -1,16 +1,16 @@
 enum Type {
-  PARKING_LOT   
+  PARKING_LOT
   BIKE_RACK
   NONE
 }
 
 model Location {
-  id Int @id @default(autoincrement())
-  addressId Int @unique
-  address Address @relation(fields: [addressId], references: [id])
-  name String
-  spotCapacity Int
+  id               Int     @id @default(autoincrement())
+  addressId        Int     @unique
+  address          Address @relation(fields: [addressId], references: [id])
+  name             String
+  spotCapacity     Int
   spotAvailability Int
-  permit Permit @default(NONE)
-  type Type @default(NONE)
+  permit           Permit  @default(NONE)
+  type             Type    @default(NONE)
 }
