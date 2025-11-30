@@ -163,12 +163,11 @@ const occStyles = {
 
 					(document.getElementById("modalPermit") as HTMLSelectElement).value = btn.dataset.lotPermit || "None";
 
-					(document.getElementById("modalUsed") as HTMLInputElement).value = btn.dataset.lotAvailable || "0";
+					(document.getElementById("modalUsed") as HTMLInputElement).value = btn.dataset.lotUsed || "0";
 
 					(document.getElementById("modalTotal") as HTMLInputElement).value = btn.dataset.lotTotal || "0";
 
-					(document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value =
-						btn.dataset.timeLimitSecs || "null";
+					(document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value = btn.dataset.timeLimitSecs || "";
 				});
 			}
 
@@ -179,23 +178,22 @@ const occStyles = {
 			form.addEventListener("submit", async (e) => {
 				e.preventDefault();
 				const updates = {
-					modelLocationID: locationID,
-					modalName: (document.getElementById("modalStreet") as HTMLInputElement).value,
-					modelNumber: (document.getElementById("modalNumber") as HTMLInputElement).value,
-					modelStreet: (document.getElementById("modalStreet") as HTMLInputElement).value,
-					modelCity: (document.getElementById("modalCity") as HTMLInputElement).value,
-					modelState: (document.getElementById("modalState") as HTMLInputElement).value,
-					modelZip: (document.getElementById("modalZip") as HTMLInputElement).value,
-					modelType: (document.getElementById("modalKind") as HTMLSelectElement).value,
-					modelPermit: (document.getElementById("modalPermit") as HTMLSelectElement).value,
-					modelUsed: (document.getElementById("modalUsed") as HTMLInputElement).value,
-					modelTotal: (document.getElementById("modalTotal") as HTMLInputElement).value,
-					modelTimeLimitSecs: (document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value,
+					name: (document.getElementById("modalName") as HTMLInputElement).value,
+					number: (document.getElementById("modalNumber") as HTMLInputElement).value,
+					street: (document.getElementById("modalStreet") as HTMLInputElement).value,
+					city: (document.getElementById("modalCity") as HTMLInputElement).value,
+					state: (document.getElementById("modalState") as HTMLInputElement).value,
+					zip: (document.getElementById("modalZip") as HTMLInputElement).value,
+					type: (document.getElementById("modalKind") as HTMLSelectElement).value,
+					permit: (document.getElementById("modalPermit") as HTMLSelectElement).value,
+					used: (document.getElementById("modalUsed") as HTMLInputElement).value,
+					total: (document.getElementById("modalTotal") as HTMLInputElement).value,
+					timeLimitSecs: (document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value,
 				};
 
 				try {
-					const updateCall = await fetch(`/api/location/update`, {
-						method: "POST",
+					const updateCall = await fetch(`/api/location/${locationID}`, {
+						method: "PUT",
 						headers: {
 							"Content-Type": "application/json",
 						},

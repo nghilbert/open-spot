@@ -15,9 +15,8 @@ export default function createLocationRoutes() {
 		}
 	});
 
-	router.post("/remove", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
-		// Extract id from request body
-		const { id } = req.body;
+	router.delete("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
+		const id = parseInt(req.params.id, 10);
 
 		// Attempt to remove a parking lot object
 		if (await locationController.remove(id)) {
@@ -29,34 +28,33 @@ export default function createLocationRoutes() {
 		}
 	});
 
-	router.post("/update", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
+	router.put("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		try {
-			const id = Number(req.body.data.modelLocationID);
+			const locationId = parseInt(req.params.id, 10);
+			const data = req.body.data;
 
-			const location = await locationController.getLocation(id);
-
+			const location = await locationController.getLocation(locationId);
 			if (!location) {
 				return res.status(404).json({ error: "Failed to find the location" });
 			}
 
 			// calc spotAvailability
-			const total = Number(req.body.data.modelTotal);
-			const used = Number(req.body.data.modelUsed);
-			const spotAvailability = total - used;
+			const spotCapacity = Number(req.body.data.total);
+			const spotAvailability = spotCapacity - Number(req.body.data.used);
 
 			const update = await locationController.updateLocation(
-				id,
-				Number(req.body.data.modelNumber), // house number
-				req.body.data.modelStreet,
-				req.body.data.modelCity,
-				req.body.data.modelState,
-				Number(req.body.data.modelZip),
-				req.body.data.modelName,
-				total,
+				locationId,
+				Number(data.number), // house number
+				data.street,
+				data.city,
+				data.state,
+				Number(data.zip),
+				data.name,
+				spotCapacity,
 				spotAvailability,
-				req.body.data.modelPermit,
-				req.body.data.modelType,
-				req.body.data.modelTimeLimitSeconds
+				data.permit,
+				data.type,
+				Number(data.timeLimitSecs)
 			);
 
 			if (update) {
