@@ -6,18 +6,18 @@ import NavIcon from "./navIcon.astro";
 
 interface Props {
 	user: User;
-	lot: Location;
+	location: Location;
 	addressString: string;
 	used: number;
 	total: number;
 	p: number;
 }
 
-const { user, lot, addressString, used, total, p } = Astro.props;
+const { user, location, addressString, used, total, p } = Astro.props;
 ---
 
 <div class="text-end d-grid gap-2" style="align-items: start;">
 	<PresentNumber p={p} />
-	{user.role === "ADMIN" && <EditButton lot={lot} used={used} total={total} />}
-	<NavIcon addressString={addressString} name={lot.name} />
+	{user.role === "ADMIN" && <EditButton location={location} used={used} total={total} />}
+	<NavIcon addressString={addressString} name={location.name} />
 </div>

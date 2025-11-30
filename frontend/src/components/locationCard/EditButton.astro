@@ -1,31 +1,20 @@
 ---
-import type { Location } from "../../../../shared/src";
+import type { Location } from "@openspot/shared";
 
 interface Props {
-	lot: Location;
+	location: Location;
 	used: number;
 	total: number;
 }
 
-const { lot, used, total } = Astro.props;
+const { location, used, total } = Astro.props;
 ---
 
 <button
 	class="editBtn"
 	data-bs-toggle="modal"
 	data-bs-target="#editModal"
-	data-lot-id={lot.id}
-	data-lot-name={lot.name}
-	data-lot-number={lot.address.number}
-	data-lot-street={lot.address.street}
-	data-lot-city={lot.address.city}
-	data-lot-state={lot.address.state}
-	data-lot-zip={lot.address.zip}
-	data-lot-kind={lot.type}
-	data-lot-permit={lot.permit || "None"}
-	data-lot-used={used}
-	data-lot-total={total}
-	data-time-limit-secs={lot.timeLimitSecs || "null"}
+	data-location={JSON.stringify(location)}
 	title="Edit location"
 	aria-label="Edit location"
 >

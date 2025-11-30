@@ -33,11 +33,12 @@
 					</div>
 					<div class="mb-3">
 						<label for="modalTimeLimitSecs" class="form-label">Time Limit (seconds)</label>
-						<input type="number" class="form-control" id="modalTimeLimitSecs" name="timeLimitSecs" required />
+						<input placeholder="null" type="number" class="form-control" id="modalTimeLimitSecs" name="timeLimitSecs" />
 					</div>
 					<div class="mb-3">
 						<label for="modalKind" class="form-label">Type</label>
 						<select class="form-select" id="modalKind" name="kind" required>
+							<option value="NONE">None</option>
 							<option value="PARKING_LOT">Parking Lot</option>
 							<option value="BIKE_RACK">Bike Rack</option>
 						</select>
