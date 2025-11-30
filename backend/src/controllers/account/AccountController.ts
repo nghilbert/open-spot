@@ -31,6 +31,19 @@ export class AccountController {
 		}
 	}
 
+	public async getUserById(id: number): Promise<User | null> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				password: true,
+			},
+		});
+
+		return user;
+	}
+
 	public async isValidSession(sessionToken: Session): Promise<boolean> {
 		// This function returns true or false depending on if the session is valid
 		const prisma = this.prisma;
@@ -63,39 +76,47 @@ export class AccountController {
 		}
 	}
 
-	public async updateAccount(userID: number, email?: string, password?: string, name?: string, username?: string, userType?: UserType, permit?: Permit): Promise<boolean> {
-        // Creates a new user object. It returns true if the user was created successfully and false
-        // if it fails. i.e. email in use.
-        const prisma = this.prisma;
+	public async updateAccount(
+		userID: number,
+		email?: string,
+		password?: string,
+		name?: string,
+		username?: string,
+		userType?: UserType,
+		permit?: Permit
+	): Promise<boolean> {
+		// Creates a new user object. It returns true if the user was created successfully and false
+		// if it fails. i.e. email in use.
+		const prisma = this.prisma;
 
-        try {
-            // Creates the password hash to insert to the DB
-            const salt = await bcrypt.genSalt();
-            const passwordHash = password ? await bcrypt.hash(password, salt) : undefined;
+		try {
+			// Creates the password hash to insert to the DB
+			const salt = await bcrypt.genSalt();
+			const passwordHash = password ? await bcrypt.hash(password, salt) : undefined;
 
-            // Insert the data into the DB
-            const newUser = await prisma.user.update({
-                where: {
-                    id: userID
-                },
-                data: {
-                    email,
+			// Insert the data into the DB
+			const newUser = await prisma.user.update({
+				where: {
+					id: userID,
+				},
+				data: {
+					email,
 					username,
-                    name,
+					name,
 					userType: userType?.toUpperCase() as UserType,
-					permit: permit?.toUpperCase() as Permit
-                },
+					permit: permit?.toUpperCase() as Permit,
+				},
 				include: {
-					password: true
-				}
-            });
+					password: true,
+				},
+			});
 
 			// Update the password if specified
-			if(passwordHash){
+			if (passwordHash) {
 				const newPasswordEntry = await prisma.password.create({
 					data: {
-						passwordHash: passwordHash
-					}
+						passwordHash: passwordHash,
+					},
 				});
 
 				await prisma.user.update({
@@ -107,16 +128,16 @@ export class AccountController {
 				});
 			}
 
-            return true;
-        } catch (error) {
-            console.error("Error updating user: ", error);
-            return false;
-        }
-    }
+			return true;
+		} catch (error) {
+			console.error("Error updating user: ", error);
+			return false;
+		}
+	}
 
-	public async getUserFromEmail(email: string): Promise<User|null> {
+	public async getUserFromEmail(email: string): Promise<User | null> {
 		// Gets the user or null depending on the email given
-		const user = this.prisma.user.findUnique({ where: { email }});
+		const user = this.prisma.user.findUnique({ where: { email } });
 		return user;
 	}
 
@@ -124,27 +145,27 @@ export class AccountController {
 		// Creates a password reset token and returns the link to reset or null to back
 		const hostname = process.env.HOSTNAME || "http://localhost:3000";
 		const token = randomBytes(32).toString("hex");
-	
+
 		await this.prisma.resetToken.create({
 			data: {
 				token,
 				userID: user.id,
 			},
 		});
-	
+
 		const content = `
 			<p>Hello, please click this link to reset your password.</p><br>
 			<a href="${hostname}/reset_password?token=${token}">Click here</a>
 		`;
-	
+
 		return await emailController.sendEmail(user.email, "Reset password", content);
 	}
 
 	public async finishPasswordReset(token: string, newPassword: string): Promise<boolean> {
 		// Finishes the password reset and remove sthe entry
 		try {
-			const resetRow = await this.prisma.resetToken.findUnique({ where: { token }});
-			if(!resetRow) return false;
+			const resetRow = await this.prisma.resetToken.findUnique({ where: { token } });
+			if (!resetRow) return false;
 
 			const isExpired = Date.now() - new Date(resetRow.createdAt).getTime() > 1000 * 60 * 60 * 24;
 			if (isExpired) {
@@ -153,24 +174,27 @@ export class AccountController {
 			}
 
 			const userID = resetRow.userID;
-			const userRow = await this.prisma.user.findUnique({ where: { id: userID }, include: { password: true, oldPasswords: true } });
+			const userRow = await this.prisma.user.findUnique({
+				where: { id: userID },
+				include: { password: true, oldPasswords: true },
+			});
 			if (!userRow) return false;
 
 			// Make sure the user's new password isnt an old password
-			for(let pass of userRow.oldPasswords){
-				if(await bcrypt.compare(newPassword, pass.passwordHash)){
+			for (let pass of userRow.oldPasswords) {
+				if (await bcrypt.compare(newPassword, pass.passwordHash)) {
 					return false;
 				}
 			}
 
-			if(await bcrypt.compare(newPassword, userRow.password.passwordHash)){
+			if (await bcrypt.compare(newPassword, userRow.password.passwordHash)) {
 				return false;
 			}
 
 			await this.prisma.resetToken.delete({ where: { token } });
 
 			return await this.updateAccount(userID, undefined, newPassword, undefined);
-		} catch(err){
+		} catch (err) {
 			console.error(err);
 			return false;
 		}

@@ -69,10 +69,10 @@ export default function createUserRoutes() {
 			});
 			//tells the front end where to redirect the user, with session token
 			res.status(200).json({ redirectTo: "/dashboard" });
-		} else if (await accountController.emailExists(email)){
+		} else if (await accountController.emailExists(email)) {
 			//email exist but is not verified
-			res.status(500).json({success: false});
-		} else{
+			res.status(500).json({ success: false });
+		} else {
 			// No record of User
 			res.status(401).json({ success: false });
 		}
@@ -143,8 +143,13 @@ export default function createUserRoutes() {
 			let user = await accountController.getUserSession(sessionToken);
 
 			if (user) {
-				if (user.password) delete user.password;
-				res.status(200).json(user);
+				const userId = user.id;
+
+				const userFromDB = await accountController.getUserById(userId);
+				const passwordCreatedOn = userFromDB?.password?.createdOn;
+
+				if (userFromDB?.password) delete userFromDB.password.passwordHash;
+				res.status(200).json(userFromDB);
 			} else {
 				res.status(401).json({ error: "Invalid session" });
 			}
