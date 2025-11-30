@@ -91,7 +91,13 @@ export class LocationController {
 					permit,
 					type,
 					address: {
-						update: { number, street, city, state, zip },
+						update: {
+							number,
+							street,
+							city,
+							state,
+							zip,
+						},
 					},
 					timeLimitSecs,
 				},
