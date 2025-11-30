@@ -55,7 +55,8 @@ export default function createLocationRoutes() {
 				total,
 				spotAvailability,
 				req.body.data.modelPermit,
-				req.body.data.modelType
+				req.body.data.modelType,
+				req.body.data.modelTimeLimitSeconds
 			);
 
 			if (update) {
