@@ -106,11 +106,39 @@ const occStyles = {
 		<!-- Edit Modal -->
 		<EditModel />
 
+		<!-- Stay at Location Modal -->
+			<div class="modal fade" id="stayModal" tabindex="-1" aria-labelledby="stayModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content bg-dark text-white">
+				<div class="modal-header border-0">
+					<h5 class="modal-title" id="stayModalLabel">Stay at this location?</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="stayLocationText" class="small text-secondary"></div>
+				</div>
+				<div class="modal-footer justify-content-center border-0">
+					<button type="button" class="btn btn-danger" id="stayNoBtn" data-bs-dismiss="modal">No</button>
+					<button type="button" class="btn btn-success" id="stayYesBtn">Yes</button>
+				</div>
+				</div>
+			</div>
+			</div>
+
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 		<script>
+			// Stay at location modal functionality
+			const stayModalEl = document.getElementById('stayModal');
+			stayModalEl.addEventListener('show.bs.modal', (event) => {
+				const triggerCard = event.relatedTarget; // the card that was clicked
+				const name = triggerCard.dataset.name || 'Unknown Location';
+				const address = triggerCard.dataset.address || '';
+				document.getElementById('stayLocationText').textContent = name + (address ? '\n' + address : '');
+			});
+
 			const editModal = document.getElementById("editModal");
 			var locationID = "";
 			//populates the form feilds with data from the element(location) that was clicked on
