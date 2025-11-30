@@ -69,7 +69,7 @@ export class LocationController {
 
 	async updateLocation(newLocation: Location): Promise<boolean> {
 		const { address, id, ...rest } = newLocation;
-		console.log("LOCATION: ", newLocation);
+
 		try {
 			await prismaClient.location.update({
 				where: { id },

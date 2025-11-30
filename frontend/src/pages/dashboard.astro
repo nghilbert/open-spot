@@ -37,7 +37,6 @@ var locations = await res.json();
 if (!res.ok) {
 	locations = [];
 }
-console.log("LOCATIONS: ", locations);
 
 // Title of the page, to be shown on the internet tab and at the top of the page
 const title = "Dashboard";
@@ -196,9 +195,7 @@ const occStyles = {
 					type: (document.getElementById("modalKind") as HTMLSelectElement).value as LocationType,
 					permit: (document.getElementById("modalPermit") as HTMLSelectElement).value as Permit,
 					spotCapacity: Number((document.getElementById("modalTotal") as HTMLInputElement).value),
-					spotAvailability:
-						Number((document.getElementById("modalTotal") as HTMLInputElement).value) -
-						Number((document.getElementById("modalUsed") as HTMLInputElement).value),
+					spotAvailability: Number((document.getElementById("modalTotal") as HTMLInputElement).value) - Number((document.getElementById("modalUsed") as HTMLInputElement).value),
 					timeLimitSecs: Number((document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value) || null,
 				};
 
