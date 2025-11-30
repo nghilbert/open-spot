@@ -6,22 +6,23 @@ interface Props {
 	createdOn: Date;
 	role: string;
 	emailVerified: boolean;
+	password: Password;
 };
 
-const { name, username, email, createdOn, role, emailVerified } = Astro.props;
+
+const { name, username, email, createdOn, role, emailVerified, password} = Astro.props;
 ---
 
-<div class="details">
+<div class="details bg-body p-4 rounded">
 	<h2 id="profile-heading">Account</h2>
 	<p class="muted">Manage your personal information and security settings.</p>
-	<div class="grid" role="group" aria-label="Profile information">
+	<div class="grid gap-2" role="group" aria-label="Profile information">
 		<div class="border rounded p-2"><label>Full name</label><div class="value">{name}</div></div>
 		<div class="border rounded p-2"><label>Username</label><div class="value">{username}</div></div>
 		<div class="border rounded p-2"><label>Email</label><div class="value">{email}</div></div>
 		<div class="border rounded p-2"><label>Member since</label><div class="value">{new Date(createdOn).toLocaleDateString("en-US")}</div></div>
 		<div class="border rounded p-2"><label>Type</label><div class="value">{role}</div></div>
-		<div class="border rounded p-2">
-			<label>Authenticated</label><div class="value">{emailVerified == true ? "Active" : "Disactive"}</div>
-		</div>
+		<div class="border rounded p-2"><label>Authenticated</label><div class="value">{emailVerified == true ? "Active" : "Disactive"}</div></div>
+		<div class="border rounded p-2"><label>Password</label><div class="value mb-1">Last changed: {new Date(password.createdOn).toLocaleDateString("en-US")}</div><button class="btn btn-primary w-100" type="button" id="change-password">Change</button></div>
 	</div>
 </div>
