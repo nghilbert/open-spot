@@ -107,16 +107,23 @@ const occStyles = {
 		<EditModel />
 
 		<!-- Stay at Location Modal -->
-		<div id="stayModal" class="stayModal">
-			<div class="stayModal-content">
-				<h2 class="stayModal-title">Stay at this location?</h2>
-				<div class="stayModal-location" id="stayLocationText"></div>
-				<div class="stayModal-buttons">
-					<button type="button" class="stayModal-btn secondary" id="stayNoBtn">No</button>
-					<button type="button" class="stayModal-btn primary" id="stayYesBtn">Yes</button>
+			<div class="modal fade" id="stayModal" tabindex="-1" aria-labelledby="stayModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content bg-dark text-white">
+				<div class="modal-header border-0">
+					<h5 class="modal-title" id="stayModalLabel">Stay at this location?</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="stayLocationText" class="small text-secondary"></div>
+				</div>
+				<div class="modal-footer justify-content-center border-0">
+					<button type="button" class="btn btn-danger" id="stayNoBtn" data-bs-dismiss="modal">No</button>
+					<button type="button" class="btn btn-success" id="stayYesBtn">Yes</button>
+				</div>
 				</div>
 			</div>
-		</div>
+			</div>
 
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -124,50 +131,12 @@ const occStyles = {
 
 		<script>
 			// Stay at location modal functionality
-			const stayModal = document.getElementById('stayModal');
-			const stayLocationText = document.getElementById('stayLocationText');
-			const stayYesBtn = document.getElementById('stayYesBtn');
-			const stayNoBtn = document.getElementById('stayNoBtn');
-			let currentSelectedLot = null;
-
-			function openStayModal(lotCard) {
-				const name = lotCard.dataset.name || 'Unknown Location';
-				const address = lotCard.dataset.address || '';
-				currentSelectedLot = lotCard;
-				stayLocationText.textContent = name + (address ? '\n' + address : '');
-				stayModal.classList.add('show');
-			}
-
-			function closeStayModal() {
-				stayModal.classList.remove('show');
-				currentSelectedLot = null;
-			}
-
-			// Attach click handlers to location cards
-			document.querySelectorAll('.lotCard').forEach(card => {
-				// Only trigger on the card itself, not on edit button or nav icon
-				card.addEventListener('click', (e) => {
-					// Don't open modal if clicking edit button or nav icon
-					if (e.target.closest('.editBtn') || e.target.closest('.navIcon')) {
-						return;
-					}
-					openStayModal(card);
-				});
-			});
-
-			stayYesBtn.addEventListener('click', () => {
-				console.log('User confirmed staying at location:', currentSelectedLot?.dataset.name);
-				// TODO: Call backend API to record that user is staying at this location
-				closeStayModal();
-			});
-
-			stayNoBtn.addEventListener('click', () => {
-				closeStayModal();
-			});
-
-			// Close modal when clicking outside
-			stayModal.addEventListener('click', (e) => {
-				if (e.target === stayModal) closeStayModal();
+			const stayModalEl = document.getElementById('stayModal');
+			stayModalEl.addEventListener('show.bs.modal', (event) => {
+				const triggerCard = event.relatedTarget; // the card that was clicked
+				const name = triggerCard.dataset.name || 'Unknown Location';
+				const address = triggerCard.dataset.address || '';
+				document.getElementById('stayLocationText').textContent = name + (address ? '\n' + address : '');
 			});
 
 			const editModal = document.getElementById("editModal");
