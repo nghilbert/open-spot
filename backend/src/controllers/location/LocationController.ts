@@ -5,7 +5,7 @@ import type { Location, Address, LocationType } from "@openspot/shared";
 export class LocationController {
 	protected type: LocationType = "NONE";
 
-	async add(address: Address, spotCapacity: number, name?: string): Promise<boolean> {
+	async add(address: Address, spotCapacity: number, name?: string, timeLimitSecs?: number): Promise<boolean> {
 		// Validate arguments
 		if (!address || !Number.isInteger(spotCapacity) || spotCapacity <= 0) {
 			return false;
@@ -68,7 +68,7 @@ export class LocationController {
 	}
 
 	async updateLocation(
-		currentId: number,
+		locationId: number,
 		number: number,
 		street: string,
 		city: string,
@@ -78,30 +78,27 @@ export class LocationController {
 		spotCapacity: number,
 		spotAvailability: number,
 		permit: Permit,
-		type: Type
+		type: Type,
+		timeLimitSecs: number | null
 	): Promise<boolean> {
 		try {
 			await prismaClient.location.update({
-				where: { id: currentId },
+				where: { id: locationId },
 				data: {
+					name,
+					spotCapacity,
+					spotAvailability,
+					permit,
+					type,
 					address: {
-						update: {
-							number: number,
-							street: street,
-							city: city,
-							state: state,
-							zip: zip,
-						},
+						update: { number, street, city, state, zip },
 					},
-					name: name,
-					spotCapacity: spotCapacity,
-					spotAvailability: spotAvailability,
-					permit: permit,
-					type: type,
+					timeLimitSecs,
 				},
 			});
 			return true;
-		} catch {
+		} catch (error) {
+			console.error("Failed to update location:", error);
 			return false;
 		}
 	}
