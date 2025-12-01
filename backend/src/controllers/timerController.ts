@@ -1,5 +1,5 @@
 import { Timer, TimerType, User } from "@prisma/client";
-import { Location } from "@openspot/shared";
+import { Location } from "@prisma/client";
 import { prismaClient } from "../prismaClient";
 
 /**
@@ -153,6 +153,22 @@ export class TimerController {
         for(let timer of timers){
             await this.createTimer(timer);
         }
+
+        // Reconstruct all pruning
+        const expiredTimers = await prismaClient.timer.findMany({
+            where: {
+                status: TimerType.EXPIRED
+            }
+        });
+
+        for(let timer of expiredTimers){
+            const timeout = setTimeout(async () => {
+                // Clear out the expiration, its been a long time. use clearTimer to avoid updating average
+                await this.clearTimer(timer.id);
+            }, this.expirationTimeout * 1000);
+    
+            this.pendingExpirations[timer.id] = timeout;
+        }
     }
 
     public async startTimer(user: User, location: Location, seconds?: number){
@@ -167,7 +183,7 @@ export class TimerController {
                     endTime,
                     status: TimerType.ACTIVE,
                     user: { connect: user },
-                    location: { connect: { id: location.id } }
+                    location: { connect: location }
                 }
             });
     

@@ -2,14 +2,18 @@ import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware";
 import { timerController } from "../controllers";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
+import { prismaClient } from "src/prismaClient";
+import { Location } from "@prisma/client";
 
 interface CreateTimerRequest {
-
+	locationID: number;
+	seconds?: number;
 };
 
 export default function createTimerRoutes() {
 	const router = Router();
 
+	// Getting
 	router.get("/", requireAuth, async (req: Request, res: Response) => {
 		// Gets the status of the user's current timer
 		const auth = (req as any as AuthenticatedRequest);
@@ -25,12 +29,16 @@ export default function createTimerRoutes() {
 		}
 	});
 
+	// Creating/ending
 	router.post("/", requireAuth, async (req: Request, res: Response) => {
 		// Starts a timer for the user
 		const auth = (req as any as AuthenticatedRequest);
+		const body = req.body as CreateTimerRequest;
+		const user = await prismaClient.user.findUnique({ where: { id: auth.user.id }});
+		const location = await prismaClient.location.findUnique({ where: { id: body.locationID }});
 
 		// Attempt to create a parking lot object
-		if(await timerController.endTimer(auth.user.id)){
+		if(await timerController.startTimer(user!, location!, body.seconds)){
 			// There is a timer with some sort of status, return it
 			res.status(200).end();
 		} else {
@@ -45,6 +53,21 @@ export default function createTimerRoutes() {
 
 		// Attempt to create a parking lot object
 		if(await timerController.endTimer(auth.user.id)){
+			// There is a timer with some sort of status, return it
+			res.status(200).end();
+		} else {
+			// Send an error
+			res.status(400).end();
+		}
+	});
+
+	// Confirming
+	router.post("/confirm", requireAuth, async (req: Request, res: Response) => {
+		// Starts a timer for the user
+		const auth = (req as any as AuthenticatedRequest);
+
+		// Attempt to create a parking lot object
+		if(await timerController.reconfirmTimer(auth.user.id)){
 			// There is a timer with some sort of status, return it
 			res.status(200).end();
 		} else {
