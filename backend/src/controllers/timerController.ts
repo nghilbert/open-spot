@@ -9,9 +9,9 @@ export class TimerController {
     private activeTimers: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
     private pendingConfirmations: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
     private pendingExpirations: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
-    private unlimitedInterval: number = 60 * 60 * 8; // in seconds
-    private confirmationTimeout: number = 60 * 60; // in seconds
-    private expirationTimeout: number = 60 * 60 * 24; // in seconds
+    private unlimitedInterval: number = 60 * 60 * 8; // in seconds, user gets 8 hours before needing to confirm
+    private confirmationTimeout: number = 60 * 60; // in seconds, user gets an hour to click confirm
+    private expirationTimeout: number = 60 * 60 * 24; // in seconds, user gets 24 hours of an expired timer before it is pruned
 
     private async createTimer(timer: Timer){
         // Creates the timeout or interval
