@@ -1,0 +1,8 @@
+---
+const res = await fetch(`${Astro.url.origin}/api/timer/confirm`, {
+    method: "POST",
+	headers: {
+		Cookie: `session=${Astro.cookies.get("session")?.value}`,
+	},
+});
+---
