@@ -6,6 +6,7 @@ import { EmailController } from "./account/EmailController";
 import { LocationController } from "./location/LocationController";
 import { ParkingLotController } from "./location/ParkingLotController";
 import { BikeRackController } from "./location/BikeRackController";
+import { TimerController } from "./timerController";
 
 export const accountController = new AccountController();
 export const loginController = new LoginController();
@@ -15,3 +16,4 @@ export const locationController = new LocationController();
 export const parkingLotController = new ParkingLotController();
 export const bikeRackController = new BikeRackController();
 export const emailController = new EmailController();
+export const timerController = new TimerController();

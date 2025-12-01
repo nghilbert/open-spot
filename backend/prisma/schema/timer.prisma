@@ -6,11 +6,13 @@ enum TimerType {
 
 model Timer {
     id Int @id @default(autoincrement())
-    userId Int
+    userId Int @unique
     locationId Int
+
     startTime DateTime
-    duration Int
+    endTime DateTime
     status TimerType
+
     user User @relation(fields: [userId], references: [id])
     location Location @relation(fields: [locationId], references: [id])
 }
