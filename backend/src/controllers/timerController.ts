@@ -1,12 +1,14 @@
 import { Timer, TimerType, User } from "@prisma/client";
 import { Location } from "@prisma/client";
 import { prismaClient } from "../prismaClient";
+import { emailController } from ".";
 
 /**
  * Notes for continuing tomorrow:
  * Need to complete integration with other controllers
- * Integrate notification system
  */
+
+const hostname = process.env.HOSTNAME || "http://localhost:3000";
 
 export class TimerController {
     private activeTimers: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
@@ -90,6 +92,9 @@ export class TimerController {
                 },
                 data: {
                     status: "EXPIRED"
+                },
+                include: {
+                    user: true
                 }
             });
             
@@ -100,7 +105,8 @@ export class TimerController {
     
             this.pendingExpirations[timerData.id] = timeout;
     
-            console.log(`TODO: Implement notification service. Anyway, 'sent' notification to ${userID}`)
+            console.log(`User ${userID} has expired their timer`);
+            await emailController.sendEmail(timerData.user.email, "Parking lot expired!", `Your parking lot reservation has expired! Please <a href="${hostname}/timer/confirm_expire">click here</a> to acknowledge. `);
             return true;
         } catch(err){
             console.error(err);
@@ -114,6 +120,9 @@ export class TimerController {
             const timerData = await prismaClient.timer.findUnique({
                 where: {
                     userId: userID
+                },
+                include: {
+                    user: true
                 }
             });
 
@@ -126,7 +135,8 @@ export class TimerController {
     
                 this.pendingConfirmations[timerData.id] = timeout;
     
-                console.log(`TODO: Implement notification service. Anyway, asking user ${userID} if theyre still using this space`);
+                console.log(`User ${userID} needs to confirm their timer`);
+                await emailController.sendEmail(timerData.user.email, "Parking lot reconfirmation", `Your parking lot reservation has been in use for a while! Please <a href="${hostname}/timer/still_there">click here</a> to confirm you are still using it. `);
                 return true;
             }
         } catch(err){
