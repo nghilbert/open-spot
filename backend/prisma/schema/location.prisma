@@ -14,4 +14,5 @@ model Location {
   permit           Permit  @default(NONE)
   type             Type    @default(NONE)
   timeLimitSecs    Int?
+  timers           Timer[]
 }

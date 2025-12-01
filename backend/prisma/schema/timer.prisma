@@ -1,0 +1,16 @@
+enum TimerType {
+    ACTIVE
+    EXPIRED
+    RESET
+}
+
+model Timer {
+    id Int @id @default(autoincrement())
+    userId Int
+    locationId Int
+    startTime DateTime
+    duration Int
+    status TimerType
+    user User @relation(fields: [userId], references: [id])
+    location Location @relation(fields: [locationId], references: [id])
+}
