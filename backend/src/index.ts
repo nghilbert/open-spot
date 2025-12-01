@@ -1,5 +1,7 @@
 import { prismaClient } from "./prismaClient";
 import { createExpressApp } from "./app";
+import { accountController, locationController, timerController } from "./controllers";
+import { Address, Location } from "@openspot/shared";
 
 // Runtime config
 const environment = process.env.NODE_ENV || "development";
@@ -8,6 +10,7 @@ const port = parseInt(process.env.PORT || "5001", 10);
 // Create a main function for lifetime handling
 async function main() {
 	const app = createExpressApp();
+	await timerController.initTimersFromDB();
 
 	let server = app.listen(port, () => {
 		console.log(`Listening on port ${port}`);

@@ -22,6 +22,7 @@ model User {
   sessions      Session[]
   role          Role       @default(NONE)
   permit        Permit     @default(NONE)
-  userType    UserType       @default(NONE)
+  userType      UserType       @default(NONE)
   createdOn     DateTime   @default(now())
+  timer         Timer?
 }
