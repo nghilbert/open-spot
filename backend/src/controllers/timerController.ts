@@ -1,5 +1,6 @@
-import { TimerType, User, Location } from "@prisma/client";
-import { prismaClient } from "src/prismaClient";
+import { TimerType, User } from "@prisma/client";
+import { Location } from "@openspot/shared";
+import { prismaClient } from "../prismaClient";
 
 export class TimerController {
     private activeTimers: {[key: number]: NodeJS.Timeout} = {};
@@ -10,8 +11,10 @@ export class TimerController {
                 id: timerID
             }});
 
-            clearTimeout(this.activeTimers[timerID]);
-            delete this.activeTimers[timerID];
+            if(timerID in this.activeTimers){
+                clearTimeout(this.activeTimers[timerID]);
+                delete this.activeTimers[timerID];
+            }
 
             return true;
         } catch(err){
@@ -33,6 +36,10 @@ export class TimerController {
         });
 
         for(let timer of timers){
+            // Skip timeout if there is no end time, i.e. count up only
+            if(!timer.endTime)
+                continue;
+
             // Gets the time in milliseconds between the end and current time
             const now = new Date();
             let timeLeft = timer.endTime.getTime() - now.getTime();
@@ -51,12 +58,11 @@ export class TimerController {
         }
     }
 
-    public async startTimer(user: User, location: Location, seconds: number){
+    public async startTimer(user: User, location: Location, seconds?: number){
         // Insert a new timer for the user and location, then start the timeout
         try {
             const startTime = new Date();
-            const endTime = new Date(startTime.getTime() + seconds * 1000);
-            const timeLeft = endTime.getTime() - startTime.getTime();
+            const endTime = seconds ? new Date(startTime.getTime() + seconds * 1000) : undefined;
     
             const timer = await prismaClient.timer.create({
                 data: {
@@ -64,17 +70,22 @@ export class TimerController {
                     endTime,
                     status: TimerType.ACTIVE,
                     user: { connect: user },
-                    location: { connect: location }
+                    location: { connect: { id: location.id } }
                 }
             });
     
-            const timeout = setTimeout(async () => {
-                // This function here sends the notification after the time is over
-                await this.endTimer(timer.id);
-                await this.sendNotification(timer.userId);
-            }, timeLeft);
+            if(endTime){
+                // Construct timeout if a set duration is provided
+                const timeLeft = endTime.getTime() - startTime.getTime();
 
-            this.activeTimers[timer.id] = timeout;
+                const timeout = setTimeout(async () => {
+                    // This function here sends the notification after the time is over
+                    await this.endTimer(timer.id);
+                    await this.sendNotification(timer.userId);
+                }, timeLeft);
+    
+                this.activeTimers[timer.id] = timeout;
+            }
 
             return true;
         } catch(err){

@@ -10,7 +10,7 @@ model Timer {
     locationId Int
 
     startTime DateTime
-    endTime DateTime
+    endTime DateTime?
     status TimerType
 
     user User @relation(fields: [userId], references: [id])
