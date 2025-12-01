@@ -286,7 +286,12 @@ export class TimerController {
             });
 
             if(timer){
-                return timer.status;
+                return {
+                    status: timer.status,
+                    startTime: timer.startTime,
+                    endTime: timer.endTime,
+                    locationID: timer.locationId,
+                };
             }
         } catch(err){
             console.error(err);

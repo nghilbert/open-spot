@@ -22,10 +22,10 @@ export default function createTimerRoutes() {
 		// Attempt to create a parking lot object
 		if(result){
 			// There is a timer with some sort of status, return it
-			res.status(200).json({ status: result });
+			res.status(200).json(result);
 		} else {
 			// Send an error
-			res.status(404).json({ status: null });
+			res.status(404).end();
 		}
 	});
 
