@@ -64,6 +64,7 @@ const { user, locations, pct, occ, occStyles } = Astro.props;
 					data-kind={location.type}
 					data-permit={permitTxt}
 					data-available={isAvailable}
+					data-timelimit={location.timeLimitSecs || ""}
 					style={`background:${style.bg}; color:${style.fg}; border-color:${style.br};`}
 				>
 					<div class="d-grid gap-3" style="grid-template-columns:1fr auto;">

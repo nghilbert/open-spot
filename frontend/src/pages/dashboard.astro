@@ -85,6 +85,14 @@ const occStyles = {
 	<div class="container py-4">
 		<NavBar title={title} buttonList={buttonList} />
 
+		<!-- Timer Display -->
+		<div class="alert alert-info d-flex justify-content-between align-items-center" id="timerDisplay">
+			<span>Not Occupying Any Spots</span>
+			<button type="button" class="btn btn-sm btn-danger" id="leaveBtn">Leave</button>
+		</div>
+
+
+
 		<!-- Filters -->
 		<section class="card shadow-lg rounded-4 border">
 			<div class="p-3 d-grid gap-3">
@@ -118,7 +126,7 @@ const occStyles = {
 				</div>
 				<div class="modal-footer justify-content-center border-0">
 					<button type="button" class="btn btn-danger" id="stayNoBtn" data-bs-dismiss="modal">No</button>
-					<button type="button" class="btn btn-success" id="stayYesBtn">Yes</button>
+					<button type="button" class="btn btn-success" id="stayYesBtn" data-bs-dismiss="modal">Yes</button>
 				</div>
 				</div>
 			</div>
@@ -131,14 +139,118 @@ const occStyles = {
 		<script>
 			import type { Location, Address, Permit, LocationType } from "@openspot/shared";
 
-			// Stay at location modal functionality
+			// --- Utility Function ---
+			function formatTime(seconds) {
+			const mins = Math.floor(seconds / 60);
+			const secs = seconds % 60;
+			return `${mins}:${secs.toString().padStart(2, "0")}`;
+			}
+
+			// --- Timer Variables ---
+			let timerInterval;
+			let startTime;
+			let currentLimit = null;
+			let currentAddress = "";
+			let currentType = ""; 
+
+			const display = document.getElementById("timerDisplay").querySelector("span");
+			const confirmBtn = document.getElementById("stayYesBtn");
+			const leaveBtn = document.getElementById("leaveBtn");
 			const stayModalEl = document.getElementById("stayModal");
-			stayModalEl.addEventListener("show.bs.modal", (event) => {
-				const triggerCard = event.relatedTarget; // the card that was clicked
-				const name = triggerCard.dataset.name || "Unknown Location";
-				const address = triggerCard.dataset.address || "";
-				document.getElementById("stayLocationText").textContent = name + (address ? "\n" + address : "");
+
+			// --- Restore Timer on Page Load ---
+			window.addEventListener("load", () => {
+			const savedStart = localStorage.getItem("stayStartTime");
+			const savedLimit = localStorage.getItem("stayTimeLimit");
+			const savedAddress = localStorage.getItem("stayAddress");
+			const savedType = localStorage.getItem("stayType");
+
+			if (savedStart) {
+				startTime = parseInt(savedStart);
+				currentLimit = savedLimit != null ? parseInt(savedLimit) : null;
+				currentAddress = savedAddress || "";
+				currentType = savedType || "";
+				runTimer();
+			}
 			});
+
+			// --- Modal Logic: capture type, address & time limit ---
+			stayModalEl.addEventListener("show.bs.modal", (event) => {
+			const triggerCard = event.relatedTarget;
+			const name = triggerCard.dataset.name || "Unknown Location";
+			const address = triggerCard.dataset.address || "";
+			const type = triggerCard.dataset.kind || ""; 
+			currentLimit = triggerCard.dataset.timelimit ? parseInt(triggerCard.dataset.timelimit) : null;
+			currentAddress = address;
+			currentType = type;
+
+			document.getElementById("stayLocationText").textContent =
+				name + (address ? "\n" + address : "");
+			});
+
+			// --- Confirm Stay (Start Timer) ---
+			confirmBtn.addEventListener("click", () => {
+			clearInterval(timerInterval);
+			startTime = Date.now();
+
+			// Save state to localStorage
+			localStorage.setItem("stayStartTime", startTime);
+			localStorage.setItem("stayTimeLimit", currentLimit || "");
+			localStorage.setItem("stayAddress", currentAddress);
+			localStorage.setItem("stayType", currentType);
+
+			runTimer();
+
+			// Close modal programmatically
+			const modal = bootstrap.Modal.getInstance(stayModalEl);
+			modal.hide();
+			});
+
+			// --- Leave (Stop Timer) ---
+			leaveBtn.addEventListener("click", () => {
+			clearInterval(timerInterval);
+			display.textContent = "You Have Left The Location";
+
+			// Clear saved state
+			localStorage.removeItem("stayStartTime");
+			localStorage.removeItem("stayTimeLimit");
+			localStorage.removeItem("stayAddress");
+			localStorage.removeItem("stayType");
+			});
+
+			// --- Timer Runner ---
+			function runTimer() {
+			clearInterval(timerInterval);
+			
+
+			if (currentLimit) {
+				// Countdown mode
+				let remaining = currentLimit - Math.floor((Date.now() - startTime) / 1000);
+				if (remaining < 0) remaining = 0;
+
+				display.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
+
+				timerInterval = setInterval(() => {
+				remaining--;
+				display.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
+
+				if (remaining <= 0) {
+					clearInterval(timerInterval);
+					display.textContent = "Time limit reached!";
+					localStorage.removeItem("stayStartTime");
+					localStorage.removeItem("stayTimeLimit");
+					localStorage.removeItem("stayAddress");
+					localStorage.removeItem("stayType");
+				}
+				}, 1000);
+			} else {
+				// Elapsed mode: show type + address + elapsed time
+				timerInterval = setInterval(() => {
+				const elapsed = Math.floor((Date.now() - startTime) / 1000);
+				display.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(elapsed)}`;
+				}, 1000);
+			}
+			}
 
 			const editModal = document.getElementById("editModal");
 			var locationID: number;

@@ -1,9 +1,0 @@
-model OAuth {
-  id String @id @default(cuid())
-
-  user User @relation(fields: [userID], references: [id], onDelete: Cascade)
-  oauth String
-  dateSent DateTime @default(now())
-
-  userID Int
-}
