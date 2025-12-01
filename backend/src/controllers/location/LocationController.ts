@@ -67,19 +67,17 @@ export class LocationController {
 		return location;
 	}
 
-	async updateLocation(newLocation: Location): Promise<boolean> {
-		const { address, id, ...rest } = newLocation;
+	async updateLocation(id: number, locationUpdates: Omit<Partial<Location>, "id">): Promise<boolean> {
+		// Extract id, address, and the rest of the fields
+		// Ignore the id if one was sent in the locationUpdates
+		const { address, ...rest } = locationUpdates;
 
 		try {
 			await prismaClient.location.update({
 				where: { id },
 				data: {
 					...rest,
-					address: {
-						update: {
-							...address,
-						},
-					},
+					...(address && { address: { update: address } }),
 				},
 			});
 			return true;

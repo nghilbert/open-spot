@@ -29,16 +29,16 @@ export default function createLocationRoutes() {
 		}
 	});
 
-	router.put("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
+	router.patch("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		try {
 			const locationId = parseInt(req.params.id, 10);
-			const newLocation: Location = req.body.data as Location;
+			const locationUpdates: Omit<Partial<Location>, "id"> = req.body.data as Location;
 
 			if (!(await locationController.getLocation(locationId))) {
 				return res.status(404).json({ error: "Failed to find the location" });
 			}
 
-			const isUpdated = await locationController.updateLocation(newLocation);
+			const isUpdated = await locationController.updateLocation(locationId, locationUpdates);
 
 			if (isUpdated) {
 				res.status(200).json({ message: "Location was updated" });

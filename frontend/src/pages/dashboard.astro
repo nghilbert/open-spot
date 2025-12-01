@@ -293,8 +293,7 @@ const occStyles = {
 			form.addEventListener("submit", async (e) => {
 				e.preventDefault();
 
-				const newLocation: Location = {
-					id: locationID,
+				const locationUpdates: Partial<Location> = {
 					name: (document.getElementById("modalName") as HTMLInputElement).value,
 					address: {
 						number: Number((document.getElementById("modalNumber") as HTMLInputElement).value),
@@ -312,11 +311,11 @@ const occStyles = {
 
 				try {
 					const updateCall = await fetch(`/api/location/${locationID}`, {
-						method: "PUT",
+						method: "PATCH",
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({ data: newLocation }),
+						body: JSON.stringify({ data: locationUpdates }),
 						credentials: "include",
 					});
 

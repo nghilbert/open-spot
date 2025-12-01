@@ -11,5 +11,5 @@ export type Location = {
 	permit: Permit;
 	type: LocationType;
 	address: Address;
-	timeLimitSecs?: number | null;
+	timeLimitSecs: number | null;
 };
