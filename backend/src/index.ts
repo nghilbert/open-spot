@@ -10,7 +10,6 @@ const port = parseInt(process.env.PORT || "5001", 10);
 // Create a main function for lifetime handling
 async function main() {
 	const app = createExpressApp();
-
 	await timerController.initTimersFromDB();
 
 	const test = async () => {

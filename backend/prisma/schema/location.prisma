@@ -15,4 +15,6 @@ model Location {
   type             Type    @default(NONE)
   timeLimitSecs    Int?
   timers           Timer[]
+  historicalTimers HistoricalTimes[]
+  averageParkingTime Int @default(0)
 }

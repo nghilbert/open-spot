@@ -4,6 +4,7 @@ import createEmailRoutes from "./email.routes";
 import createLocationRoutes from "./location.routes";
 import createLotRoutes from "./lot.routes";
 import createRackRoutes from "./rack.routes";
+import createTimerRoutes from "./timer.routes";
 
 export default function createRoutes() {
 	const router = Router();
@@ -22,5 +23,9 @@ export default function createRoutes() {
 
 	console.log("Mounting /api/rack routes...");
 	router.use("/rack", createRackRoutes());
+
+	console.log("Mounting /api/timer routes...");
+	router.use("/timer", createTimerRoutes());
+
 	return router;
 }

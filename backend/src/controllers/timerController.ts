@@ -1,27 +1,79 @@
-import { TimerType, User } from "@prisma/client";
+import { Timer, TimerType, User } from "@prisma/client";
 import { Location } from "@openspot/shared";
 import { prismaClient } from "../prismaClient";
 
 /**
  * Notes for continuing tomorrow:
- * Need to complete integration with other controllers
+ * Add timer to check for something like 12 hours if the user is expired still without accepting, then prune
  * Add interval for reminders with unlimited parking time
+ * Add historical data table
+ * Need to complete integration with other controllers
  * Integrate notification system
- * https://ilstu-openspot.atlassian.net/issues/?jql=project%20%3D%20%22SCRUM%22%20AND%20status%20%3D%20%27Planning%27&selectedIssue=SCRUM-92
  */
 
 export class TimerController {
-    private activeTimers: {[key: number]: NodeJS.Timeout} = {};
+    private activeTimers: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
+    private pendingConfirmations: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
+    private pendingExpirations: {[key: number]: NodeJS.Timeout} = {}; // Key is timerID
+    private unlimitedInterval: number = 60 * 60 * 8; // in seconds
+    private confirmationTimeout: number = 60 * 60; // in seconds
+    private expirationTimeout: number = 60 * 60 * 24; // in seconds
 
-    private async endTimer(timerID: number){
+    private async createTimer(timer: Timer){
+        // Creates the timeout or interval
+        if(timer.endTime){
+            // Create the timeout
+            const now = new Date();
+            let timeLeft = timer.endTime.getTime() - now.getTime();
+    
+            if(timeLeft <= -1000000){
+                // Ignore insanely long expired timers, it's not worth the flood of notifs that far long ago
+                return;
+            } else if(timeLeft <= 0){
+                timeLeft = 1;
+            }
+    
+            const timeout = setTimeout(async () => {
+                // This function here sends the notification after the time is over
+                await this.sendExpiredNotification(timer.userId);
+            }, timeLeft);
+
+            this.activeTimers[timer.id] = timeout;
+        } else {
+            // Create the reminder intnerval
+            const interval = setInterval(async () => {
+                // Send confirmation
+                await this.sendConfirmationNotification(timer.userId);
+            }, this.unlimitedInterval * 1000);
+
+            this.activeTimers[timer.id] = interval;
+        }
+    }
+
+    private async clearTimer(timerID: number){
         try {
-            await prismaClient.timer.delete({ where: {
+            const timer = await prismaClient.timer.delete({ where: {
                 id: timerID
             }});
 
             if(timerID in this.activeTimers){
-                clearTimeout(this.activeTimers[timerID]);
+                if(timer.endTime){
+                    clearTimeout(this.activeTimers[timerID]);
+                } else {
+                    clearInterval(this.activeTimers[timerID]);
+
+                    if(timerID in this.pendingConfirmations){
+                        clearTimeout(this.pendingConfirmations[timerID]);
+                    }
+                }
+
                 delete this.activeTimers[timerID];
+            }
+
+            // Remove expiration timeout
+            if(timer.id in this.pendingExpirations){
+                clearTimeout(this.pendingExpirations[timer.id]);
+                delete this.pendingExpirations[timer.id];
             }
 
             return true;
@@ -32,8 +84,59 @@ export class TimerController {
         return false;
     }
 
-    private async sendNotification(userID: number){
-        console.log(`TODO: Implement notification service. Anyway, 'sent' notification to ${userID}`)
+    private async sendExpiredNotification(userID: number){
+        // Start a timeout for the user needing to acknowledge/end, otherwise prune
+        try {
+            const timerData = await prismaClient.timer.update({
+                where: {
+                    userId: userID
+                },
+                data: {
+                    status: "EXPIRED"
+                }
+            });
+            
+            const timeout = setTimeout(async () => {
+                // Clear out the expiration, its been a long time. use clearTimer to avoid updating average
+                await this.clearTimer(timerData.id);
+            }, this.expirationTimeout * 1000);
+    
+            this.pendingExpirations[timerData.id] = timeout;
+    
+            console.log(`TODO: Implement notification service. Anyway, 'sent' notification to ${userID}`)
+            return true;
+        } catch(err){
+            console.error(err);
+        }
+
+        return false;
+    }
+
+    private async sendConfirmationNotification(userID: number){
+        try {
+            const timerData = await prismaClient.timer.findUnique({
+                where: {
+                    userId: userID
+                }
+            });
+
+            // Check for confirmation
+            if(timerData){
+                const timeout = setTimeout(async () => {
+                    // If this timeout completes, the user was never confirmed, so expire the timer.
+                    await this.sendExpiredNotification(timerData.userId);
+                }, this.confirmationTimeout * 1000);
+    
+                this.pendingConfirmations[timerData.id] = timeout;
+    
+                console.log(`TODO: Implement notification service. Anyway, asking user ${userID} if theyre still using this space`);
+                return true;
+            }
+        } catch(err){
+            console.error(err);
+        }
+
+        return false;
     }
 
     public async initTimersFromDB(){
@@ -48,28 +151,7 @@ export class TimerController {
         });
 
         for(let timer of timers){
-            // Skip timeout if there is no end time, i.e. count up only
-            if(!timer.endTime)
-                continue;
-
-            // Gets the time in milliseconds between the end and current time
-            const now = new Date();
-            let timeLeft = timer.endTime.getTime() - now.getTime();
-
-            if(timeLeft <= -1000000){
-                // Ignore insanely long expired timers, it's not worth the flood of notifs that far long ago
-                continue;
-            } else if(timeLeft <= 0){
-                timeLeft = 1;
-            }
-
-            const timeout = setTimeout(async () => {
-                // This function here sends the notification after the time is over
-                await this.endTimer(timer.id);
-                await this.sendNotification(timer.userId);
-            }, timeLeft);
-
-            this.activeTimers[timer.id] = timeout;
+            await this.createTimer(timer);
         }
     }
 
@@ -89,19 +171,7 @@ export class TimerController {
                 }
             });
     
-            if(endTime){
-                // Construct timeout if a set duration is provided
-                const timeLeft = endTime.getTime() - startTime.getTime();
-
-                const timeout = setTimeout(async () => {
-                    // This function here sends the notification after the time is over
-                    await this.endTimer(timer.id);
-                    await this.sendNotification(timer.userId);
-                }, timeLeft);
-    
-                this.activeTimers[timer.id] = timeout;
-            }
-
+            await this.createTimer(timer);
             return true;
         } catch(err){
             console.error(err);
@@ -110,17 +180,76 @@ export class TimerController {
         return false;
     }
 
-    public async clearTimer(userID: number){
+    public async reconfirmTimer(userID: number){
+        // This is used to confirm an unlimited time parking spot is still being used
         try {
             const timerData = await prismaClient.timer.findUnique({
-                where: { userId: userID }
+                where: {
+                    userId: userID,
+                    status: "ACTIVE"
+                }
+            });
+            
+            if(timerData && timerData.id in this.pendingConfirmations){
+                clearTimeout(this.pendingConfirmations[timerData.id]);
+                delete this.pendingConfirmations[timerData.id];
+                return true;
+            }
+        } catch(err){
+            console.error(err);
+        }
+
+        return false;
+    }
+
+    public async endTimer(userID: number){
+        // Once the user acknowledges the timer is expired or ending early, it can be removed and total time recorded into historical times
+        try {
+            const timerData = await prismaClient.timer.findUnique({
+                where: {
+                    userId: userID
+                }
             });
             
             if(timerData){
-                this.endTimer(timerData.id);
+                // A timer exists, move it
+                await prismaClient.historicalTimes.create({
+                    data: {
+                        startTime: timerData.startTime,
+                        endTime: timerData.endTime || new Date(),
+                        locationId: timerData.locationId
+                    }
+                });
+
+                // Remove it from active timers
+                await this.clearTimer(timerData.id);
+
+                // Recompute historical average
+                let average = 0;
+
+                const data = await prismaClient.historicalTimes.findMany({
+                    where: {
+                        locationId: timerData.locationId
+                    }
+                });
+
+                for(let timer of data){
+                    const now = new Date();
+                    average += (now.getSeconds() - timer.startTime.getSeconds());
+                }
+                
+                average /= data.length;
+
+                await prismaClient.location.update({
+                    where: {
+                        id: timerData.locationId
+                    },
+                    data: {
+                        averageParkingTime: average
+                    }
+                });
+
                 return true;
-            } else {
-                return false;
             }
         } catch(err){
             console.error(err);
