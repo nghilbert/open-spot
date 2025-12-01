@@ -33,10 +33,9 @@ res = await fetch(`${Astro.url.origin}/api/location/getAll`, {
 	},
 });
 
-var lots = await res.json();
-
+var locations = await res.json();
 if (!res.ok) {
-	lots = [];
+	locations = [];
 }
 
 // Title of the page, to be shown on the internet tab and at the top of the page
@@ -109,7 +108,7 @@ const occStyles = {
 		</section>
 
 		<!-- List -->
-		<LocationCard user={user} lots={lots} pct={pct} occ={occ} occStyles={occStyles} />
+		<LocationCard user={user} locations={locations} pct={pct} occ={occ} occStyles={occStyles} />
 
 		<!-- Edit Modal -->
 		<EditModel />
@@ -138,6 +137,8 @@ const occStyles = {
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 		<script>
+			import type { Location, Address, Permit, LocationType } from "@openspot/shared";
+
 			// --- Utility Function ---
 			function formatTime(seconds) {
 			const mins = Math.floor(seconds / 60);
@@ -252,34 +253,37 @@ const occStyles = {
 			}
 
 			const editModal = document.getElementById("editModal");
-			var locationID = "";
+			var locationID: number;
+
 			//populates the form feilds with data from the element(location) that was clicked on
 			if (editModal) {
 				editModal.addEventListener("show.bs.modal", (event: any) => {
-					const btn = event.relatedTarget as HTMLElement;
-					locationID = btn.dataset.lotId ?? "";
+					const location: Location = JSON.parse(event.relatedTarget.dataset.location) as Location;
+					const address: Address = location.address;
+					locationID = location.id;
+					const spotsUsed = location.spotCapacity - location.spotAvailability;
 
-					(document.getElementById("modalName") as HTMLInputElement).value = btn.dataset.lotName || "";
+					(document.getElementById("modalName") as HTMLInputElement).value = location.name || "";
 
-					(document.getElementById("modalNumber") as HTMLInputElement).value = btn.dataset.lotNumber || "";
+					(document.getElementById("modalNumber") as HTMLInputElement).value = String(address.number) || "";
 
-					(document.getElementById("modalStreet") as HTMLInputElement).value = btn.dataset.lotStreet || "";
+					(document.getElementById("modalStreet") as HTMLInputElement).value = String(address.street) || "";
 
-					(document.getElementById("modalCity") as HTMLInputElement).value = btn.dataset.lotCity || "";
+					(document.getElementById("modalCity") as HTMLInputElement).value = address.city || "";
 
-					(document.getElementById("modalState") as HTMLInputElement).value = btn.dataset.lotState || "";
+					(document.getElementById("modalState") as HTMLInputElement).value = address.state || "";
 
-					(document.getElementById("modalZip") as HTMLInputElement).value = btn.dataset.lotZip || "";
+					(document.getElementById("modalZip") as HTMLInputElement).value = String(address.zip) || "";
 
-					(document.getElementById("modalKind") as HTMLSelectElement).value = btn.dataset.lotKind || "Parking";
+					(document.getElementById("modalKind") as HTMLSelectElement).value = location.type || "NONE";
 
-					(document.getElementById("modalPermit") as HTMLSelectElement).value = btn.dataset.lotPermit || "None";
+					(document.getElementById("modalPermit") as HTMLSelectElement).value = location.permit || "NONE";
 
-					(document.getElementById("modalUsed") as HTMLInputElement).value = btn.dataset.lotUsed || "0";
+					(document.getElementById("modalUsed") as HTMLInputElement).value = String(spotsUsed) || "0";
 
-					(document.getElementById("modalTotal") as HTMLInputElement).value = btn.dataset.lotTotal || "0";
+					(document.getElementById("modalTotal") as HTMLInputElement).value = String(location.spotCapacity) || "0";
 
-					(document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value = btn.dataset.timeLimitSecs || "";
+					(document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value = String(location.timeLimitSecs) || "";
 				});
 			}
 
@@ -289,18 +293,22 @@ const occStyles = {
 			//when the form is submitted, make update call to backend
 			form.addEventListener("submit", async (e) => {
 				e.preventDefault();
-				const updates = {
+
+				const newLocation: Location = {
+					id: locationID,
 					name: (document.getElementById("modalName") as HTMLInputElement).value,
-					number: (document.getElementById("modalNumber") as HTMLInputElement).value,
-					street: (document.getElementById("modalStreet") as HTMLInputElement).value,
-					city: (document.getElementById("modalCity") as HTMLInputElement).value,
-					state: (document.getElementById("modalState") as HTMLInputElement).value,
-					zip: (document.getElementById("modalZip") as HTMLInputElement).value,
-					type: (document.getElementById("modalKind") as HTMLSelectElement).value,
-					permit: (document.getElementById("modalPermit") as HTMLSelectElement).value,
-					used: (document.getElementById("modalUsed") as HTMLInputElement).value,
-					total: (document.getElementById("modalTotal") as HTMLInputElement).value,
-					timeLimitSecs: (document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value,
+					address: {
+						number: Number((document.getElementById("modalNumber") as HTMLInputElement).value),
+						street: (document.getElementById("modalStreet") as HTMLInputElement).value,
+						city: (document.getElementById("modalCity") as HTMLInputElement).value,
+						state: (document.getElementById("modalState") as HTMLInputElement).value,
+						zip: Number((document.getElementById("modalZip") as HTMLInputElement).value),
+					} as Address,
+					type: (document.getElementById("modalKind") as HTMLSelectElement).value as LocationType,
+					permit: (document.getElementById("modalPermit") as HTMLSelectElement).value as Permit,
+					spotCapacity: Number((document.getElementById("modalTotal") as HTMLInputElement).value),
+					spotAvailability: Number((document.getElementById("modalTotal") as HTMLInputElement).value) - Number((document.getElementById("modalUsed") as HTMLInputElement).value),
+					timeLimitSecs: Number((document.getElementById("modalTimeLimitSecs") as HTMLInputElement).value) || null,
 				};
 
 				try {
@@ -309,7 +317,7 @@ const occStyles = {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({ data: updates }),
+						body: JSON.stringify({ data: newLocation }),
 						credentials: "include",
 					});
 
@@ -362,5 +370,5 @@ const occStyles = {
 				applyFilters();
 			});
 		</script>
-	</div></BaseLayout
->
+	</div>
+</BaseLayout>

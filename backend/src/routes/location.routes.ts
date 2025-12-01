@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { requireAuth, verifyAdmin } from "../middleware";
 import { locationController } from "../controllers";
+import { Location } from "@openspot/shared";
 
 export default function createLocationRoutes() {
 	const router = Router();
@@ -31,34 +32,16 @@ export default function createLocationRoutes() {
 	router.put("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		try {
 			const locationId = parseInt(req.params.id, 10);
-			const data = req.body.data;
+			const newLocation: Location = req.body.data as Location;
 
-			const location = await locationController.getLocation(locationId);
-			if (!location) {
+			if (!(await locationController.getLocation(locationId))) {
 				return res.status(404).json({ error: "Failed to find the location" });
 			}
 
-			// calc spotAvailability
-			const spotCapacity = Number(req.body.data.total);
-			const spotAvailability = spotCapacity - Number(req.body.data.used);
+			const isUpdated = await locationController.updateLocation(newLocation);
 
-			const update = await locationController.updateLocation(
-				locationId,
-				Number(data.number), // house number
-				data.street,
-				data.city,
-				data.state,
-				Number(data.zip),
-				data.name,
-				spotCapacity,
-				spotAvailability,
-				data.permit,
-				data.type,
-				Number(data.timeLimitSecs)
-			);
-
-			if (update) {
-				res.status(200).json({ message: "Update received", data: update });
+			if (isUpdated) {
+				res.status(200).json({ message: "Location was updated" });
 			} else {
 				res.status(400).json({ error: "Failed to update location" });
 			}

@@ -3,18 +3,18 @@ import type { Location, Permit } from "../../../../shared/src";
 import DetailSection from "./DetailSection.astro";
 
 interface Props {
-	lot: Location;
+	location: Location;
 	addressString: string;
 	typeText: string;
 	permitTxt: Permit;
 	occText: string;
 }
 
-const { lot, addressString, typeText, permitTxt, occText } = Astro.props;
+const { location, addressString, typeText, permitTxt, occText } = Astro.props;
 ---
 
 <div class="d-grid gap-1">
-	<div class="fw-bold lh-sm">{lot.name}</div>
+	<div class="fw-bold lh-sm">{location.name}</div>
 	<div class="small text-opacity-75">{addressString}</div>
 	<DetailSection details={[typeText, permitTxt, occText]} />
 </div>
