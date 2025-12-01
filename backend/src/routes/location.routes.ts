@@ -16,6 +16,21 @@ export default function createLocationRoutes() {
 		}
 	});
 
+	router.get("/get/:id", requireAuth, async (req: Request, res: Response) => {
+		try {
+			const location = await locationController.getLocation(parseInt(req.params.id));
+
+			if(location){
+				res.status(200).json(location);
+				return;
+			}
+		} catch (error) {
+			console.error("Failed to get locations:", error);
+		}
+
+		res.status(404).end();
+	});
+
 	router.delete("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		const id = parseInt(req.params.id, 10);
 

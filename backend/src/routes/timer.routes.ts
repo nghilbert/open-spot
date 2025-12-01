@@ -4,11 +4,7 @@ import { timerController } from "../controllers";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
 import { prismaClient } from "../prismaClient";
 import { Location } from "@prisma/client";
-
-interface CreateTimerRequest {
-	locationID: number;
-	seconds?: number;
-};
+import { CreateTimerRequest } from "@openspot/shared";
 
 export default function createTimerRoutes() {
 	const router = Router();
@@ -38,7 +34,7 @@ export default function createTimerRoutes() {
 		const location = await prismaClient.location.findUnique({ where: { id: body.locationID }});
 
 		// Attempt to create a parking lot object
-		if(await timerController.startTimer(user!, location!, body.seconds)){
+		if(user && location && await timerController.startTimer(user, location, body.seconds)){
 			// There is a timer with some sort of status, return it
 			res.status(200).end();
 		} else {

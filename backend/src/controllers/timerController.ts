@@ -251,9 +251,10 @@ export class TimerController {
                     }
                 });
 
+                const now = new Date();
+
                 for(let timer of data){
-                    const now = new Date();
-                    average += (now.getSeconds() - timer.startTime.getSeconds());
+                    average += (now.getTime() - timer.startTime.getTime()) / 1000;
                 }
                 
                 average /= data.length;
