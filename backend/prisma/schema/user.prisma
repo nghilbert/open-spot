@@ -20,7 +20,6 @@ model User {
   oldPasswords  Password[] @relation("OldPasswords")
   name          String
   sessions      Session[]
-  oauths        OAuth[]
   role          Role       @default(NONE)
   permit        Permit     @default(NONE)
   userType    UserType       @default(NONE)
