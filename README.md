@@ -80,7 +80,6 @@ This architecture consists of three layers:
   - Validate credentials (`Verify`, `Password`)
   - Store/retrieve user data (`User`, `Session`, `Location`)
   - Handle password resets (`ResetToken`)
-  - Manage OAuth flows (`OAuth`)
   - Resolve addresses (`Address`)
 
 
@@ -128,7 +127,6 @@ This architecture consists of three layers:
 - Session
 - Location
 - Address
-- OAuth
 
 #### Dependencies:
 - `Verify` → `User`, `Password`
@@ -139,8 +137,6 @@ This architecture consists of three layers:
   - Sessions are tied to user records.
 - `Location` → `Address`
   - Location data includes address resolution.
-- `OAuth` → `User`, `Session`
-  - OAuth flows create sessions and link to users.
 ---
 
 
