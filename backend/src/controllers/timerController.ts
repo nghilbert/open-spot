@@ -2,6 +2,14 @@ import { TimerType, User } from "@prisma/client";
 import { Location } from "@openspot/shared";
 import { prismaClient } from "../prismaClient";
 
+/**
+ * Notes for continuing tomorrow:
+ * Need to complete integration with other controllers
+ * Add interval for reminders with unlimited parking time
+ * Integrate notification system
+ * https://ilstu-openspot.atlassian.net/issues/?jql=project%20%3D%20%22SCRUM%22%20AND%20status%20%3D%20%27Planning%27&selectedIssue=SCRUM-92
+ */
+
 export class TimerController {
     private activeTimers: {[key: number]: NodeJS.Timeout} = {};
 
@@ -24,6 +32,10 @@ export class TimerController {
         return false;
     }
 
+    private async sendNotification(userID: number){
+        console.log(`TODO: Implement notification service. Anyway, 'sent' notification to ${userID}`)
+    }
+
     public async initTimersFromDB(){
         // This constructs all timeouts from the database, this should be called once on startup
         const timers = await prismaClient.timer.findMany({
@@ -44,7 +56,10 @@ export class TimerController {
             const now = new Date();
             let timeLeft = timer.endTime.getTime() - now.getTime();
 
-            if(timeLeft <= 0){
+            if(timeLeft <= -1000000){
+                // Ignore insanely long expired timers, it's not worth the flood of notifs that far long ago
+                continue;
+            } else if(timeLeft <= 0){
                 timeLeft = 1;
             }
 
@@ -114,7 +129,22 @@ export class TimerController {
         return false;
     }
 
-    public async sendNotification(userID: number){
-        console.log(`TODO: Implement notification service. Anyway, 'sent' notification to ${userID}`)
+    public async getTimerStatus(userID: number){
+        // Returns the status of the timer
+        try {
+            const timer = await prismaClient.timer.findUnique({
+                where: {
+                    userId: userID
+                }
+            });
+
+            if(timer){
+                return timer.status;
+            }
+        } catch(err){
+            console.error(err);
+        }
+
+        return false;
     }
 };
