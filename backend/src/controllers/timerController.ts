@@ -3,11 +3,6 @@ import { Location } from "@prisma/client";
 import { prismaClient } from "../prismaClient";
 import { emailController } from ".";
 
-/**
- * Notes for continuing tomorrow:
- * Need to complete integration with other controllers
- */
-
 const hostname = process.env.HOSTNAME || "http://localhost:3000";
 
 export class TimerController {
