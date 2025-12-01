@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware";
 import { timerController } from "../controllers";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
-import { prismaClient } from "src/prismaClient";
+import { prismaClient } from "../prismaClient";
 import { Location } from "@prisma/client";
 
 interface CreateTimerRequest {

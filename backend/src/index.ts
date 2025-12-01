@@ -12,16 +12,6 @@ async function main() {
 	const app = createExpressApp();
 	await timerController.initTimersFromDB();
 
-	const test = async () => {
-		// let loc: Address = { number: 0, street: "100 South Fell", city: "normal", state: "il", zip: 61761};
-		// await locationController.add(loc, 10, "Test lot", 1000);
-
-		const loc = await locationController.getLocation(1) as Location|null;
-		const user = await prismaClient.user.findUnique({ where: { id: 2 }});
-		console.log(await timerController.startTimer(user!, loc!, 5));
-	}
-	test();
-
 	let server = app.listen(port, () => {
 		console.log(`Listening on port ${port}`);
 	});
