@@ -4,9 +4,6 @@ import { prismaClient } from "../prismaClient";
 
 /**
  * Notes for continuing tomorrow:
- * Add timer to check for something like 12 hours if the user is expired still without accepting, then prune
- * Add interval for reminders with unlimited parking time
- * Add historical data table
  * Need to complete integration with other controllers
  * Integrate notification system
  */
