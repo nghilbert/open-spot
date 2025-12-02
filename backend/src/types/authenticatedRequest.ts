@@ -1,4 +1,4 @@
-import { User } from "@openspot/shared";
+import { User } from "@prisma/client";
 
 export interface AuthenticatedRequest extends Request {
 	user: User;

@@ -1,9 +1,9 @@
-import { Session, User } from "@openspot/shared";
 import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import { emailController } from "..";
-import { Permit, Role, Type, UserType } from "@prisma/client";
+import { Prisma, Permit, UserType, User } from "@prisma/client";
 import bcrypt from "bcrypt";
+type UserPassword = Prisma.UserGetPayload<{ include: { password: true } }>;
 
 export class AccountController {
 	// Variables
@@ -31,20 +31,7 @@ export class AccountController {
 		}
 	}
 
-	public async getUserById(id: number): Promise<User | null> {
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id,
-			},
-			include: {
-				password: true,
-			},
-		});
-
-		return user;
-	}
-
-	public async isValidSession(sessionToken: Session): Promise<boolean> {
+	public async isValidSession(sessionToken: string): Promise<boolean> {
 		// This function returns true or false depending on if the session is valid
 		const prisma = this.prisma;
 
@@ -57,7 +44,7 @@ export class AccountController {
 		}
 	}
 
-	public async getUserSession(sessionToken: Session): Promise<User | null> {
+	public async getUserSession(sessionToken: string): Promise<User | null> {
 		// Returns the user object if the sessiontoken is valid and found, otherwise null
 		const prisma = this.prisma;
 

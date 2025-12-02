@@ -1,7 +1,6 @@
 import { prismaClient } from "./prismaClient";
 import { createExpressApp } from "./app";
-import { accountController, locationController, timerController } from "./controllers";
-import { Address, Location } from "@openspot/shared";
+import { timerController } from "./controllers";
 
 // Runtime config
 const environment = process.env.NODE_ENV || "development";

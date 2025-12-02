@@ -3,7 +3,6 @@ import { requireAuth } from "../middleware";
 import { timerController } from "../controllers";
 import { AuthenticatedRequest } from "../types/authenticatedRequest";
 import { prismaClient } from "../prismaClient";
-import { Location } from "@prisma/client";
 import { CreateTimerRequest } from "@openspot/shared";
 
 export default function createTimerRoutes() {

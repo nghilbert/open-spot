@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { requireAuth, verifyAdmin } from "../middleware";
 import { locationController } from "../controllers";
-import { Location } from "@openspot/shared";
+import { Location } from "@prisma/client";
 
 export default function createLocationRoutes() {
 	const router = Router();
@@ -47,7 +47,8 @@ export default function createLocationRoutes() {
 	router.patch("/:id", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		try {
 			const locationId = parseInt(req.params.id, 10);
-			const locationUpdates: Omit<Partial<Location>, "id"> = req.body.data as Location;
+			const locationUpdates: Partial<Location> = req.body.data as Location;
+			delete locationUpdates.id;
 
 			if (!(await locationController.getLocation(locationId))) {
 				return res.status(404).json({ error: "Failed to find the location" });

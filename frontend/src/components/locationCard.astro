@@ -1,12 +1,15 @@
 ---
-import type { Location, User } from "@openspot/shared";
+import type { Prisma, User } from "@prisma/client";
 import RightHandSideTop from "./locationCard/RightHandSideTop.astro";
 import LeftHandSideTop from "./locationCard/LeftHandSideTop.astro";
 import ProgressBar from "./locationCard/progressBar.astro";
 
+ 
+type LocationAddress = Prisma.LocationGetPayload<{ include: { address: true }}>;
+
 interface Props {
 	user: User;
-	locations: Location[];
+	locations: LocationAddress[];
 	pct: (used: number, total: number) => number;
 	occ: (p: number) => "green" | "yellow" | "red";
 	occStyles: {
@@ -33,7 +36,7 @@ const { user, locations, pct, occ, occStyles } = Astro.props;
 
 <section class="d-grid gap-4 mt-4" id="list">
 	{
-		locations.map((location: Location) => {
+		locations.map((location) => {
 			const used = location.spotCapacity - location.spotAvailability;
 			const total = location.spotCapacity;
 			const p = pct(used, total);
