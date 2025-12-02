@@ -231,10 +231,11 @@ const occStyles = {
 					msg.classList.add("alert", "alert-success");
 
 					addLocationForm.reset();
+					const addModalEl = document.getElementById("addLocationModal");
 
-					const modalEl = document.getElementById("addLocationModal");
-					const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
-					modal?.hide();
+					// @ts-ignore
+					const addModal = bootstrap.Modal.getInstance(addModalEl);
+					addModal?.hide();
 
 					window.location.reload();
 				} catch (err) {
