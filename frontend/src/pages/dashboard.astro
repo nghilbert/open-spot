@@ -299,11 +299,21 @@ const occStyles = {
 				currentType = type;
 				currentID = parseInt(triggerCard.dataset.lotid || "0");
 
+				const staying = localStorage.getItem("stayLocationID");
+
+				if (staying != null) {
+					event.preventDefault(); // stops the modal from showing
+					return;
+  				}
+
+
+
 				document.getElementById("stayLocationText")!.textContent = name + (address ? "\n" + address : "");
 			});
 
 			// --- Confirm Stay (Start Timer) ---
 			confirmBtn!.addEventListener("click", () => {
+				console.log("OCCUPYING SPOT");
 				clearInterval(timerInterval);
 				startTime = Date.now();
 
@@ -329,21 +339,43 @@ const occStyles = {
 				}).catch((err) => {
 					console.error(err);
 				});
+				console.log("OCCUPYING SPOT");
+
+				fetch(`/api/location/occupy/${currentID}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				}).catch((err) => {
+					console.error(err);
+				});
 
 				// Close modal programmatically
 				// @ts-ignore
 				const modal = bootstrap.Modal.getInstance(stayModalEl);
 				modal.hide();
+				window.location.reload();
 			});
 
 			// --- Leave (Stop Timer) ---
 			leaveBtn!.addEventListener("click", () => {
+
+				const staying = localStorage.getItem("stayLocationID");
+
+				if (staying != null) {
 				clearInterval(timerInterval);
 				display!.textContent = "You Have Left The Location";
 
 				// Tell server to stop timer
 				fetch("/api/timer", {
 					method: "DELETE",
+					credentials: "include",
+				}).catch((err) => {
+					console.error(err);
+				});
+				console.log("LEAVING SPOT");
+				fetch(`/api/location/leave/${currentID}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
 					credentials: "include",
 				}).catch((err) => {
 					console.error(err);
@@ -355,6 +387,12 @@ const occStyles = {
 				localStorage.removeItem("stayTimeLimit");
 				localStorage.removeItem("stayAddress");
 				localStorage.removeItem("stayType");
+
+				setTimeout(() => {
+					window.location.reload();
+				}, 1500);
+  				}
+				
 			});
 
 			// --- Timer Runner ---

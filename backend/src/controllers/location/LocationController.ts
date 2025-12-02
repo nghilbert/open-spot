@@ -70,6 +70,45 @@ export class LocationController {
 		return location;
 	}
 
+	async decrementAvailability(id: number): Promise<boolean> {
+		try {
+			const location = await prismaClient.location.findUnique({ where: { id } });
+
+			// Prevent negative spotAvailability
+			if (!location || location.spotAvailability <= 0) {
+				return false;
+			}
+
+			await prismaClient.location.update({
+				where: { id },
+				data: {
+					spotAvailability: { decrement: 1 },
+				},
+			});
+		} catch (error) {
+			console.error("Failed to decrement spotAvailability:\n", error);
+			return false;
+		}
+
+		return true;
+	}
+
+	async incrementAvailability(id: number): Promise<boolean> {
+		try {
+			await prismaClient.location.update({
+				where: { id },
+				data: {
+					spotAvailability: { increment: 1 },
+				},
+			});
+		} catch (error) {
+			console.error("Failed to decrement spotAvailability:\n", error);
+			return false;
+		}
+
+		return true;
+	}
+
 	async updateLocation(id: number, locationUpdates: UpdateLocationInput): Promise<boolean> {
 		// @ts-ignore
 		delete locationUpdates.id;
