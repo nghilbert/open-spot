@@ -9,6 +9,7 @@ import "../assets/styles/dashboard.css";
 import LocationCard from "src/components/locationCard.astro";
 import EditModel from "../components/EditModel.astro";
 import type { User } from "@prisma/client";
+
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 //request user session and makes sure it is vaild and active
@@ -304,9 +305,7 @@ const occStyles = {
 				if (staying != null) {
 					event.preventDefault(); // stops the modal from showing
 					return;
-  				}
-
-
+				}
 
 				document.getElementById("stayLocationText")!.textContent = name + (address ? "\n" + address : "");
 			});
@@ -353,46 +352,46 @@ const occStyles = {
 				// @ts-ignore
 				const modal = bootstrap.Modal.getInstance(stayModalEl);
 				modal.hide();
-				window.location.reload();
+				setTimeout(() => {
+					window.location.reload();
+				}, 1500);
 			});
 
 			// --- Leave (Stop Timer) ---
 			leaveBtn!.addEventListener("click", () => {
-
 				const staying = localStorage.getItem("stayLocationID");
 
 				if (staying != null) {
-				clearInterval(timerInterval);
-				display!.textContent = "You Have Left The Location";
+					clearInterval(timerInterval);
+					display!.textContent = "You Have Left The Location";
 
-				// Tell server to stop timer
-				fetch("/api/timer", {
-					method: "DELETE",
-					credentials: "include",
-				}).catch((err) => {
-					console.error(err);
-				});
-				console.log("LEAVING SPOT");
-				fetch(`/api/location/leave/${currentID}`, {
-					method: "PATCH",
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				}).catch((err) => {
-					console.error(err);
-				});
+					// Tell server to stop timer
+					fetch("/api/timer", {
+						method: "DELETE",
+						credentials: "include",
+					}).catch((err) => {
+						console.error(err);
+					});
+					console.log("LEAVING SPOT");
+					fetch(`/api/location/leave/${currentID}`, {
+						method: "PATCH",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+					}).catch((err) => {
+						console.error(err);
+					});
 
-				// Clear saved state
-				localStorage.removeItem("stayLocationID");
-				localStorage.removeItem("stayStartTime");
-				localStorage.removeItem("stayTimeLimit");
-				localStorage.removeItem("stayAddress");
-				localStorage.removeItem("stayType");
+					// Clear saved state
+					localStorage.removeItem("stayLocationID");
+					localStorage.removeItem("stayStartTime");
+					localStorage.removeItem("stayTimeLimit");
+					localStorage.removeItem("stayAddress");
+					localStorage.removeItem("stayType");
 
-				setTimeout(() => {
-					window.location.reload();
-				}, 1500);
-  				}
-				
+					setTimeout(() => {
+						window.location.reload();
+					}, 1500);
+				}
 			});
 
 			// --- Timer Runner ---

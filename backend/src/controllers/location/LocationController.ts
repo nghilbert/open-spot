@@ -76,6 +76,7 @@ export class LocationController {
 
 			// Prevent negative spotAvailability
 			if (!location || location.spotAvailability <= 0) {
+				console.error("Location is already empty:\n");
 				return false;
 			}
 
@@ -95,6 +96,14 @@ export class LocationController {
 
 	async incrementAvailability(id: number): Promise<boolean> {
 		try {
+			const location = await prismaClient.location.findUnique({ where: { id } });
+
+			// Prevent too much spotAvailability
+			if (!location || location.spotAvailability >= location.spotCapacity) {
+				console.error("Location is full");
+				return false;
+			}
+
 			await prismaClient.location.update({
 				where: { id },
 				data: {
@@ -102,7 +111,7 @@ export class LocationController {
 				},
 			});
 		} catch (error) {
-			console.error("Failed to decrement spotAvailability:\n", error);
+			console.error("Failed to increment spotAvailability:\n", error);
 			return false;
 		}
 
