@@ -54,7 +54,6 @@ const title = "Finish setting up your profile";
 				<button type="submit" class="btn btn-primary" id="submitBtn">Save & Continue</button>
 			</form>
 		</Card>
-		<div id="toast" class="toast" role="status" aria-live="polite">Profile saved. You’re all set!</div>
 	</main>
 </BaseLayout>
 
@@ -64,7 +63,6 @@ const title = "Finish setting up your profile";
 	const permitSelect = document.getElementById("permit");
 	const usernameEl = document.getElementById("username");
 	const msg = document.getElementById("msg");
-	const toast = document.getElementById("toast");
 	const submitBtn = document.getElementById("submitBtn");
 
 	// Helper
@@ -77,6 +75,7 @@ const title = "Finish setting up your profile";
 		permitSelect.required = isDriver;
 		if (!isDriver) permitSelect.value = "";
 		msg.textContent = isDriver ? "Drivers must select a parking permit." : "Cyclists don’t need a parking permit.";
+		msg.className = "text-muted mb-2";
 	}
 	document
 		.querySelectorAll('input[name="accountType"]')
@@ -115,13 +114,14 @@ const title = "Finish setting up your profile";
 
 			if (!res.ok) throw new Error(`Save failed: ${res.status} ${res.statusText}`);
 
-			toast.classList.add("show");
 			msg.textContent = "Saved! Redirecting… if you have not verified email will bring you back to login";
+			msg.className = "text-success mb-2";
 			localStorage.removeItem("pendingEmail");
 			setTimeout(() => (window.location.href = "/dashboard"), 900);
 		} catch (err) {
 			console.error(err);
 			msg.textContent = "Something went wrong saving your profile. Please try again.";
+			msg.className = "text-danger mb-2";
 		} finally {
 			submitBtn.disabled = false;
 		}
@@ -129,9 +129,9 @@ const title = "Finish setting up your profile";
 
 	// Skip-for-now
 	document.getElementById("SkipForNow").addEventListener("click", async () => {
-		toast.textContent = "Preference saved. Redirecting…";
+		msg.textContent = "Preference saved. Redirecting…";
+		msg.className = "text-success mb-2";
 		localStorage.removeItem("pendingEmail");
-		toast.classList.add("show");
 		window.location.href = "/";
 	});
 </script>
