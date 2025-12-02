@@ -1,6 +1,6 @@
 import { LocationController } from "./LocationController";
-import type { LocationType } from "@openspot/shared";
+import type { Type } from "@prisma/client";
 
 export class ParkingLotController extends LocationController {
-	protected type: LocationType = "PARKING_LOT";
+	protected type: Type = "PARKING_LOT";
 }

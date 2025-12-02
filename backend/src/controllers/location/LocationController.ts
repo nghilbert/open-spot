@@ -1,9 +1,11 @@
-import { Permit, Type } from "@prisma/client";
+import { Permit, Address, Location } from "@prisma/client";
 import { prismaClient } from "../../prismaClient";
-import type { Location, Address, LocationType } from "@openspot/shared";
+import { Prisma, Type } from "@prisma/client";
+type LocationAddress = Prisma.LocationGetPayload<{ include: { address: true } }>;
+type UpdateLocationInput = Omit<Prisma.LocationUpdateInput, "id">;
 
 export class LocationController {
-	protected type: LocationType = "NONE";
+	protected type: Type = "NONE";
 
 	async add(address: Address, spotCapacity: number, name?: string, timeLimitSecs?: number): Promise<boolean> {
 		// Validate arguments
@@ -59,7 +61,7 @@ export class LocationController {
 		}
 	}
 
-	async getLocation(currentId: number): Promise<(Location & { address: Address }) | null> {
+	async getLocation(currentId: number): Promise<LocationAddress | null> {
 		const location = await prismaClient.location.findUnique({
 			where: { id: currentId },
 			include: { address: true },
@@ -67,20 +69,14 @@ export class LocationController {
 		return location;
 	}
 
-	async updateLocation(newLocation: Location): Promise<boolean> {
-		const { address, id, ...rest } = newLocation;
+	async updateLocation(id: number, locationUpdates: UpdateLocationInput): Promise<boolean> {
+		// @ts-ignore
+		delete locationUpdates.id;
 
 		try {
 			await prismaClient.location.update({
 				where: { id },
-				data: {
-					...rest,
-					address: {
-						update: {
-							...address,
-						},
-					},
-				},
+				data: locationUpdates,
 			});
 			return true;
 		} catch (error) {

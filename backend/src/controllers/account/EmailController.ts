@@ -1,9 +1,8 @@
-import { User } from "@openspot/shared";
+import { User } from "@prisma/client";
 import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
 

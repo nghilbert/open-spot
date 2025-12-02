@@ -8,7 +8,8 @@ import {
 	logoutController,
 	emailController,
 } from "../controllers";
-import { Permit, UserType } from "@prisma/client";
+import { Prisma, Permit, UserType } from "@prisma/client";
+import { prismaClient } from "../prismaClient";
 
 export default function createUserRoutes() {
 	// Request typings
@@ -141,15 +142,13 @@ export default function createUserRoutes() {
 
 		if (sessionToken) {
 			let user = await accountController.getUserSession(sessionToken);
-
 			if (user) {
-				const userId = user.id;
+				const fullUser = await prismaClient.user.findUnique({
+					where: { id: user.id },
+					include: { password: { select: { createdOn: true } } },
+				});
 
-				const userFromDB = await accountController.getUserById(userId);
-				const passwordCreatedOn = userFromDB?.password?.createdOn;
-
-				if (userFromDB?.password) delete userFromDB.password.passwordHash;
-				res.status(200).json(userFromDB);
+				res.status(200).json(fullUser);
 			} else {
 				res.status(401).json({ error: "Invalid session" });
 			}

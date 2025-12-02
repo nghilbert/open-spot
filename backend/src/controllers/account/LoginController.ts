@@ -1,4 +1,4 @@
-import { Session, User} from "@openspot/shared";
+import { User } from "@prisma/client";
 import { prismaClient } from "../../prismaClient";
 import { randomBytes } from "crypto";
 import * as bcrypt from "bcrypt";
@@ -24,11 +24,11 @@ export class LoginController {
 		return sessionToken;
 	}
 
-	public async login(email: string, password: string): Promise<Session | null> {
+	public async login(email: string, password: string): Promise<string | null> {
   const prisma = this.prisma;
 
   try {
-    const user: User | null = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
       include: { password: true },
     });
