@@ -46,7 +46,7 @@ export default function createLocationRoutes() {
 
 	router.post("/add", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
 		// Extract values from request body
-		const { address, spotCapacity, name, type } = req.body;
+		const { address, spotCapacity, name, type } = req.body.data;
 
 		// Attempt to create a parking lot object
 		if (await locationController.add(address, spotCapacity, name, type)) {
