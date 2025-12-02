@@ -304,6 +304,7 @@ const occStyles = {
 
 			// --- Confirm Stay (Start Timer) ---
 			confirmBtn!.addEventListener("click", () => {
+				console.log("OCCUPYING SPOT");
 				clearInterval(timerInterval);
 				startTime = Date.now();
 
@@ -329,6 +330,15 @@ const occStyles = {
 				}).catch((err) => {
 					console.error(err);
 				});
+				console.log("OCCUPYING SPOT");
+
+				fetch(`/api/location/occupy/${currentID}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				}).catch((err) => {
+					console.error(err);
+				});
 
 				// Close modal programmatically
 				// @ts-ignore
@@ -344,6 +354,14 @@ const occStyles = {
 				// Tell server to stop timer
 				fetch("/api/timer", {
 					method: "DELETE",
+					credentials: "include",
+				}).catch((err) => {
+					console.error(err);
+				});
+				console.log("LEAVING SPOT");
+				fetch(`/api/location/leave/${currentID}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
 					credentials: "include",
 				}).catch((err) => {
 					console.error(err);

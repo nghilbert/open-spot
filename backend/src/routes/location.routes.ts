@@ -22,10 +22,37 @@ export default function createLocationRoutes() {
 
 			if (location) {
 				res.status(200).json(location);
-				return;
 			}
 		} catch (error) {
-			console.error("Failed to get locations:", error);
+			res.status(400);
+		}
+
+		res.status(404).end();
+	});
+
+	router.patch("/occupy/:id", requireAuth, async (req: Request, res: Response) => {
+		try {
+			const id = parseInt(req.params.id, 10);
+
+			if (await locationController.decrementAvailability(id)) {
+				res.status(200).json({ success: true });
+			}
+		} catch (error) {
+			res.status(400).json({ success: false });
+		}
+
+		res.status(404).end();
+	});
+
+	router.patch("/leave/:id", requireAuth, async (req: Request, res: Response) => {
+		try {
+			const id = parseInt(req.params.id, 10);
+
+			if (await locationController.incrementAvailability(id)) {
+				res.status(200).json({ success: true });
+			}
+		} catch (error) {
+			res.status(400).json({ success: false });
 		}
 
 		res.status(404).end();
