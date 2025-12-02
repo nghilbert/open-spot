@@ -344,6 +344,7 @@ const occStyles = {
 				// @ts-ignore
 				const modal = bootstrap.Modal.getInstance(stayModalEl);
 				modal.hide();
+				window.location.reload();
 			});
 
 			// --- Leave (Stop Timer) ---
@@ -373,6 +374,10 @@ const occStyles = {
 				localStorage.removeItem("stayTimeLimit");
 				localStorage.removeItem("stayAddress");
 				localStorage.removeItem("stayType");
+
+				setTimeout(() => {
+					window.location.reload();
+				}, 1500);
 			});
 
 			// --- Timer Runner ---
