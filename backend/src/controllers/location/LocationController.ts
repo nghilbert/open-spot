@@ -3,31 +3,14 @@ import { prismaClient } from "../../prismaClient";
 import { Prisma, Type } from "@prisma/client";
 type LocationAddress = Prisma.LocationGetPayload<{ include: { address: true } }>;
 type UpdateLocationInput = Omit<Prisma.LocationUpdateInput, "id">;
+type CreateLocationInput = Prisma.LocationCreateInput;
 
 export class LocationController {
-	async add(
-		address: Address,
-		type: Type,
-		spotCapacity: number,
-		name?: string,
-		timeLimitSecs?: number
-	): Promise<boolean> {
-		// Validate arguments
-		if (!address || !Number.isInteger(spotCapacity) || spotCapacity <= 0) {
-			return false;
-		}
-
+	async add(newLocation: CreateLocationInput): Promise<boolean> {
 		// Create database object
 		try {
 			await prismaClient.location.create({
-				data: {
-					spotCapacity: spotCapacity,
-					spotAvailability: spotCapacity,
-					type: type,
-					address: { create: address },
-					timeLimitSecs: timeLimitSecs ?? null,
-					name: name ?? "no_name",
-				},
+				data: newLocation,
 			});
 		} catch (error) {
 			console.error("Failed to create a location:\n", error);
@@ -47,17 +30,17 @@ export class LocationController {
 		try {
 			// Delete related timers
 			await prismaClient.timer.deleteMany({
-				where: { locationId: id }
+				where: { locationId: id },
 			});
 
 			// Delete historical timers
 			await prismaClient.historicalTimes.deleteMany({
-				where: { locationId: id }
+				where: { locationId: id },
 			});
 
 			// Then delete location
 			await prismaClient.location.delete({
-				where: { id: id }
+				where: { id: id },
 			});
 		} catch (error) {
 			console.error("Failed to remove a location:\n", error);
