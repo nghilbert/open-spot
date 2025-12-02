@@ -137,7 +137,7 @@ const occStyles = {
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 		<script>
-			import type { Location, Address, Permit, LocationType } from "@openspot/shared";
+			import type { Location, Address, Permit, LocationType, CreateTimerRequest } from "@openspot/shared";
 
 			// --- Utility Function ---
 			function formatTime(seconds: number) {
@@ -152,6 +152,7 @@ const occStyles = {
 			let currentLimit: number|null = null;
 			let currentAddress = "";
 			let currentType = ""; 
+			let currentID = 0;
 
 			const display = document.getElementById("timerDisplay")!.querySelector("span");
 			const confirmBtn = document.getElementById("stayYesBtn");
@@ -164,12 +165,14 @@ const occStyles = {
 				const savedLimit = localStorage.getItem("stayTimeLimit");
 				const savedAddress = localStorage.getItem("stayAddress");
 				const savedType = localStorage.getItem("stayType");
+				const savedID = localStorage.getItem("stayLocationID");
 
 				if (savedStart) {
 					startTime = parseInt(savedStart);
 					currentLimit = savedLimit != null ? parseInt(savedLimit) : null;
 					currentAddress = savedAddress || "";
 					currentType = savedType || "";
+					currentID = parseInt(savedID || "0");
 					runTimer();
 				}
 			});
@@ -183,6 +186,7 @@ const occStyles = {
 				currentLimit = triggerCard.dataset.timelimit ? parseInt(triggerCard.dataset.timelimit) : null;
 				currentAddress = address;
 				currentType = type;
+				currentID = parseInt(triggerCard.dataset.lotid || "0");
 
 				document.getElementById("stayLocationText")!.textContent = name + (address ? "\n" + address : "");
 			});
@@ -193,14 +197,27 @@ const occStyles = {
 				startTime = Date.now();
 
 				// Save state to localStorage
+				localStorage.setItem("stayLocationID", currentID.toString());
 				localStorage.setItem("stayStartTime", startTime.toString());
 				localStorage.setItem("stayTimeLimit", currentLimit?.toString() || "");
 				localStorage.setItem("stayAddress", currentAddress);
 				localStorage.setItem("stayType", currentType);
 
 				runTimer();
+				
+				// Tell server to start timer
+				const payload: CreateTimerRequest = { locationID: currentID, seconds: (currentLimit ? (currentLimit / 1000) : undefined) };
+				fetch("/api/timer", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(payload),
+					credentials: "include"
+				}).catch(err => {
+					console.error(err);
+				});
 
-				// Close modal programmatically
+				// Close modal programmatically 
+				// @ts-ignore
 				const modal = bootstrap.Modal.getInstance(stayModalEl);
 				modal.hide();
 			});
@@ -210,7 +227,16 @@ const occStyles = {
 				clearInterval(timerInterval);
 				display!.textContent = "You Have Left The Location";
 
+				// Tell server to stop timer
+				fetch("/api/timer", {
+					method: "DELETE",
+					credentials: "include"
+				}).catch(err => {
+					console.error(err);
+				});
+
 				// Clear saved state
+				localStorage.removeItem("stayLocationID");
 				localStorage.removeItem("stayStartTime");
 				localStorage.removeItem("stayTimeLimit");
 				localStorage.removeItem("stayAddress");
@@ -219,36 +245,36 @@ const occStyles = {
 
 			// --- Timer Runner ---
 			function runTimer() {
-			clearInterval(timerInterval);
-			
+				clearInterval(timerInterval);
 
-			if (currentLimit) {
-				// Countdown mode
-				let remaining = currentLimit - Math.floor((Date.now() - startTime) / 1000);
-				if (remaining < 0) remaining = 0;
+				if (currentLimit) {
+					// Countdown mode
+					let remaining = currentLimit - Math.floor((Date.now() - startTime) / 1000);
+					if (remaining < 0) remaining = 0;
 
-				display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
+					display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
 
-				timerInterval = setInterval(() => {
-				remaining--;
-				display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
+					timerInterval = setInterval(() => {
+					remaining--;
+					display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(remaining)} remaining`;
 
-				if (remaining <= 0) {
-					clearInterval(timerInterval);
-					display!.textContent = "Time limit reached!";
-					localStorage.removeItem("stayStartTime");
-					localStorage.removeItem("stayTimeLimit");
-					localStorage.removeItem("stayAddress");
-					localStorage.removeItem("stayType");
+					if (remaining <= 0) {
+						clearInterval(timerInterval);
+						display!.textContent = "Time limit reached!";
+						localStorage.removeItem("stayLocationID");
+						localStorage.removeItem("stayStartTime");
+						localStorage.removeItem("stayTimeLimit");
+						localStorage.removeItem("stayAddress");
+						localStorage.removeItem("stayType");
+					}
+					}, 1000);
+				} else {
+					// Elapsed mode: show type + address + elapsed time
+					timerInterval = setInterval(() => {
+					const elapsed = Math.floor((Date.now() - startTime) / 1000);
+					display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(elapsed)}`;
+					}, 1000);
 				}
-				}, 1000);
-			} else {
-				// Elapsed mode: show type + address + elapsed time
-				timerInterval = setInterval(() => {
-				const elapsed = Math.floor((Date.now() - startTime) / 1000);
-				display!.textContent = `${currentType == "PARKING_LOT" ? "Parking Lot": "Bike Rake"} — ${currentAddress} — ${formatTime(elapsed)}`;
-				}, 1000);
-			}
 			}
 
 			const editModal = document.getElementById("editModal");
