@@ -42,7 +42,7 @@ const { user, locations, pct, occ, occStyles } = Astro.props;
 			const p = pct(used, total);
 			const state = occ(p);
 			const style = occStyles[state];
-			const occText = total > 0 ? `${used}/${total} spots full` : "—";
+			const occText = total > 0 ? `${used}/${total} Spots Used` : "—";
 			const typeText =
 				location.type === "PARKING_LOT" ? "Parking Lot" : location.type === "BIKE_RACK" ? "Bike Rack" : "None";
 			const permitTxt = location.permit;

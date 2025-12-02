@@ -8,7 +8,7 @@ import ColorScore from "../components/ColorScore.astro";
 import "../assets/styles/dashboard.css";
 import LocationCard from "src/components/locationCard.astro";
 import EditModel from "../components/EditModel.astro";
-import type { User } from "@Prisma/client";
+import type { User } from "@prisma/client";
 // Force the server to regenerate the page every request, rather than at `npm run build`.
 export const prerender = false;
 //request user session and makes sure it is vaild and active
