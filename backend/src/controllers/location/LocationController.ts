@@ -1,13 +1,17 @@
-import { Permit, Address, Location } from "@prisma/client";
+import { Address, Location } from "@prisma/client";
 import { prismaClient } from "../../prismaClient";
 import { Prisma, Type } from "@prisma/client";
 type LocationAddress = Prisma.LocationGetPayload<{ include: { address: true } }>;
 type UpdateLocationInput = Omit<Prisma.LocationUpdateInput, "id">;
 
 export class LocationController {
-	protected type: Type = "NONE";
-
-	async add(address: Address, spotCapacity: number, name?: string, timeLimitSecs?: number): Promise<boolean> {
+	async add(
+		address: Address,
+		type: Type,
+		spotCapacity: number,
+		name?: string,
+		timeLimitSecs?: number
+	): Promise<boolean> {
 		// Validate arguments
 		if (!address || !Number.isInteger(spotCapacity) || spotCapacity <= 0) {
 			return false;
@@ -19,13 +23,14 @@ export class LocationController {
 				data: {
 					spotCapacity: spotCapacity,
 					spotAvailability: spotCapacity,
+					type: type,
 					address: { create: address },
+					timeLimitSecs: timeLimitSecs ?? null,
 					name: name ?? "no_name",
-					type: this.type,
 				},
 			});
 		} catch (error) {
-			console.error(`Failed to create a location of type ${this.type.toLowerCase()}:`, error);
+			console.error("Failed to create a location:\n", error);
 			return false;
 		}
 
@@ -42,7 +47,7 @@ export class LocationController {
 		try {
 			await prismaClient.location.delete({ where: { id } });
 		} catch (error) {
-			console.error(`Failed to remove a location of type ${this.type.toLowerCase()}:`, error);
+			console.error("Failed to remove a location:\n", error);
 			return false;
 		}
 
@@ -56,7 +61,7 @@ export class LocationController {
 			});
 			return locations;
 		} catch (error) {
-			console.error("Failed to get locations: ", error);
+			console.error("Failed to get locations:\n", error);
 			return [];
 		}
 	}
@@ -80,7 +85,7 @@ export class LocationController {
 			});
 			return true;
 		} catch (error) {
-			console.error("Failed to update location:", error);
+			console.error("Failed to update location:\n", error);
 			return false;
 		}
 	}

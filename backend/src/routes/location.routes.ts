@@ -20,7 +20,7 @@ export default function createLocationRoutes() {
 		try {
 			const location = await locationController.getLocation(parseInt(req.params.id));
 
-			if(location){
+			if (location) {
 				res.status(200).json(location);
 				return;
 			}
@@ -37,6 +37,20 @@ export default function createLocationRoutes() {
 		// Attempt to remove a parking lot object
 		if (await locationController.remove(id)) {
 			// Successful removal
+			res.status(200).json({ success: true });
+		} else {
+			// Send an error
+			res.status(400).json({ success: false });
+		}
+	});
+
+	router.post("/add", requireAuth, verifyAdmin, async (req: Request, res: Response) => {
+		// Extract values from request body
+		const { address, spotCapacity, name, type } = req.body;
+
+		// Attempt to create a parking lot object
+		if (await locationController.add(address, spotCapacity, name, type)) {
+			// Successful creation
 			res.status(200).json({ success: true });
 		} else {
 			// Send an error
