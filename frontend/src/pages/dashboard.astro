@@ -150,12 +150,18 @@ const occStyles = {
 					};
 				};
 			}>;
+			type UpdateLocationInput = Omit<Prisma.LocationUpdateInput, "id">;
 
 			// --- Utility Function ---
 			function formatTime(seconds: number) {
-				const mins = Math.floor(seconds / 60);
-				const secs = seconds % 60;
-				return `${mins}:${secs.toString().padStart(2, "0")}`;
+				const secs = Math.floor(seconds) % 60;
+				const mins = Math.floor(seconds / 60) % 60;
+				const hours = Math.floor(seconds / (60 * 60)) % 24;
+				const days = Math.floor(seconds / (60 * 60 * 24));
+
+				if (days > 0)
+					return `${days} days ${hours}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+				return `${hours}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 			}
 
 			// --- Timer Variables ---
@@ -335,14 +341,16 @@ const occStyles = {
 			form.addEventListener("submit", async (e) => {
 				e.preventDefault();
 
-				const locationUpdates: Partial<LocationAddress> = {
+				const locationUpdates: UpdateLocationInput = {
 					name: (document.getElementById("modalName") as HTMLInputElement).value,
 					address: {
-						number: Number((document.getElementById("modalNumber") as HTMLInputElement).value),
-						street: (document.getElementById("modalStreet") as HTMLInputElement).value,
-						city: (document.getElementById("modalCity") as HTMLInputElement).value,
-						state: (document.getElementById("modalState") as HTMLInputElement).value,
-						zip: Number((document.getElementById("modalZip") as HTMLInputElement).value),
+						update: {
+							number: Number((document.getElementById("modalNumber") as HTMLInputElement).value),
+							street: (document.getElementById("modalStreet") as HTMLInputElement).value,
+							city: (document.getElementById("modalCity") as HTMLInputElement).value,
+							state: (document.getElementById("modalState") as HTMLInputElement).value,
+							zip: Number((document.getElementById("modalZip") as HTMLInputElement).value),
+						},
 					},
 					type: (document.getElementById("modalKind") as HTMLSelectElement).value as Type,
 					permit: (document.getElementById("modalPermit") as HTMLSelectElement).value as Permit,
