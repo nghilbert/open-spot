@@ -1,0 +1,38 @@
+---
+import type { Location } from "@prisma/client";
+
+interface Props {
+	location: Location;
+}
+
+const { location } = Astro.props;
+---
+
+<button
+	class="deleteBtn"
+	data-location={JSON.stringify(location)}
+	title="Delete location"
+	aria-label="Delete location"
+	id="delete-btn"
+>
+	<i class="bi">Delete</i>
+</button>
+
+<script>
+	const btn = document.getElementById("delete-btn");
+
+	btn?.addEventListener("click", async (ev) => {
+		ev.preventDefault();
+
+		const locationID = JSON.parse(btn.dataset.location!).id;
+		
+		const res = await fetch(`/api/location/${locationID}`, {
+			method: "DELETE",
+			credentials: "include"
+		});
+
+		if(res.ok){
+			window.location.reload();
+		}
+	});
+</script>

@@ -12,8 +12,8 @@ model Timer {
     endTime DateTime?
     status TimerType
 
-    user User @relation(fields: [userId], references: [id])
-    location Location @relation(fields: [locationId], references: [id])
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 }
 
 model HistoricalTimes {
@@ -23,5 +23,5 @@ model HistoricalTimes {
     startTime DateTime
     endTime DateTime
 
-    location Location @relation(fields: [locationId], references: [id])
+    location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 }

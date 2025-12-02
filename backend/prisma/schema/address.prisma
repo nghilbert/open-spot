@@ -5,5 +5,5 @@ model Address {
     city String
     state String
     zip Int
-    location Location? 
+    location Location?
 }

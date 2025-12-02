@@ -15,7 +15,7 @@ model User {
   username      String     @default("")
   email         String     @unique
   emailVerified Boolean    @default(false)
-  password      Password   @relation("CurrentPassword", fields: [PasswordID], references: [passwordId])
+  password      Password   @relation("CurrentPassword", fields: [PasswordID], references: [passwordId], onDelete: Cascade)
   PasswordID    String     @unique
   oldPasswords  Password[] @relation("OldPasswords")
   name          String

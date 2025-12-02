@@ -40,7 +40,20 @@ export class LocationController {
 
 		// Remove database object
 		try {
-			await prismaClient.location.delete({ where: { id } });
+			// Delete related timers
+			await prismaClient.timer.deleteMany({
+				where: { locationId: id }
+			});
+
+			// Delete historical timers
+			await prismaClient.historicalTimes.deleteMany({
+				where: { locationId: id }
+			});
+
+			// Then delete location
+			await prismaClient.location.delete({
+				where: { id: id }
+			});
 		} catch (error) {
 			console.error(`Failed to remove a location of type ${this.type.toLowerCase()}:`, error);
 			return false;
