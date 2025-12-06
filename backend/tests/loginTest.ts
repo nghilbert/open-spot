@@ -8,7 +8,7 @@ async function createTestUser(email: string, password: string, isVerified: boole
 	const passObj = await prismaClient.password.create({ data: { passwordHash: passwordHash } });
 
 	// Create a user with the email and password
-	const testUser = await prismaClient.user.create({
+	await prismaClient.user.create({
 		data: {
 			name: "TestUser",
 			email: email,
@@ -17,8 +17,6 @@ async function createTestUser(email: string, password: string, isVerified: boole
 		},
 		include: { password: true },
 	});
-
-	return testUser;
 }
 
 async function loginTest() {
@@ -32,7 +30,8 @@ async function loginTest() {
 	await createTestUser(EMAIL_UNVERIFIED, PASSWORD, false);
 
 	// Start tests
-	let isTestPased = true;
+	let isTestPassed = true;
+	let counter = 0;
 	console.log("----- Testing Login API Call -----\n");
 	console.log("----- Verified user, wrong email, and correct password -----");
 
@@ -43,10 +42,10 @@ async function loginTest() {
 	});
 
 	if (!response.ok) {
-		console.log("Test successful, login declined. Status: ", response.status);
+		console.log("Test successful, login declined. Status: ", response.ok);
 	} else {
-		console.log("Test failed, login accepted. Status: ", response.status);
-		isTestPased = false;
+		console.log("Test failed, login accepted. Status: ", response.ok);
+		isTestPassed = false;
 	}
 
 	console.log("\n----- Verified user, correct email, and wrong password -----");
@@ -58,10 +57,10 @@ async function loginTest() {
 	});
 
 	if (!response.ok) {
-		console.log("Test successful, login declined. Status: ", response.status);
+		console.log("Test successful, login declined. Status: ", response.ok);
 	} else {
-		console.log("Test failed, login accepted. Status: ", response.status);
-		isTestPased = false;
+		console.log("Test failed, login accepted. Status: ", response.ok);
+		isTestPassed = false;
 	}
 
 	console.log("\n----- Unverified user, correct email, and correct password -----");
@@ -73,10 +72,10 @@ async function loginTest() {
 	});
 
 	if (!response.ok) {
-		console.log("Test successful, login declined. Status: ", response.status);
+		console.log("Test successful, login declined. Status: ", response.ok);
 	} else {
-		console.log("Test failed, login accepted. Status: ", response.status);
-		isTestPased = false;
+		console.log("Test failed, login accepted. Status: ", response.ok);
+		isTestPassed = false;
 	}
 
 	console.log("\n----- Verified user, correct email, and correct password -----");
@@ -88,10 +87,16 @@ async function loginTest() {
 	});
 
 	if (response.ok) {
-		console.log("Test successful, login accepted. Status: ", response.status);
+		console.log("Test successful, login accepted. Status: ", response.ok);
 	} else {
-		console.log("Test failed, login declined. Status: ", response.status);
-		isTestPased = false;
+		console.log("Test failed, login declined. Status: ", response.ok);
+		isTestPassed = false;
+	}
+
+	if(isTestPassed){
+		console.log("\nAll Test Pass Login Feature working as expected!!!");
+	} else {
+		console.log("\nOnly "+ counter +"/4 tested passed, please review the logs");
 	}
 
 	// Clean up test users
