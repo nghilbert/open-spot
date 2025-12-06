@@ -1,17 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "../src/prismaClient";
 import bcrypt from "bcrypt";
-
-const prismaClient = new PrismaClient();
 
 async function createTestUser(email: string, password: string, isVerified: boolean) {
 	// Create a password object for the test user
 	const salt = await bcrypt.genSalt();
 	const passwordHash = await bcrypt.hash(password, salt);
-	const passObj = await prismaClient.password.create({
-		data: {
-			passwordHash: passwordHash,
-		},
-	});
+	const passObj = await prismaClient.password.create({ data: { passwordHash: passwordHash } });
 
 	// Create a user with the email and password
 	const testUser = await prismaClient.user.create({
@@ -32,15 +26,17 @@ async function loginTest() {
 	const EMAIL_UNVERIFIED = "unverified@ilstu.edu";
 	const PASSWORD = "testPassword";
 
+	// Create temporary users for testing
+	await prismaClient.user.deleteMany({ where: { email: { in: [EMAIL_VERIFIED, EMAIL_UNVERIFIED] } } });
 	await createTestUser(EMAIL_VERIFIED, PASSWORD, true);
 	await createTestUser(EMAIL_UNVERIFIED, PASSWORD, false);
 
+	// Start tests
 	let isTestPased = true;
-	console.log("----- Testing Login -----\n");
+	console.log("----- Testing Login API Call -----\n");
+	console.log("----- Verified user, wrong email, and correct password -----");
 
-	console.log("----- Verified user, wrong email and correct password -----\n");
-
-	let response = await fetch("/api/user/login", {
+	let response = await fetch("http://localhost:3000/api/user/login", {
 		method: "POST",
 		body: JSON.stringify({ email: "WrongEmail", password: PASSWORD }),
 		headers: { "Content-Type": "application/json" },
@@ -53,9 +49,9 @@ async function loginTest() {
 		isTestPased = false;
 	}
 
-	console.log("----- Verified user, correct email and wrong password -----\n");
+	console.log("\n----- Verified user, correct email, and wrong password -----");
 
-	response = await fetch("/api/user/login", {
+	response = await fetch("http://localhost:3000/api/user/login", {
 		method: "POST",
 		body: JSON.stringify({ email: EMAIL_VERIFIED, password: "WrongPassword" }),
 		headers: { "Content-Type": "application/json" },
@@ -68,9 +64,9 @@ async function loginTest() {
 		isTestPased = false;
 	}
 
-	console.log("----- Unverified user, correct email and correct password -----\n");
+	console.log("\n----- Unverified user, correct email, and correct password -----");
 
-	response = await fetch("/api/user/login", {
+	response = await fetch("http://localhost:3000/api/user/login", {
 		method: "POST",
 		body: JSON.stringify({ email: EMAIL_UNVERIFIED, password: PASSWORD }),
 		headers: { "Content-Type": "application/json" },
@@ -83,9 +79,9 @@ async function loginTest() {
 		isTestPased = false;
 	}
 
-	console.log("----- Verified user, correct email and correct password -----\n");
+	console.log("\n----- Verified user, correct email, and correct password -----");
 
-	response = await fetch("/api/user/login", {
+	response = await fetch("http://localhost:3000/api/user/login", {
 		method: "POST",
 		body: JSON.stringify({ email: EMAIL_VERIFIED, password: PASSWORD }),
 		headers: { "Content-Type": "application/json" },
@@ -97,6 +93,9 @@ async function loginTest() {
 		console.log("Test failed, login declined. Status: ", response.status);
 		isTestPased = false;
 	}
+
+	// Clean up test users
+	await prismaClient.user.deleteMany({ where: { email: { in: [EMAIL_VERIFIED, EMAIL_UNVERIFIED] } } });
 }
 
 loginTest();
