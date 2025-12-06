@@ -108,10 +108,10 @@ import logo from "../assets/images/logo.svg";
 								window.location.href = result.redirectTo;
 								// Optionally close modal or redirect
 							} else if (response.status === 401) {
-								status.textContent = "Invalid email or password.";
+								status.textContent = "Invalid email";
 								status.style.display = "block";
 							} else if (response.status === 500){
-								status.textContent = "Email not verified, please check inbox";
+								status.textContent = "Incorrect Password or Email Not Verified";
 								status.style.display = "block";
 							}else {
 								status.textContent = "Unexpected error. Please try again.";
